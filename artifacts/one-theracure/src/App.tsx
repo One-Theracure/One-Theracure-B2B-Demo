@@ -14,7 +14,18 @@ import LoadingScreen from "@/components/common/LoadingScreen";
 import CommandPalette from "@/components/CommandPalette";
 import SkipNav from "@/components/common/SkipNav";
 
-const Index = lazy(() => import("./pages/Index"));
+const AppShell = lazy(() => import("./components/layout/AppShell"));
+const TodayPage = lazy(() => import("./pages/TodayPage"));
+const PatientsPage = lazy(() => import("./pages/PatientsPage"));
+const PatientDetailPage = lazy(() => import("./pages/PatientDetailPage"));
+const InsightsPage = lazy(() => import("./pages/InsightsPage"));
+const FrontDeskPage = lazy(() => import("./pages/FrontDeskPage"));
+const SettingsPage = lazy(() => import("./pages/SettingsPage"));
+const EncounterRoute = lazy(() => import("./pages/EncounterRoute"));
+const EncounterNoteSurface = lazy(() => import("./pages/EncounterNoteSurface"));
+const CdsGroupView = lazy(() => import("./components/encounter/CdsGroupView"));
+const OrdersGroupView = lazy(() => import("./components/encounter/OrdersGroupView"));
+const TimelineGroupView = lazy(() => import("./components/encounter/TimelineGroupView"));
 const Auth = lazy(() => import("./pages/Auth"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
@@ -59,6 +70,18 @@ function SignUpPage() {
   );
 }
 
+/**
+ * Single ProtectedRoute wrapper for the whole authenticated app. Putting
+ * authorization at the layout boundary (instead of every leaf) means we
+ * cannot accidentally ship a public new page — the default state for new
+ * routes is "auth required".
+ */
+const Shell = () => (
+  <ProtectedRoute requiredPermission="read_patients">
+    <AppShell />
+  </ProtectedRoute>
+);
+
 const App = () => {
   if (!clerkPubKey) {
     return (
@@ -89,17 +112,34 @@ const App = () => {
                   <ErrorBoundary>
                     <Suspense fallback={<LoadingScreen />}>
                       <Routes>
+                        {/* Auth routes (public) */}
                         <Route path="/auth" element={<Auth />} />
                         <Route path="/sign-in/*" element={<SignInPage />} />
                         <Route path="/sign-up/*" element={<SignUpPage />} />
-                        <Route
-                          path="/"
-                          element={
-                            <ProtectedRoute requiredPermission="read_patients">
-                              <Index />
-                            </ProtectedRoute>
-                          }
-                        />
+
+                        {/* Authenticated app — single AppShell, nested children */}
+                        <Route element={<Shell />}>
+                          <Route index element={<Navigate to="/today" replace />} />
+                          <Route path="/today" element={<TodayPage />} />
+                          <Route path="/patients" element={<PatientsPage />} />
+                          <Route path="/patients/:id" element={<PatientDetailPage />} />
+
+                          {/* Encounter — :id is the single source of truth */}
+                          <Route path="/encounters/:id" element={<EncounterRoute />}>
+                            <Route index element={<EncounterNoteSurface />} />
+                            <Route path="cds" element={<CdsGroupView />} />
+                            <Route path="orders" element={<OrdersGroupView />} />
+                            <Route path="timeline" element={<TimelineGroupView />} />
+                          </Route>
+
+                          <Route path="/insights" element={<InsightsPage />} />
+                          <Route path="/frontdesk" element={<FrontDeskPage />} />
+
+                          {/* Settings — view selection is in the URL */}
+                          <Route path="/settings" element={<SettingsPage />} />
+                          <Route path="/settings/:view" element={<SettingsPage />} />
+                        </Route>
+
                         <Route path="*" element={<NotFound />} />
                       </Routes>
                     </Suspense>

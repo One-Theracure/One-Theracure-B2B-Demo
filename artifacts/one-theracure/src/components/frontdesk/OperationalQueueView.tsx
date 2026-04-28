@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { Phone, Check, RotateCcw, Play, Bell, UserCheck, RefreshCw, Filter } from "lucide-react";
+import { Phone, Check, RotateCcw, Play, Bell, UserCheck, RefreshCw, Filter, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,6 +8,9 @@ import { mockPatients } from "@/data/mockPatients";
 import { SPECIALTY_PACKS } from "@/data/specialtyPacks";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { encountersService } from "@/services/encountersService";
+import { eventBus } from "@/services/eventBus";
+import { logger } from "@/lib/logger";
 
 const SPECIALTIES_FOR_QUEUE = ["Dermatology", "Dentistry", "General Practice", "Cardiology", "Pediatrics"];
 
@@ -83,6 +86,54 @@ export default function OperationalQueueView() {
   const updateStatus = (id: string, status: QueueStatus) => {
     setQueue((prev) => prev.map((q) => q.id === id ? { ...q, status, updatedAt: new Date().toISOString() } : q));
     toast({ title: `Status updated to "${QUEUE_STATUS_LABELS[status]}"` });
+  };
+
+  // Set of queue items currently being handed off — disables the button to
+  // prevent double-clicks creating duplicate encounters.
+  const [sendingIds, setSendingIds] = useState<Set<string>>(new Set());
+
+  /**
+   * Send to Doctor — the one-click handoff.
+   *
+   * Creates a real encounter row via the API (so the doctor's Today page
+   * will see it on next refresh / via the eventBus broadcast) and flips
+   * the queue item to `in-consult`. We do NOT post providerId from the
+   * client — the server attaches the assigned doctor (today: from the
+   * Clerk session; future: from the appointment's doctorId).
+   */
+  const sendToDoctor = async (item: OperationalQueueItem) => {
+    if (sendingIds.has(item.id)) return;
+    setSendingIds((s) => new Set(s).add(item.id));
+    try {
+      const enc = await encountersService.create({
+        patientId: item.patientId,
+        status: "active",
+        visitType: item.visitType || "consult",
+      });
+      updateStatus(item.id, "in-consult");
+      eventBus.emit("queue.sent-to-doctor", {
+        patientId: item.patientId,
+        encounterId: enc.id,
+        payload: { doctorName: item.doctorName, visitType: item.visitType },
+      });
+      toast({
+        title: "Sent to doctor",
+        description: `${item.patientName} is now in ${item.doctorName}'s Today queue.`,
+      });
+    } catch (err) {
+      logger.error("queue.sendToDoctor failed", err);
+      toast({
+        title: "Could not send to doctor",
+        description: "Please try again. The patient remains in the queue.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingIds((s) => {
+        const next = new Set(s);
+        next.delete(item.id);
+        return next;
+      });
+    }
   };
 
   const stats = {
@@ -204,11 +255,13 @@ export default function OperationalQueueView() {
                       )}
                       {item.status === "arrived" && (
                         <button
-                          onClick={() => updateStatus(item.id, "in-consult")}
-                          title="Start Encounter"
-                          className="w-7 h-7 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 transition-colors"
+                          onClick={() => sendToDoctor(item)}
+                          disabled={sendingIds.has(item.id)}
+                          title="Send to Doctor — creates an encounter and adds to doctor's Today queue"
+                          aria-label={`Send ${item.patientName} to ${item.doctorName}`}
+                          className="w-7 h-7 rounded-lg bg-violet-500/10 hover:bg-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 transition-colors disabled:opacity-40"
                         >
-                          <Play className="h-3.5 w-3.5" />
+                          <Send className="h-3.5 w-3.5" />
                         </button>
                       )}
                       {item.status !== "completed" && item.status !== "no-show" && (

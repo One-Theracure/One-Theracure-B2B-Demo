@@ -8,7 +8,10 @@ export type EventType =
   | 'encounter.updated'
   | 'patient.updated'
   | 'ai.called'
-  | 'carepath.activated';
+  | 'carepath.activated'
+  // Phase 3 — front-desk → doctor handoff. Today page subscribes so a new
+  // queue handoff appears without a manual refresh.
+  | 'queue.sent-to-doctor';
 
 export interface AppEvent {
   id: string;

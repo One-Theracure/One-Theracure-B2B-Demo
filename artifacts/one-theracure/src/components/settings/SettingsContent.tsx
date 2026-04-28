@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Settings, PenTool, Users, FileText, ChevronRight, ArrowLeft } from "lucide-react";
@@ -10,6 +10,8 @@ import AuditLogView from "./AuditLogView";
 import { RequireRole } from "@/hooks/useRequireRole";
 
 type SettingsView = "main" | "templates" | "signature" | "roles" | "audit";
+
+const VALID_VIEWS: ReadonlySet<SettingsView> = new Set(["main", "templates", "signature", "roles", "audit"]);
 
 const SETTINGS_ITEMS = [
   {
@@ -42,8 +44,24 @@ const SETTINGS_ITEMS = [
   },
 ];
 
+/**
+ * Settings — view selection lives in the URL (`/settings/:view`) so deep
+ * links and refresh keep the user where they were. Phase 2 used local
+ * useState; Phase 3 lifts it to URL state to match the IA principle that
+ * every screen has a stable, shareable address.
+ */
 const SettingsContent = () => {
-  const [view, setView] = useState<SettingsView>("main");
+  const { view: rawView } = useParams<{ view?: string }>();
+  const navigate = useNavigate();
+
+  const view: SettingsView =
+    rawView && VALID_VIEWS.has(rawView as SettingsView)
+      ? (rawView as SettingsView)
+      : "main";
+
+  const setView = (next: SettingsView) => {
+    navigate(next === "main" ? "/settings" : `/settings/${next}`);
+  };
 
   if (view !== "main") {
     return (

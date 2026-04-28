@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play } from "lucide-react";
+import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play, Stethoscope } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileEditModal from "@/components/profile/ProfileEditModal";
 import { useTheme } from "next-themes";
@@ -27,9 +27,14 @@ interface HeaderProps {
   accessible?: boolean;
   onAccessibilityToggle?: (val: boolean) => void;
   onStartDemo?: () => void;
+  /**
+   * Opens the Start Visit dialog. Persistent across pages so a clinician can
+   * begin a new encounter from anywhere in the app.
+   */
+  onStartVisit?: () => void;
 }
 
-const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo }: HeaderProps) => {
+const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo, onStartVisit }: HeaderProps) => {
   // Single source of truth: the parent (Index) owns currentUser. We only
   // bubble profile updates back up; we never duplicate state here.
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -95,6 +100,19 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                 >
                   <Search className="h-4 w-4" />
                 </Button>
+
+                {/* Start Visit — persistent CTA, primary action for doctors */}
+                {onStartVisit && (
+                  <Button
+                    size="sm"
+                    onClick={onStartVisit}
+                    className="hidden sm:inline-flex gap-1.5 h-9 text-sm font-semibold bg-gradient-to-r from-primary to-violet-700 text-white shadow-sm"
+                    aria-label="Start a new visit"
+                  >
+                    <Stethoscope className="h-3.5 w-3.5 flex-shrink-0" />
+                    <span className="hidden md:inline">Start Visit</span>
+                  </Button>
+                )}
 
                 {/* Demo Tour */}
                 {onStartDemo && (
@@ -249,6 +267,18 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                   </div>
                   <Edit3 className="h-4 w-4 text-muted-foreground group-hover:text-foreground flex-shrink-0" />
                 </button>
+
+                {/* Start Visit (mobile) */}
+                {onStartVisit && (
+                  <Button
+                    size="sm"
+                    onClick={() => { setIsMobileMenuOpen(false); onStartVisit(); }}
+                    className="w-full gap-1.5 h-10 text-sm font-semibold bg-gradient-to-r from-primary to-violet-700 text-white"
+                  >
+                    <Stethoscope className="h-4 w-4" />
+                    Start Visit
+                  </Button>
+                )}
 
                 {/* Utility actions */}
                 <div className="grid grid-cols-2 gap-2">
