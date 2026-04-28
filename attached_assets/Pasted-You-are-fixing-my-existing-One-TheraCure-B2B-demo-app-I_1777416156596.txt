@@ -1,0 +1,146 @@
+You are fixing my existing One TheraCure B2B demo app.
+
+IMPORTANT CONTEXT:
+This is NOT a production app.
+This is ONLY a clickable demo/prototype for doctors, clinics, hospitals, and investors.
+
+The current app has built login/auth/database flows, and I am unable to access the product because of login issues.
+
+Your task:
+Remove or bypass all authentication, login, signup, session, protected route, and backend database dependency so the app opens directly into the One TheraCure B2B demo dashboard with dummy data.
+
+DO NOT rebuild the whole app from scratch unless absolutely necessary.
+First inspect the existing codebase and make the smallest clean change that gets the demo working.
+
+My product:
+One TheraCure B2B is an AI-powered clinical operating system for doctors and clinics.
+It should demonstrate:
+1. Doctor dashboard
+2. Patient list
+3. Start consultation / AI scribe flow
+4. AI-generated SOAP note
+5. Clinical decision support / differential diagnosis / red flags
+6. Prescription / after-visit summary
+7. Follow-up reminders
+8. Clinic workflow / appointment view
+9. Patient timeline / encounter history
+
+Current problem:
+The app has login/auth/database and I cannot login.
+For this demo, remove that blocker completely.
+
+PRIMARY GOAL:
+When I run the app, it should directly open the main One TheraCure B2B dashboard using dummy demo data.
+
+STRICT REQUIREMENTS:
+1. No login page.
+2. No signup page.
+3. No authentication required.
+4. No protected routes.
+5. No backend database required.
+6. No Supabase/Firebase/Postgres/Prisma dependency required for demo data.
+7. No API dependency required for core screens.
+8. Use local static dummy data from files such as:
+   - src/data/demoPatients.ts
+   - src/data/demoAppointments.ts
+   - src/data/demoEncounters.ts
+   - src/data/demoPrescriptions.ts
+9. If auth/database code already exists, do not delete aggressively unless safe.
+   Instead:
+   - bypass it
+   - disconnect routes from it
+   - keep unused code only if removing it risks breaking the app
+10. The app must run cleanly in Replit without login errors.
+
+DESIRED BEHAVIOR:
+On app load:
+- Route `/` should show the main B2B dashboard directly.
+- Route `/dashboard` should show the same dashboard.
+- Any old `/login`, `/signin`, `/auth`, or `/signup` route should redirect to `/dashboard`.
+- Any protected route wrapper should be removed or disabled.
+- Any missing session/user should not crash the app.
+- Use a hardcoded demo user object if needed.
+
+Example demo user:
+{
+  id: "demo-doctor-001",
+  name: "Dr. Ananya Sharma",
+  role: "Consultant Physician",
+  clinicName: "One TheraCure Demo Clinic",
+  location: "Mumbai, India"
+}
+
+IMPLEMENTATION APPROACH:
+Step 1:
+Inspect the routing structure.
+Find files likely named:
+- App.tsx
+- main.tsx
+- routes.tsx
+- router.tsx
+- ProtectedRoute.tsx
+- AuthProvider.tsx
+- Login.tsx
+- SignIn.tsx
+
+Step 2:
+Identify where login/auth is blocking access.
+
+Step 3:
+Make the minimum safe changes:
+- Remove ProtectedRoute usage OR make ProtectedRoute simply render children.
+- Replace auth-dependent user/session calls with a demo user.
+- Redirect all auth pages to dashboard.
+- Make `/` point to the dashboard.
+- Ensure no screen crashes because user is null.
+
+Step 4:
+Replace database calls used by demo screens with local dummy data.
+If a component is fetching from a backend, convert it to read from local demo data instead.
+
+Step 5:
+Add or update dummy data files.
+
+Step 6:
+Run the app and fix all compile/runtime errors.
+
+Step 7:
+Give me a clear summary:
+- What files were changed
+- What auth/database dependency was bypassed
+- What demo data was added
+- How I can run the demo
+- Any remaining risks
+
+IMPORTANT DESIGN INTENT:
+This app should feel like a polished demo, not a production admin panel.
+Prioritize:
+- fast access
+- beautiful first impression
+- simple doctor workflow
+- believable dummy data
+- clean healthcare UI
+- investor/demo readiness
+
+DO NOT:
+- ask me to create accounts
+- ask me for database credentials
+- require environment variables for the demo
+- keep the login screen as the first screen
+- spend time building production-grade auth
+- over-engineer state management
+
+If you find multiple options, choose the simplest demo-safe option:
+Option A: bypass auth and use dummy local data.
+Do this unless it is technically impossible.
+
+Acceptance criteria:
+1. App opens directly to dashboard.
+2. No login required.
+3. No backend/database required for demo.
+4. Dashboard shows realistic dummy clinic data.
+5. Patient and consultation flows are clickable.
+6. No blank screen.
+7. No auth/session error.
+8. No database connection error.
+9. Replit preview works.
