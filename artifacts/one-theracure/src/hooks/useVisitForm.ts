@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { VisitFormData, Medication } from "@/types/visitForm";
 import { diagnosisTemplates } from "@/data/diagnosisTemplates";
+import { logger } from '@/lib/logger';
 
 export const useVisitForm = () => {
   const [formData, setFormData] = useState<VisitFormData>({
@@ -71,7 +72,7 @@ export const useVisitForm = () => {
         // Clear the stored data after using it
         sessionStorage.removeItem('selectedPatientForVisit');
       } catch (error) {
-        console.error('Error parsing stored patient data:', error);
+        logger.error('Error parsing stored patient data:', error);
       }
     }
   }, []);

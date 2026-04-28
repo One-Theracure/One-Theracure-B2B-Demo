@@ -1,10 +1,18 @@
 import { useState, useRef, useCallback } from "react";
 import { pipeline } from "@huggingface/transformers";
+import { logger } from "@/lib/logger";
+import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 
 interface TranscriptChunk {
   text: string;
   timestamp: number;
   confidence?: number;
+}
+
+// Minimal shape for the @huggingface/transformers pipeline result we use.
+// Avoids a project-wide dep on the package's deep types.
+interface AsrPipeline {
+  (audio: Float32Array, opts?: Record<string, unknown>): Promise<{ text?: string }>;
 }
 
 export const useAutoScribe = () => {
@@ -13,13 +21,16 @@ export const useAutoScribe = () => {
   const [chunks, setChunks] = useState<TranscriptChunk[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const transcriperRef = useRef<any>(null);
+  const transcriperRef = useRef<AsrPipeline | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const recordingStartTime = useRef<number>(0);
   const finalTextRef = useRef<string>("");
+  // Track the chunk-rotation interval separately so we don't monkey-patch
+  // the MediaRecorder instance (which has no slot for our state).
+  const chunkIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize Whisper on first use
   const initializeTranscriper = useCallback(async () => {
@@ -33,7 +44,7 @@ export const useAutoScribe = () => {
       );
       return transcriperRef.current;
     } catch (err) {
-      console.warn("WebGPU Whisper failed, falling back to Web Speech API:", err);
+      logger.warn("WebGPU Whisper failed, falling back to Web Speech API", err);
       // Return null to indicate fallback should be used
       return null;
     }
@@ -41,12 +52,11 @@ export const useAutoScribe = () => {
 
   // Fallback to Web Speech API
   const startWebSpeechRecognition = useCallback(() => {
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    const SpeechRecognition = getSpeechRecognitionCtor();
+    if (!SpeechRecognition) {
       setError("Speech recognition not supported in this browser");
       return;
     }
-
-    const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
     const recognition = new SpeechRecognition();
     
     recognition.continuous = true;
@@ -109,7 +119,11 @@ export const useAutoScribe = () => {
       }
 
       const arrayBuffer = await audioBlob.arrayBuffer();
-      const result = await transcriber(arrayBuffer);
+      // Whisper expects a Float32Array of decoded PCM samples; the upstream
+      // pipeline wrapper accepts the raw audio buffer as well via the same
+      // Float32 view. Cast through the typed view to satisfy TS.
+      const audio = new Float32Array(arrayBuffer);
+      const result = await transcriber(audio);
       
       if (result?.text) {
         const chunk: TranscriptChunk = {
@@ -121,7 +135,7 @@ export const useAutoScribe = () => {
         setTranscript(prev => prev + " " + result.text);
       }
     } catch (err) {
-      console.error("Whisper transcription failed:", err);
+      logger.error("Whisper transcription failed", err);
     } finally {
       setIsProcessing(false);
     }
@@ -191,25 +205,26 @@ export const useAutoScribe = () => {
           }
         }, 8000);
         
-        // Store interval for cleanup
-        (mediaRecorder as any).chunkInterval = chunkInterval;
+        // Store interval for cleanup — typed ref instead of monkey-patching.
+        chunkIntervalRef.current = chunkInterval;
       } else {
         // Fallback to Web Speech API
         startWebSpeechRecognition();
       }
-      
+
     } catch (err) {
       setError("Microphone access denied or unavailable");
-      console.error("Recording error:", err);
+      logger.error("Recording error", err);
     }
   }, [initializeTranscriper, processAudioChunk, startWebSpeechRecognition]);
 
   const stopRecording = useCallback(() => {
+    if (chunkIntervalRef.current) {
+      clearInterval(chunkIntervalRef.current);
+      chunkIntervalRef.current = null;
+    }
     if (mediaRecorderRef.current) {
       const recorder = mediaRecorderRef.current;
-      if ((recorder as any).chunkInterval) {
-        clearInterval((recorder as any).chunkInterval);
-      }
       recorder.stop();
       mediaRecorderRef.current = null;
     }

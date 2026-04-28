@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
+import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import { CDSInputs, CDSMode, CDSOutput, ChartChatMessage } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
 import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
@@ -190,12 +191,13 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
       setIsListening(false);
       return;
     }
-    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const SR = getSpeechRecognitionCtor();
+    if (!SR) return;
     const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = "en-IN";
-    recognition.onresult = (e: any) => {
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
       const text = e.results[0]?.[0]?.transcript || "";
       if (text) setQuery((prev) => prev ? prev + " " + text : text);
     };

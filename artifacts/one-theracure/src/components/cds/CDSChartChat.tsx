@@ -12,6 +12,7 @@ import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { mockPatients } from "@/data/mockPatients";
 import { MessageCircle, Send, Mic, MicOff, User, Sparkles, Trash2 } from "lucide-react";
+import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 
 const isSpeechSupported = typeof window !== "undefined" && ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
 
@@ -96,12 +97,13 @@ const CDSChartChat = () => {
       setIsListening(false);
       return;
     }
-    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const SR = getSpeechRecognitionCtor();
+    if (!SR) return;
     const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = "en-IN";
-    recognition.onresult = (e: any) => {
+    recognition.onresult = (e: SpeechRecognitionEvent) => {
       const text = e.results[0]?.[0]?.transcript || "";
       if (text) setQuery((prev) => prev ? prev + " " + text : text);
     };

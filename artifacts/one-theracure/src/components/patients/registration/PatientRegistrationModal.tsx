@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, UserPlus, Check, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from "@/lib/logger";
 import { Patient } from "@/types/patient";
 import DemographicsStep from "./steps/DemographicsStep";
 import InsuranceStep from "./steps/InsuranceStep";
@@ -120,78 +121,57 @@ const PatientRegistrationModal = ({ isOpen, onClose, onPatientAdded, editPatient
     setIsSubmitting(true);
     const mrn = generateMRN();
 
+    // Phase 1: registration is intentionally demo-only. We do NOT persist to
+    // the API yet — the backend hasn't shipped Clerk Organisations, audit log,
+    // or PHI-grade transport hardening. Phase 2 enables real writes through
+    // the typed apiClient. Until then, the new patient lives in local state
+    // alongside the mock dataset so demos keep working.
     try {
-      const response = await fetch("/api/patients", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          dateOfBirth: formData.dateOfBirth,
-          age: calculateAge(formData.dateOfBirth),
-          gender: formData.gender,
-          phone: formData.phone,
-          email: formData.email || null,
-          addressLine1: formData.addressLine1 || null,
-          addressLine2: formData.addressLine2 || null,
-          city: formData.city || null,
-          state: formData.state || null,
-          pincode: formData.pincode || null,
-          bloodGroup: formData.bloodGroup || null,
-          maritalStatus: formData.maritalStatus || null,
-          preferredLanguage: formData.preferredLanguage || "English",
-          mrn,
-          aadharNumber: formData.aadharNumber || null,
-          abhaId: formData.abhaId || null,
-          insuranceProvider: formData.insuranceProvider || null,
-          insurancePolicyNumber: formData.insurancePolicyNumber || null,
-          insuranceGroupNumber: formData.insuranceGroupNumber || null,
-          insuranceValidity: formData.insuranceValidity || null,
-          tpaName: formData.tpaName || null,
-          emergencyContactName: formData.emergencyContactName || null,
-          emergencyContactRelationship: formData.emergencyContactRelationship || null,
-          emergencyContactPhone: formData.emergencyContactPhone || null,
-          allergies: formData.allergies ? formData.allergies.split(",").map(a => a.trim()).filter(Boolean) : [],
-          chronicConditions: formData.chronicConditions ? formData.chronicConditions.split(",").map(c => c.trim()).filter(Boolean) : [],
-          specialty: formData.specialty || "General Medicine",
-          notes: formData.notes || null,
-        }),
-      });
-
-      if (!response.ok) {
-        const errBody = await response.json().catch(() => ({}));
-        throw new Error(errBody.error || `Server error ${response.status}`);
-      }
-
-      const data = await response.json();
+      const id =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `demo-${Date.now()}`;
 
       const newPatient: Patient = {
-        id: data.id,
-        name: `${data.firstName} ${data.lastName}`,
-        age: data.age || calculateAge(formData.dateOfBirth),
-        gender: data.gender,
-        mrn: data.mrn,
-        phone: data.phone,
-        email: data.email || undefined,
-        address: [data.addressLine1, data.addressLine2, data.city, data.state, data.pincode].filter(Boolean).join(", ") || undefined,
-        emergencyContact: data.emergencyContactPhone || undefined,
-        bloodGroup: data.bloodGroup || undefined,
-        allergies: data.allergies || [],
-        chronicConditions: data.chronicConditions || [],
-        lastVisit: data.createdAt,
+        id,
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        age: calculateAge(formData.dateOfBirth),
+        gender: formData.gender,
+        mrn,
+        phone: formData.phone,
+        email: formData.email || undefined,
+        address:
+          [formData.addressLine1, formData.addressLine2, formData.city, formData.state, formData.pincode]
+            .filter(Boolean)
+            .join(", ") || undefined,
+        emergencyContact: formData.emergencyContactPhone || undefined,
+        bloodGroup: formData.bloodGroup || undefined,
+        allergies: formData.allergies
+          ? formData.allergies.split(",").map((a) => a.trim()).filter(Boolean)
+          : [],
+        chronicConditions: formData.chronicConditions
+          ? formData.chronicConditions.split(",").map((c) => c.trim()).filter(Boolean)
+          : [],
+        lastVisit: new Date().toISOString(),
         totalVisits: 0,
-        specialty: data.specialty || "General Medicine",
-        status: data.status || "Active",
+        specialty: formData.specialty || "General Medicine",
+        status: "Active",
         recentVisits: [],
       };
 
       onPatientAdded(newPatient);
-      toast({ title: "Patient Registered", description: `${newPatient.name} added and saved to database` });
+      toast({
+        title: "Patient Registered (demo)",
+        description: `${newPatient.name} added to the local demo dataset.`,
+      });
       resetAndClose();
-    } catch (err: any) {
-      console.error("Registration error:", err);
-      toast({ title: "Registration Failed", description: err.message || "Please try again", variant: "destructive" });
+    } catch (err) {
+      logger.error("Registration error", err);
+      toast({
+        title: "Registration Failed",
+        description: "Please try again",
+        variant: "destructive",
+      });
     } finally {
       setIsSubmitting(false);
     }

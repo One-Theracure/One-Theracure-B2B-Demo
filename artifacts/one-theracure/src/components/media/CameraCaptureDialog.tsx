@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from '@/lib/logger';
 
 interface CameraCaptureDialogProps {
   open: boolean;
@@ -52,7 +53,7 @@ export const CameraCaptureDialog = ({
         videoRef.current.srcObject = mediaStream;
       }
     } catch (error) {
-      console.error("Camera access error:", error);
+      logger.error("Camera access error:", error);
       toast({
         title: "Camera Error",
         description: "Could not access camera. Please check permissions.",

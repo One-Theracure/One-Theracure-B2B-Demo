@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
+import { logger } from '@/lib/logger';
 
 interface ScreenCaptureDialogProps {
   open: boolean;
@@ -60,7 +61,7 @@ export const ScreenCaptureDialog = ({
         onOpenChange(false);
       });
     } catch (error) {
-      console.error("Screen capture error:", error);
+      logger.error("Screen capture error:", error);
       toast({
         title: "Screen Capture Error",
         description: "Could not capture screen. Please try again.",

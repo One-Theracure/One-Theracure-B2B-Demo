@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { User, Save } from "lucide-react";
@@ -28,22 +28,38 @@ interface ProfileEditModalProps {
     name: string;
     role: string;
     id: string;
+    email?: string;
   };
-  onProfileUpdate: (updatedUser: any) => void;
+  onProfileUpdate: (updatedUser: ProfileData & { id: string }) => void;
 }
 
+const buildInitialProfile = (u: ProfileEditModalProps["currentUser"]): ProfileData => ({
+  name: u.name,
+  role: u.role,
+  email: u.email ?? "",
+  phone: "",
+  specialty: "General Medicine",
+  clinicName: "",
+  clinicAddress: "",
+  about: "",
+  languagesSpoken: ["English"],
+});
+
 const ProfileEditModal = ({ isOpen, onClose, currentUser, onProfileUpdate }: ProfileEditModalProps) => {
-  const [profileData, setProfileData] = useState<ProfileData>({
-    name: currentUser.name,
-    role: currentUser.role,
-    email: "dr.ramakant@clinic.com",
-    phone: "+91 98765 43210",
-    specialty: "General Medicine",
-    clinicName: "Deshpande Medical Center",
-    clinicAddress: "123 Medical Street, Mumbai, Maharashtra",
-    about: "Experienced physician with 15+ years in general medicine and preventive care.",
-    languagesSpoken: ["English", "Hindi", "Marathi"]
-  });
+  const [profileData, setProfileData] = useState<ProfileData>(() => buildInitialProfile(currentUser));
+
+  // Re-sync from Clerk identity whenever the user object changes (e.g. Clerk
+  // hydrates after the modal has already mounted as a guest), or whenever the
+  // modal is reopened. Without this the form can show stale identity.
+  useEffect(() => {
+    if (!isOpen) return;
+    setProfileData((prev) => ({
+      ...prev,
+      name: currentUser.name,
+      role: currentUser.role,
+      email: currentUser.email ?? prev.email,
+    }));
+  }, [isOpen, currentUser.id, currentUser.name, currentUser.role, currentUser.email]);
 
   const handleInputChange = (field: keyof ProfileData, value: string) => {
     setProfileData(prev => ({ ...prev, [field]: value }));
@@ -60,19 +76,10 @@ const ProfileEditModal = ({ isOpen, onClose, currentUser, onProfileUpdate }: Pro
   const handleSave = () => {
     // Update the current user data for header display
     onProfileUpdate({
-      name: profileData.name,
-      role: profileData.role,
+      ...profileData,
       id: currentUser.id,
-      // Include all profile data for preview components
-      email: profileData.email,
-      phone: profileData.phone,
-      specialty: profileData.specialty,
-      clinicName: profileData.clinicName,
-      clinicAddress: profileData.clinicAddress,
-      about: profileData.about,
-      languagesSpoken: profileData.languagesSpoken
     });
-    
+
     toast.success("Profile updated successfully!");
     onClose();
   };

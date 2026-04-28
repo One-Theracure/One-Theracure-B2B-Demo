@@ -1,6 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { removeBackground, loadImage } from '@/utils/backgroundRemoval';
+import { logger } from '@/lib/logger';
 
 interface TransparentLogoProps {
   originalSrc: string;
@@ -31,7 +32,7 @@ const TransparentLogo = ({ originalSrc, alt, className }: TransparentLogoProps) 
         const processedUrl = URL.createObjectURL(processedBlob);
         setProcessedImageUrl(processedUrl);
       } catch (error) {
-        console.error('Failed to process image:', error);
+        logger.error('Failed to process image:', error);
         setProcessingError(true);
       } finally {
         setIsProcessing(false);

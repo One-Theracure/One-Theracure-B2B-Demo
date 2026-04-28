@@ -14,20 +14,24 @@ import ProfileEditModal from "@/components/profile/ProfileEditModal";
 import { useTheme } from "next-themes";
 import { useClerk } from "@clerk/react";
 
+interface HeaderUser {
+  name: string;
+  role: string;
+  id: string;
+  email?: string;
+}
+
 interface HeaderProps {
-  currentUser: {
-    name: string;
-    role: string;
-    id: string;
-  };
-  onProfileUpdate?: (updatedProfile: any) => void;
+  currentUser: HeaderUser;
+  onProfileUpdate?: (updatedProfile: HeaderUser) => void;
   accessible?: boolean;
   onAccessibilityToggle?: (val: boolean) => void;
   onStartDemo?: () => void;
 }
 
-const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo }: HeaderProps) => {
-  const [currentUser, setCurrentUser] = useState(initialUser);
+const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo }: HeaderProps) => {
+  // Single source of truth: the parent (Index) owns currentUser. We only
+  // bubble profile updates back up; we never duplicate state here.
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
@@ -35,11 +39,8 @@ const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false,
   const navigate = useNavigate();
   const logout = () => { signOut(); navigate("/auth"); };
 
-  const handleProfileUpdate = (updatedUser: any) => {
-    setCurrentUser(updatedUser);
-    if (onProfileUpdate) {
-      onProfileUpdate(updatedUser);
-    }
+  const handleProfileUpdate = (updated: { name: string; role: string; id: string; email?: string }) => {
+    onProfileUpdate?.({ name: updated.name, role: updated.role, id: updated.id, email: updated.email });
   };
 
   return (

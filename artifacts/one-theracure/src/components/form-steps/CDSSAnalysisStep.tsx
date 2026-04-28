@@ -29,6 +29,7 @@ import { AttachmentMenu } from "@/components/media/AttachmentMenu";
 import { CameraCaptureDialog } from "@/components/media/CameraCaptureDialog";
 import { ScreenCaptureDialog } from "@/components/media/ScreenCaptureDialog";
 import { blobToFile } from "@/utils/file";
+import { logger } from '@/lib/logger';
 
 interface Medication {
   id: string;
@@ -404,7 +405,7 @@ const CDSSAnalysisStep = ({ formData, onInputChange, onMedicationsChange }: CDSS
       });
 
     } catch (error) {
-      console.error('Document processing failed:', error);
+      logger.error('Document processing failed:', error);
       toast({
         title: "Processing failed",
         description: "Failed to process the document. Please try again.",
@@ -482,7 +483,7 @@ const CDSSAnalysisStep = ({ formData, onInputChange, onMedicationsChange }: CDSS
       });
 
     } catch (error) {
-      console.error('Document processing failed:', error);
+      logger.error('Document processing failed:', error);
       toast({
         title: "Processing failed",
         description: "Failed to process the document. Please try again.",

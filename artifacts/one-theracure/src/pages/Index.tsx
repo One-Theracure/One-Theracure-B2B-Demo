@@ -1,6 +1,7 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useUser } from "@clerk/react";
 import Header from "@/components/layout/Header";
 import TabNavigation from "@/components/layout/TabNavigation";
 import Dashboard from "@/components/Dashboard";
@@ -11,39 +12,87 @@ import DemoWalkthrough from "@/components/demo/DemoWalkthrough";
 
 const ACCESSIBILITY_KEY = "app_accessibility";
 
+interface CurrentUser {
+  name: string;
+  role: string;
+  id: string;
+  email?: string;
+}
+
 const Index = () => {
+  const { user, isLoaded } = useUser();
   const [activeTab, setActiveTab] = useState("dashboard");
   const [showWalkthrough, setShowWalkthrough] = useState(false);
   const [accessible, setAccessible] = useState(() => {
     try { return localStorage.getItem(ACCESSIBILITY_KEY) === "true"; } catch { return false; }
   });
-  const [currentUser, setCurrentUser] = useState({
-    name: "Dr. Ramakant Deshpande",
-    role: "Consultant",
-    id: "user123"
-  });
+
+  const baseUser: CurrentUser = useMemo(() => {
+    // Phase 1: role + clinic come from Clerk publicMetadata when available;
+    // Phase 2 will replace this with proper Clerk Organizations + custom roles.
+    const meta = (user?.publicMetadata ?? {}) as Record<string, unknown>;
+    const fallbackName =
+      user?.fullName ||
+      [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
+      user?.primaryEmailAddress?.emailAddress ||
+      "Doctor";
+    return {
+      name: fallbackName,
+      role: typeof meta.role === "string" ? meta.role : "Doctor",
+      id: user?.id ?? "guest",
+      email: user?.primaryEmailAddress?.emailAddress,
+    };
+  }, [user]);
+
+  const [currentUser, setCurrentUser] = useState<CurrentUser>(baseUser);
   const [profileData, setProfileData] = useState({
-    name: "Dr. Ramakant Deshpande",
-    role: "Consultant",
-    email: "dr.ramakant@clinic.com",
-    phone: "+91 98765 43210",
+    name: baseUser.name,
+    role: baseUser.role,
+    email: baseUser.email ?? "",
+    phone: "",
     specialty: "General Medicine",
-    clinicName: "OneThera Cure Medical Center",
-    clinicAddress: "123 Healthcare Plaza, Medical District, Mumbai, Maharashtra 400001",
-    about: "Experienced physician with 15+ years in general medicine and preventive care, specializing in comprehensive patient care and clinical documentation."
+    clinicName: "",
+    clinicAddress: "",
+    about: "",
   });
+
+  // When Clerk hydrates the user, sync local state once. Subsequent edits via
+  // ProfileEditModal own the local copy; we don't overwrite them on re-render.
+  useEffect(() => {
+    if (!isLoaded) return;
+    setCurrentUser((prev) => (prev.id === "guest" ? baseUser : prev));
+    setProfileData((prev) =>
+      prev.name === "" || prev.name === "Doctor"
+        ? {
+            ...prev,
+            name: baseUser.name,
+            role: baseUser.role,
+            email: baseUser.email ?? prev.email,
+          }
+        : prev,
+    );
+  }, [isLoaded, baseUser]);
 
   useEffect(() => {
     try { localStorage.setItem(ACCESSIBILITY_KEY, String(accessible)); } catch {}
   }, [accessible]);
 
-  const handleProfileUpdate = (updatedProfile: any) => {
+  // Header bubbles up the small HeaderUser shape; we keep the broader
+  // profileData (specialty, clinic, etc.) untouched here. ProfileEditModal is
+  // the only surface that edits those richer fields and it owns its own copy.
+  const handleProfileUpdate = (updated: { name: string; role: string; id: string; email?: string }) => {
     setCurrentUser({
-      name: updatedProfile.name,
-      role: updatedProfile.role,
-      id: currentUser.id
+      name: updated.name,
+      role: updated.role,
+      id: currentUser.id,
+      email: updated.email,
     });
-    setProfileData(updatedProfile);
+    setProfileData((prev) => ({
+      ...prev,
+      name: updated.name,
+      role: updated.role,
+      email: updated.email ?? prev.email,
+    }));
   };
   useEffect(() => {
     const handler = (e: Event) => {

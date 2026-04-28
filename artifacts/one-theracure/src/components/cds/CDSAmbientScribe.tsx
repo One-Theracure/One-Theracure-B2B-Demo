@@ -14,6 +14,7 @@ import { CDSMode, CDSOutput, CDSInputs, ScribeInsights, ScribeCustomization, IND
 import { generateCDSContent, generateLiveInsights } from "@/services/mockAI";
 import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
+import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import {
   Mic, MicOff, Activity, HelpCircle, Stethoscope, ArrowRight, FileText, Sparkles, Eye,
   Languages, Users, Settings, Save, WifiOff, ChevronDown, ChevronUp
@@ -140,14 +141,13 @@ const CDSAmbientScribe = () => {
       });
     }, 20000);
 
-    const SpeechRecognition =
-      (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+    const SpeechRecognition = getSpeechRecognitionCtor();
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = language;
-      recognition.onresult = (event: any) => {
+      recognition.onresult = (event: SpeechRecognitionEvent) => {
         let finalText = "";
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) finalText += event.results[i][0].transcript + " ";

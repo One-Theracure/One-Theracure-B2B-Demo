@@ -1,4 +1,5 @@
 import React from "react";
+import { logger } from '@/lib/logger';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -17,7 +18,7 @@ class ErrorBoundary extends React.Component<React.PropsWithChildren, ErrorBounda
 
   componentDidCatch(error: Error, info: React.ErrorInfo) {
     // You could report to a monitoring service here
-    console.error("ErrorBoundary caught an error", error, info);
+    logger.error("ErrorBoundary caught an error", error, info);
   }
 
   handleRetry = () => {
