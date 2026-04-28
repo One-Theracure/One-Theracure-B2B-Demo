@@ -8,7 +8,7 @@ import CDSSafetyBanner from "./CDSSafetyBanner";
 import CDSOutputPanel from "./CDSOutputPanel";
 import { CDSInputs, CDSOutput, INDIAN_LANGUAGES } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { mockPatients } from "@/data/mockPatients";
 import { BookOpen, Printer, Sparkles, Languages } from "lucide-react";
@@ -18,7 +18,7 @@ const CDSPatientInstructions = () => {
   const [language, setLanguage] = useState("en-IN");
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState<CDSOutput | null>(null);
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => {

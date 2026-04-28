@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import CDSSafetyBanner from "./CDSSafetyBanner";
 import { CDSInputs, MedicationSuggestion, ICD10Suggestion } from "@/types/cds";
 import { generateMedicationSuggestions, generateICD10Suggestions } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { mockPatients } from "@/data/mockPatients";
 import { Pill, AlertTriangle, Copy, CheckCircle, Sparkles, Clock, Shield, Beaker, Hash, ChevronDown, ChevronUp } from "lucide-react";
@@ -21,7 +21,7 @@ const CDSMedicationAssist = () => {
   const [icdCodes, setIcdCodes] = useState<ICD10Suggestion[]>([]);
   const [icdExpanded, setIcdExpanded] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
-  const { logGenerate, logCopy } = useCDSAuditLog();
+  const { logGenerate, logCopy } = useAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => {

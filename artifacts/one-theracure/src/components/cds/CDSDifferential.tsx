@@ -5,7 +5,7 @@ import CDSSafetyBanner from "./CDSSafetyBanner";
 import CDSInputPanel from "./CDSInputPanel";
 import { CDSInputs, CDSOutput, DDxItem } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { AlertOctagon, CheckCircle2, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
 import CDSOutputPanel from "./CDSOutputPanel";
@@ -65,7 +65,7 @@ const CDSDifferential = () => {
   const [includeCitations, setIncludeCitations] = useState(true);
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState<CDSOutput | null>(null);
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => setInputs((p) => ({ ...p, [field]: value })), []);

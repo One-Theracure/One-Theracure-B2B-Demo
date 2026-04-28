@@ -6,8 +6,10 @@ import { Settings, PenTool, Users, FileText, ChevronRight, ArrowLeft } from "luc
 import DigitalSignature from "@/components/digital-signature/DigitalSignature";
 import TemplateManagement from "./TemplateManagement";
 import UserRoleManagement from "./UserRoleManagement";
+import AuditLogView from "./AuditLogView";
+import { RequireRole } from "@/hooks/useRequireRole";
 
-type SettingsView = "main" | "templates" | "signature" | "roles";
+type SettingsView = "main" | "templates" | "signature" | "roles" | "audit";
 
 const SETTINGS_ITEMS = [
   {
@@ -57,7 +59,16 @@ const SettingsContent = () => {
         </Button>
         {view === "templates" && <TemplateManagement />}
         {view === "signature" && <DigitalSignature />}
-        {view === "roles" && <UserRoleManagement />}
+        {view === "roles" && (
+          <RequireRole roles={["owner"]}>
+            <UserRoleManagement />
+          </RequireRole>
+        )}
+        {view === "audit" && (
+          <RequireRole roles={["owner", "auditor"]}>
+            <AuditLogView />
+          </RequireRole>
+        )}
       </div>
     );
   }
@@ -72,13 +83,11 @@ const SettingsContent = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {SETTINGS_ITEMS.map((item) => {
           const Icon = item.icon;
-          const isClickable = item.id !== "audit";
           return (
             <button
               key={item.id}
-              onClick={() => isClickable && setView(item.id as SettingsView)}
-              disabled={!isClickable}
-              className="group text-left bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 p-5 flex items-start gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
+              onClick={() => setView(item.id as SettingsView)}
+              className="group text-left bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 p-5 flex items-start gap-4"
             >
               <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center flex-shrink-0`}>
                 <Icon className="h-5 w-5 text-white" />
@@ -86,12 +95,7 @@ const SettingsContent = () => {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-foreground">{item.label}</p>
-                  {isClickable && (
-                    <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
-                  )}
-                  {!isClickable && (
-                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">Coming soon</span>
-                  )}
+                  <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors flex-shrink-0" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{item.description}</p>
               </div>

@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { CDSTemplate, CDSMode } from "@/types/cds";
 import { useToast } from "@/hooks/use-toast";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { PlusCircle, Trash2, Edit3, Eye, Save, X, Settings2 } from "lucide-react";
 
 const STORAGE_KEY = "cds_templates";
@@ -86,7 +86,9 @@ const CDSTemplates = () => {
   const [newIsDefault, setNewIsDefault] = useState(false);
   const [showCreate, setShowCreate] = useState(false);
   const { toast } = useToast();
-  const { getLog } = useCDSAuditLog();
+  // Phase 2: audit history is rendered in Settings → Audit (server-backed).
+  // Templates surface no longer inlines a 20-row recent-events list — the
+  // dedicated audit view supports patient/encounter/user/date filtering.
 
   useEffect(() => { saveTemplates(templates); }, [templates]);
 
@@ -116,8 +118,6 @@ const CDSTemplates = () => {
     setTemplates((prev) => prev.filter((t) => t.id !== id));
     toast({ title: "Template deleted." });
   };
-
-  const auditLog = getLog().slice(0, 20);
 
   return (
     <div className="space-y-6">
@@ -240,23 +240,11 @@ const CDSTemplates = () => {
           </Card>
 
           <Card>
-            <CardHeader className="pb-2"><CardTitle className="text-sm">Audit Log (Recent)</CardTitle></CardHeader>
+            <CardHeader className="pb-2"><CardTitle className="text-sm">Audit Log</CardTitle></CardHeader>
             <CardContent>
-              {auditLog.length === 0 ? (
-                <p className="text-sm text-muted-foreground">No entries yet.</p>
-              ) : (
-                <div className="space-y-1.5 max-h-64 overflow-y-auto">
-                  {auditLog.map((entry) => (
-                    <div key={entry.id} className="text-sm border-b border-border pb-1">
-                      <div className="flex items-center gap-1 flex-wrap">
-                        <Badge variant="outline" className="text-sm px-1.5">{entry.action}</Badge>
-                        <span className="text-muted-foreground">{entry.mode}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground">{new Date(entry.timestamp).toLocaleString("en-IN")}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="text-sm text-muted-foreground">
+                The full clinic audit log lives in <strong>Settings → Audit</strong> and is filterable by patient, encounter, user and date.
+              </p>
             </CardContent>
           </Card>
         </div>

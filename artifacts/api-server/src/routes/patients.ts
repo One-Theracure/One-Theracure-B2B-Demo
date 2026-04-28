@@ -1,39 +1,16 @@
-import { Router, type Request, type Response, type NextFunction } from "express";
-import { getAuth } from "@clerk/express";
+import { Router } from "express";
 import { db, patientsTable, insertPatientSchema } from "@workspace/db";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod/v4";
-import type { Logger } from "pino";
 import { validateBody } from "../lib/validate";
-import { DEFAULT_ORG_ID, DEFAULT_CLINIC_ID } from "../lib/scope";
-
-interface AuthedRequest extends Request {
-  userId: string;
-  orgId: string;
-  clinicId: string;
-  log: Logger;
-}
+import { requireAuth, type AuthedRequest } from "../lib/scope";
 
 const patientsRouter = Router();
 
-const requireAuth = (req: Request, res: Response, next: NextFunction): void => {
-  const auth = getAuth(req);
-  const userId = auth?.userId;
-  if (!userId) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
-  }
-  // Phase 2 will replace these with `auth.orgId` / a clinic claim.
-  (req as AuthedRequest).userId = userId;
-  (req as AuthedRequest).orgId = DEFAULT_ORG_ID;
-  (req as AuthedRequest).clinicId = DEFAULT_CLINIC_ID;
-  next();
-};
-
 const orgClinicScope = (req: AuthedRequest) =>
   and(
-    eq(patientsTable.orgId, req.orgId),
-    eq(patientsTable.clinicId, req.clinicId),
+    eq(patientsTable.orgId, req.auth.orgId),
+    eq(patientsTable.clinicId, req.auth.clinicId),
   );
 
 // Strip server-controlled fields the client must never set. We accept the
@@ -68,9 +45,9 @@ patientsRouter.post(
         .insert(patientsTable)
         .values({
           ...req.body,
-          orgId: authed.orgId,
-          clinicId: authed.clinicId,
-          createdByUserId: authed.userId,
+          orgId: authed.auth.orgId,
+          clinicId: authed.auth.clinicId,
+          createdByUserId: authed.auth.userId,
         })
         .returning();
       res.status(201).json(patient);

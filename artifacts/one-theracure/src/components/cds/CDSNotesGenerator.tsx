@@ -9,7 +9,7 @@ import CDSOutputPanel from "./CDSOutputPanel";
 import CDSLivePreview from "./CDSLivePreview";
 import { CDSInputs, CDSMode, CDSOutput } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { FileText, Sparkles, Eye } from "lucide-react";
 
@@ -32,7 +32,7 @@ const CDSNotesGenerator = () => {
   const [loading, setLoading] = useState(false);
   const [outputs, setOutputs] = useState<Record<string, CDSOutput>>({});
   const [rightTab, setRightTab] = useState<string>("live-preview");
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => setInputs((p) => ({ ...p, [field]: value })), []);

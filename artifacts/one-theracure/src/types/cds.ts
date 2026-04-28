@@ -101,6 +101,11 @@ export interface CDSTemplate {
   updatedAt: string;
 }
 
+/**
+ * @deprecated Phase 2 swapped CDS audit to a server-backed log.
+ * Use `AuditEvent` from `@/services/auditService` for new code; this type
+ * remains only because some legacy demo fixtures still reference its shape.
+ */
 export interface AuditLogEntry {
   id: string;
   timestamp: string;

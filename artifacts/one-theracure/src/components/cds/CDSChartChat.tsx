@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import CDSSafetyBanner from "./CDSSafetyBanner";
 import { CDSInputs, ChartChatMessage } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { mockPatients } from "@/data/mockPatients";
 import { MessageCircle, Send, Mic, MicOff, User, Sparkles, Trash2 } from "lucide-react";
@@ -24,7 +24,7 @@ const CDSChartChat = () => {
   const [isListening, setIsListening] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {

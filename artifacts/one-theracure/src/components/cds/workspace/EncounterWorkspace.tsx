@@ -15,7 +15,8 @@ import { Patient } from "@/types/patient";
 import { CDSInputs, CDSOutput } from "@/types/cds";
 import { ExtractedEntity, EvidencePointer } from "@/types/document";
 import { eventBus } from "@/services/eventBus";
-import { createEncounter } from "@/types/encounter";
+import { encountersService } from "@/services/encountersService";
+import { logger } from "@/lib/logger";
 import { initializeGraphFromPatient } from "@/services/patientGraph";
 import { useToast } from "@/hooks/use-toast";
 import { useVisitForm } from "@/hooks/useVisitForm";
@@ -144,21 +145,29 @@ const EncounterWorkspace = () => {
   const handlePatientSelect = useCallback((patient: Patient) => {
     setSelectedPatient(patient);
     initializeGraphFromPatient(patient);
-    const encounter = createEncounter({
-      tenantId: "default",
-      clinicId: "default",
-      patientId: patient.id,
-      providerId: "dr-priya-sharma",
-      providerName: "Dr. Priya Sharma",
-      status: "active",
-      visitType: "follow-up",
-    });
-    setCurrentEncounterId(encounter.id);
-    eventBus.emit("encounter.created", {
-      patientId: patient.id,
-      encounterId: encounter.id,
-      payload: { patientName: patient.name },
-    });
+    // Server-backed encounter create. Provider identity (id + name) is set
+    // SERVER-SIDE from the Clerk session — we never claim to be a different
+    // doctor from the client. UI updates optimistically with a temp id and
+    // swaps to the persisted id when the request resolves.
+    const tempId = `enc-temp-${Date.now()}`;
+    setCurrentEncounterId(tempId);
+    encountersService
+      .create({
+        patientId: patient.id,
+        status: "active",
+        visitType: "follow-up",
+      })
+      .then((encounter) => {
+        setCurrentEncounterId(encounter.id);
+        eventBus.emit("encounter.created", {
+          patientId: patient.id,
+          encounterId: encounter.id,
+          payload: { patientName: patient.name },
+        });
+      })
+      .catch((err) => {
+        logger.error("encounter.create failed", err);
+      });
     const overviewContent = `# ${patient.name}\n**MRN:** ${patient.mrn}  |  **Age:** ${patient.age}  |  **Gender:** ${patient.gender}\n\n## Active Conditions\n${patient.chronicConditions?.map((c) => `- ${c}`).join("\n") || "None on file"}\n\n## Allergies\n${patient.allergies?.map((a) => `- ${a}`).join("\n") || "NKDA"}\n\n## Recent Visits\n${patient.recentVisits?.map((v) => `- **${v.date}** — ${v.diagnosis} (Dr. ${v.doctor})`).join("\n") || "No recent visits"}\n\n---\n*Use the AI assistant or quick actions to generate clinical documents for this patient.*`;
     setDocumentTabs([{ ...OVERVIEW_TAB, contentMarkdown: overviewContent, createdAt: new Date().toISOString() }]);
     setActiveTabId("encounter-overview");

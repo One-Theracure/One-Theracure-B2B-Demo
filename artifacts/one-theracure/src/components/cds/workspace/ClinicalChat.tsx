@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import { CDSInputs, CDSMode, CDSOutput, ChartChatMessage } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { checkDataSufficiency, SufficiencyResult } from "@/services/dataSufficiency";
 import DataSufficiencyGate from "@/components/cds/workspace/DataSufficiencyGate";
@@ -76,7 +76,7 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {

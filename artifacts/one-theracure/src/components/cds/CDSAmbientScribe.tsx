@@ -12,7 +12,7 @@ import CDSOutputPanel from "./CDSOutputPanel";
 import CDSLivePreview from "./CDSLivePreview";
 import { CDSMode, CDSOutput, CDSInputs, ScribeInsights, ScribeCustomization, INDIAN_LANGUAGES, SpeakerSegment } from "@/types/cds";
 import { generateCDSContent, generateLiveInsights } from "@/services/mockAI";
-import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import {
@@ -63,7 +63,7 @@ const CDSAmbientScribe = () => {
   const insightTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const offlineTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { logGenerate } = useCDSAuditLog();
+  const { logGenerate } = useAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {
