@@ -124,16 +124,29 @@ const App = () => {
                           <Route path="/patients" element={<PatientsPage />} />
                           <Route path="/patients/:id" element={<PatientDetailPage />} />
 
-                          {/* Encounter — :id is the single source of truth */}
+                          {/* Encounter — :id is the single source of truth.
+                              Sub-tabs follow the Phase 3 spec naming:
+                                note              — documentation surface (note/scribe/summarize)
+                                decision-support  — consult / DDx / A&P / chart-chat
+                                patient-outputs   — instructions / med-assist / templates (AVS in Phase 6)
+                                timeline          — audit-backed timeline
+                              The bare /encounters/:id redirects to the explicit
+                              /note path so deep-links and bookmarks always
+                              land on a stable sub-route. */}
                           <Route path="/encounters/:id" element={<EncounterRoute />}>
-                            <Route index element={<EncounterNoteSurface />} />
-                            <Route path="cds" element={<CdsGroupView />} />
-                            <Route path="orders" element={<OrdersGroupView />} />
+                            <Route index element={<Navigate to="note" replace />} />
+                            <Route path="note" element={<EncounterNoteSurface />} />
+                            <Route path="decision-support" element={<CdsGroupView />} />
+                            <Route path="patient-outputs" element={<OrdersGroupView />} />
                             <Route path="timeline" element={<TimelineGroupView />} />
                           </Route>
 
                           <Route path="/insights" element={<InsightsPage />} />
                           <Route path="/frontdesk" element={<FrontDeskPage />} />
+
+                          {/* Top-level /audit is an alias for /settings/audit
+                              so it can be linked or bookmarked directly. */}
+                          <Route path="/audit" element={<Navigate to="/settings/audit" replace />} />
 
                           {/* Settings — view selection is in the URL */}
                           <Route path="/settings" element={<SettingsPage />} />

@@ -94,7 +94,7 @@ describe("StartVisitDialog", () => {
     expect(args).toMatchObject({ patientId: "P-test-1", status: "active" });
 
     await waitFor(() => {
-      expect(location).toBe("/encounters/enc-new-1?patientId=P-test-1");
+      expect(location).toBe("/encounters/enc-new-1/note?patientId=P-test-1");
     });
   });
 

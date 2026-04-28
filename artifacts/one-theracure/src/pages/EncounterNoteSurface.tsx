@@ -16,8 +16,14 @@ interface EncounterOutletContext {
  */
 const EncounterNoteSurface = () => {
   const { encounter, patient } = useOutletContext<EncounterOutletContext>();
+  // `key={encounter.id}` forces a clean remount when the URL :id changes
+  // (e.g. the workspace's patient picker created a new encounter and
+  // navigated). Without this, EncounterWorkspace's `useState(initialPatient)`
+  // would hold the previous encounter's state — chart-against-wrong-encounter
+  // class of bug.
   return (
     <EncounterWorkspace
+      key={encounter.id}
       initialEncounterId={encounter.id}
       initialPatient={patient}
     />

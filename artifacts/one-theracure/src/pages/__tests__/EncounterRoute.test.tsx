@@ -80,13 +80,15 @@ const renderAt = async (path: string) => {
   const CdsGroupView = (await import("@/components/encounter/CdsGroupView")).default;
   const OrdersGroupView = (await import("@/components/encounter/OrdersGroupView")).default;
   const TimelineGroupView = (await import("@/components/encounter/TimelineGroupView")).default;
+  const { Navigate } = await import("react-router-dom");
   return render(
     <MemoryRouter initialEntries={[path]}>
       <Routes>
         <Route path="/encounters/:id" element={<EncounterRoute />}>
-          <Route index element={<EncounterNoteSurface />} />
-          <Route path="cds" element={<CdsGroupView />} />
-          <Route path="orders" element={<OrdersGroupView />} />
+          <Route index element={<Navigate to="note" replace />} />
+          <Route path="note" element={<EncounterNoteSurface />} />
+          <Route path="decision-support" element={<CdsGroupView />} />
+          <Route path="patient-outputs" element={<OrdersGroupView />} />
           <Route path="timeline" element={<TimelineGroupView />} />
         </Route>
       </Routes>
@@ -106,7 +108,20 @@ describe("EncounterRoute", () => {
       expect(screen.getByText(/Test Patient One/)).toBeInTheDocument();
     });
     expect(mockGet).toHaveBeenCalledWith("enc-1");
-    expect(screen.getByTestId("note-surface")).toBeInTheDocument();
+    // The index route is a `<Navigate to="note" replace />`, so the note
+    // surface mounts on the next render tick after the encounter loads.
+    await waitFor(() => {
+      expect(screen.getByTestId("note-surface")).toBeInTheDocument();
+    });
+  });
+
+  it("redirects bare /encounters/:id to the explicit /note child", async () => {
+    mockGet.mockResolvedValue(baseEncounter);
+    await renderAt("/encounters/enc-1");
+    await waitFor(() => {
+      // The Note surface should mount — the index Navigate to="note" does the redirect.
+      expect(screen.getByTestId("note-surface")).toBeInTheDocument();
+    });
   });
 
   it("shows a friendly not-found state if the encounter cannot be loaded", async () => {
@@ -130,6 +145,8 @@ describe("EncounterRoute", () => {
 
     await user.click(screen.getByRole("link", { name: /Orders & Outputs/i }));
     await waitFor(() => expect(screen.getByTestId("orders-group")).toBeInTheDocument());
+    // URL should reflect the renamed segment.
+    expect(window.location.pathname).not.toBe("/encounters/enc-1/orders");
 
     await user.click(screen.getByRole("link", { name: /Timeline/i }));
     await waitFor(() => expect(screen.getByTestId("timeline-group")).toBeInTheDocument());

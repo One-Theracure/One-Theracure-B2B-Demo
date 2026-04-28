@@ -203,7 +203,7 @@ const EncounterWorkspace = ({
             encounterId: encounter.id,
             payload: { patientName: patient.name },
           });
-          navigate(`/encounters/${encounter.id}?patientId=${patient.id}`);
+          navigate(`/encounters/${encounter.id}/note?patientId=${patient.id}`);
         })
         .catch((err) => {
           logger.error("encounter.create failed", err);

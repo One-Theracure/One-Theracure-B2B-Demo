@@ -51,17 +51,19 @@ A healthcare EMR (Electronic Medical Record) platform for Indian doctors ("AI-po
 - `/today` — Doctor's day landing (Now Seeing, Queue, Follow-ups, Sign-offs)
 - `/patients` and `/patients/:id`
 - `/encounters/:id` (with nested `Outlet`):
-  - index → Note (full `EncounterWorkspace`)
-  - `/cds` → Decision Support group (consult / DDx / A&P / chart-chat)
-  - `/orders` → Orders group (instructions / med-assist / templates)
-  - `/timeline` → Audit-backed timeline
+  - index → redirects to `/note`
+  - `/note` → full `EncounterWorkspace` (documentation surface)
+  - `/decision-support` → consult / DDx / A&P / chart-chat
+  - `/patient-outputs` → instructions / med-assist / templates (AVS in Phase 6)
+  - `/timeline` → audit-backed timeline
+- `/audit` — alias redirect to `/settings/audit`
 - `/insights` — Longitudinal patient analytics (`?patientId=` filter)
 - `/frontdesk` — Operational queue with one-click "Send to Doctor" handoff
 - `/settings/:view` — `profile|security|users|audit|specialties|integrations|notifications|preferences`
 - `/auth`, `/sign-in/*`, `/sign-up/*` — Public auth routes
 
 **Phase 3 patterns to preserve**:
-- Encounter selection is 100% URL-driven via `/encounters/:id`. `EncounterWorkspace` accepts optional `initialEncounterId`/`initialPatient` props; in URL mode, the patient picker creates the encounter then `navigate()`s — it never mutates local encounter state.
+- Encounter selection is 100% URL-driven via `/encounters/:id`. `EncounterWorkspace` accepts optional `initialEncounterId`/`initialPatient` props; in URL mode, the patient picker creates the encounter then `navigate()`s to `/encounters/:newId/note` — it never mutates local encounter state. `EncounterNoteSurface` passes `key={encounter.id}` to force a clean remount on encounter switch.
 - Front-desk → doctor handoff goes through `eventBus.emit("queue.sent-to-doctor", ...)`; `TodayPage` subscribes via `eventBus.on()`.
 - Healthcare safety contract: clients NEVER post `providerId`, `providerName`, `orgId`, or `clinicId` on encounter create — those are stamped server-side from the Clerk session. Tests assert this for every create call site.
 

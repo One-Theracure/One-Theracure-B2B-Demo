@@ -60,7 +60,7 @@ const StartVisitDialog = ({ open, onOpenChange }: StartVisitDialogProps) => {
       });
       onOpenChange(false);
       setSearch("");
-      navigate(`/encounters/${enc.id}?patientId=${patient.id}`);
+      navigate(`/encounters/${enc.id}/note?patientId=${patient.id}`);
     } catch (err) {
       logger.error("startVisit.create failed", err);
       toast({

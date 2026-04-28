@@ -102,7 +102,7 @@ describe("EncounterWorkspace.handlePatientSelect — URL-driven mode", () => {
     expect(args).toMatchObject({ patientId: "P002", status: "active" });
 
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/encounters/enc-new-2?patientId=P002");
+      expect(mockNavigate).toHaveBeenCalledWith("/encounters/enc-new-2/note?patientId=P002");
     });
   });
 
@@ -137,7 +137,7 @@ describe("EncounterWorkspace.handlePatientSelect — URL-driven mode", () => {
 
     resolveCreate({ id: "enc-new-3" });
     await waitFor(() => {
-      expect(mockNavigate).toHaveBeenCalledWith("/encounters/enc-new-3?patientId=P002");
+      expect(mockNavigate).toHaveBeenCalledWith("/encounters/enc-new-3/note?patientId=P002");
     });
   });
 });
