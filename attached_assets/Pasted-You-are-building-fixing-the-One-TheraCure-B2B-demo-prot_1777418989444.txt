@@ -1,0 +1,392 @@
+You are building/fixing the One TheraCure B2B demo prototype in Replit.
+
+IMPORTANT CONTEXT:
+This is NOT a production app.
+This is NOT meant for real patients.
+This is NOT meant for real clinical use.
+This is ONLY a polished clickable demo for:
+1. Doctors
+2. Clinic owners
+3. Hospital decision-makers
+4. Investors
+5. Strategic advisors
+
+The goal is to demonstrate the product vision clearly and beautifully, not to build production infrastructure.
+
+ABSOLUTE RULE:
+No login.
+No signup.
+No authentication.
+No protected routes.
+No backend database dependency.
+No required environment variables.
+No real patient data.
+No production auth/security system.
+No Supabase/Firebase/Postgres/Prisma requirement for the demo.
+
+The app must open directly into the One TheraCure B2B demo dashboard.
+
+If any auth/database code already exists:
+- Do not rebuild the entire app from scratch.
+- Bypass it safely.
+- Redirect auth routes to dashboard.
+- Use local dummy data.
+- Keep unused code only if removing it risks breaking the app.
+- Make the smallest clean change needed to make the demo usable.
+
+PRIMARY OBJECTIVE:
+Create a premium, investor-ready, doctor-ready One TheraCure B2B clinical operating system demo that feels like a real product.
+
+The demo should show how One TheraCure helps Indian doctors run an AI-powered clinic in minutes through:
+1. AI Scribe
+2. Smart EMR
+3. Clinical Decision Support
+4. Prescription generation
+5. After-Visit Summary
+6. Patient timeline
+7. Follow-up reminders
+8. Front-desk handoff
+9. Appointment management
+10. Clinic workflow dashboard
+
+ROUTING REQUIREMENTS:
+1. `/` opens directly to dashboard.
+2. `/dashboard` opens directly to dashboard.
+3. `/auth`, `/login`, `/signin`, `/signup`, `/register` redirect to `/dashboard`.
+4. There must be no first-screen login page.
+5. There must be no “Create Account” blocker.
+6. Any ProtectedRoute should simply render children.
+7. Any missing user/session should use a hardcoded demo doctor.
+
+Use this demo doctor:
+
+{
+  id: "demo-doctor-001",
+  name: "Dr. Ananya Sharma",
+  role: "Consultant Physician",
+  clinicName: "One TheraCure Demo Clinic",
+  location: "Mumbai, India",
+  verified: true
+}
+
+DEMO DATA REQUIREMENTS:
+Use local static dummy data only.
+
+Create or use files like:
+- src/data/demoDoctor.ts
+- src/data/demoPatients.ts
+- src/data/demoAppointments.ts
+- src/data/demoEncounters.ts
+- src/data/demoPrescriptions.ts
+- src/data/demoFollowUps.ts
+- src/data/demoClinicStats.ts
+
+Do not fetch from a backend for core demo screens.
+
+Use realistic Indian clinic demo data:
+- Indian patient names
+- Mumbai/Thane clinic context
+- Common OPD cases
+- Mixed Hindi/English clinical conversation examples
+- Follow-up reminders
+- Lab test suggestions
+- Prescription examples
+- Chronic care examples
+
+Example patients:
+1. Aarav Mehta — fever, cough, body ache
+2. Priya Nair — diabetes follow-up
+3. Suresh Patil — hypertension review
+4. Fatima Khan — thyroid follow-up
+5. Rohan Shah — acidity and abdominal discomfort
+6. Meera Joshi — dermatology follow-up
+
+Do not use real patient data.
+
+CORE SCREEN REQUIREMENTS:
+
+1. Dashboard
+Show:
+- Today’s appointments
+- Patients seen today
+- Pending follow-ups
+- AI notes generated
+- Revenue/clinic workflow snapshot if useful
+- Quick actions:
+  - Start AI Scribe
+  - View Patients
+  - Today’s Queue
+  - Generate Prescription
+  - Front Desk Handoff
+
+The dashboard must feel premium, clean, and immediately understandable.
+
+2. Patient List
+Show:
+- Search
+- Filter by appointment status
+- Patient name, age, gender
+- Chief complaint
+- Last visit
+- Follow-up status
+- Risk flag if any
+
+Clicking a patient opens the patient timeline.
+
+3. Patient Timeline / Encounter History
+Show:
+- Patient profile
+- Previous visits
+- Current complaint
+- Vitals
+- Medications
+- Allergies
+- Lab history
+- AI-generated longitudinal summary
+- Start new encounter button
+
+4. AI Scribe / Consultation Screen
+This is the most important demo screen.
+
+Show a realistic consultation workflow:
+- Start recording / demo transcript
+- Live transcript area
+- AI clinical note generation
+- SOAP note
+- Chief complaint
+- History of present illness
+- Examination findings
+- Assessment
+- Plan
+- Red flags
+- Differential diagnosis
+- Suggested investigations
+- Medication safety notes
+
+Include example mixed Indian clinic conversation:
+Patient may speak casually and give irrelevant family/travel details.
+The AI should extract only clinically relevant information and ignore gossip/non-clinical chatter.
+
+Show this clearly:
+“AI filtered non-clinical conversation and retained clinically relevant history.”
+
+5. Clinical Decision Support Screen
+Show:
+- Most likely diagnosis
+- Differential diagnosis
+- Red flags
+- Guideline-style considerations
+- Drug interaction warning
+- Follow-up recommendation
+- Safety disclaimer:
+  “AI suggestions are for clinician support only. Final decision remains with the doctor.”
+
+Make it doctor-respecting. Do not make the AI look like it is replacing the doctor.
+
+6. Prescription / After-Visit Summary
+Show:
+- Doctor prescription view
+- Patient-friendly after-visit summary
+- QR code placeholder for One TheraCure patient app
+- Follow-up date
+- Lab tests
+- Medication instructions
+- Preferred language option:
+  English / Hindi / Marathi
+
+Make this look like a strong distribution layer:
+Doctor gives digital/printed AVS → patient scans QR → patient enters One TheraCure ecosystem.
+
+7. Front Desk Handoff
+Show:
+- Billing handoff
+- Follow-up scheduling
+- Lab test coordination
+- Pharmacy coordination
+- Next appointment reminder
+- WhatsApp message preview
+
+This should show clinic workflow value, not just documentation.
+
+8. Appointment / Queue Screen
+Show:
+- Waiting
+- In consultation
+- Completed
+- Follow-up pending
+- No-show
+- Reschedule action
+
+DESIGN REQUIREMENTS:
+The UI should feel:
+- Premium
+- Calm
+- Trustworthy
+- Medical
+- Modern
+- Fast
+- Clean
+- Investor-ready
+- Doctor-friendly
+
+Avoid:
+- Generic AI SaaS design
+- Overuse of gradients
+- Too many cards
+- Tiny unreadable text
+- Clutter
+- Fake-looking dashboards
+- Complicated navigation
+- Over-engineered admin panels
+- Login-first experience
+
+Design style:
+- White/light background
+- Deep navy or medical blue accents
+- Clean cards
+- Strong typography
+- Clear hierarchy
+- Rounded corners
+- Subtle shadows
+- Professional spacing
+- Sidebar or top navigation is acceptable
+- Must work well in Replit preview
+
+UX PRINCIPLES:
+1. A doctor should understand the product in 5 seconds.
+2. An investor should understand the business value in 30 seconds.
+3. A clinic owner should understand ROI immediately.
+4. The demo should tell a story:
+   Queue → Consultation → AI Scribe → SOAP Note → CDS → Prescription → AVS → Follow-up → Front Desk Handoff.
+5. Keep flows clickable and simple.
+6. Do not bury key features behind menus.
+7. Avoid dead buttons where possible.
+8. Use dummy interactions to simulate the product.
+
+DEMO STORY TO IMPLEMENT:
+Create a primary demo flow for one patient:
+
+Patient:
+Priya Nair, 42, female
+Reason: Diabetes follow-up with fatigue and occasional dizziness
+
+Flow:
+1. Doctor opens dashboard.
+2. Doctor sees Priya in today’s queue.
+3. Doctor opens Priya’s patient timeline.
+4. Doctor starts AI Scribe.
+5. Demo transcript appears.
+6. AI generates SOAP note.
+7. CDS suggests diabetes follow-up considerations, hypoglycemia risk, HbA1c test, medication adherence check.
+8. Doctor generates prescription and after-visit summary.
+9. Front desk receives follow-up/lab handoff.
+10. Patient receives QR-based after-visit summary.
+
+This flow should be the central demo path.
+
+TECHNICAL REQUIREMENTS:
+- Use existing framework and structure if already present.
+- Do not migrate frameworks.
+- Do not rebuild everything unless the current app is unusable.
+- Prefer simple local state.
+- Prefer explicit readable code.
+- Avoid clever abstractions.
+- Avoid premature backend architecture.
+- Keep components reusable where obvious.
+- DRY repeated cards/tables/buttons where practical.
+- Do not over-engineer.
+
+Code preferences:
+- Explicit over clever.
+- Engineered enough, not over-engineered.
+- DRY where repetition is obvious.
+- Handle loading/empty/error states for demo screens.
+- Use TypeScript types if the project already uses TypeScript.
+- Keep dummy data separated from UI components.
+- Keep components clean and readable.
+
+COMPONENTS TO CREATE OR CLEAN UP:
+- AppShell
+- Sidebar or TopNav
+- DashboardCard
+- PatientCard
+- PatientTable
+- AppointmentQueue
+- EncounterTimeline
+- ScribePanel
+- SoapNotePanel
+- CDSPanel
+- PrescriptionPreview
+- AVSPreview
+- FrontDeskHandoff
+- StatusBadge
+- RiskBadge
+- EmptyState
+- DemoBanner
+
+DEMO BANNER:
+Add a subtle banner somewhere:
+“Demo mode: using synthetic dummy data. Not for real clinical use.”
+
+Do not make it ugly or distracting.
+
+SAFETY / COMPLIANCE COPY:
+Use careful language:
+- “AI-assisted”
+- “Clinician support”
+- “Draft note”
+- “Suggested considerations”
+- “Doctor-reviewed”
+- “Final decision remains with the clinician”
+
+Avoid:
+- “AI diagnosis is final”
+- “Guaranteed diagnosis”
+- “Fully automated treatment”
+- “Replaces doctor”
+- “HIPAA compliant” unless implemented
+- “NMC compliant” unless implemented
+
+Remove or avoid unsupported compliance claims like:
+- “HIPAA compliant by default”
+- “NMC verified”
+- “256-bit encryption”
+unless these are purely visual placeholders clearly marked as demo. Prefer not to show them.
+
+TEST / QUALITY CHECK:
+After changes:
+1. Run the app.
+2. Fix compile errors.
+3. Fix runtime errors.
+4. Confirm `/` opens dashboard.
+5. Confirm `/auth` redirects to dashboard.
+6. Confirm no login required.
+7. Confirm dummy data loads.
+8. Confirm main demo flow works:
+   Dashboard → Priya → Timeline → AI Scribe → SOAP Note → CDS → Prescription/AVS → Front Desk Handoff.
+9. Confirm no database connection error.
+10. Confirm no missing environment variable blocks the app.
+
+FINAL RESPONSE FORMAT:
+After implementation, summarize:
+
+1. What changed
+2. Files changed
+3. Routes fixed
+4. Dummy data added
+5. Demo flow available
+6. Any remaining issues
+7. How to run in Replit
+
+DO NOT:
+- build production auth
+- ask for database credentials
+- ask me to create account
+- block dashboard behind login
+- require backend for demo
+- add unnecessary production complexity
+- remove useful existing product screens
+- make unsupported medical/compliance claims
+
+Your recommended direction should be:
+Demo-first, dummy-data-first, no-auth, no-backend, clickable product story.
