@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, ChevronRight, UserPlus, Check, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Patient } from "@/types/patient";
 import DemographicsStep from "./steps/DemographicsStep";
 import InsuranceStep from "./steps/InsuranceStep";
@@ -122,84 +121,65 @@ const PatientRegistrationModal = ({ isOpen, onClose, onPatientAdded, editPatient
     const mrn = generateMRN();
 
     try {
-      const { data: session } = await supabase.auth.getSession();
-      if (!session?.session?.user) {
-        // Fallback to local-only patient for unauthenticated users
-        const localPatient: Patient = {
-          id: `patient_${Date.now()}`,
-          name: `${formData.firstName} ${formData.lastName}`,
+      const response = await fetch("/api/patients", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          dateOfBirth: formData.dateOfBirth,
           age: calculateAge(formData.dateOfBirth),
           gender: formData.gender,
-          mrn,
           phone: formData.phone,
-          email: formData.email,
-          address: [formData.addressLine1, formData.addressLine2, formData.city, formData.state, formData.pincode].filter(Boolean).join(", "),
-          emergencyContact: formData.emergencyContactPhone,
-          bloodGroup: formData.bloodGroup,
+          email: formData.email || null,
+          addressLine1: formData.addressLine1 || null,
+          addressLine2: formData.addressLine2 || null,
+          city: formData.city || null,
+          state: formData.state || null,
+          pincode: formData.pincode || null,
+          bloodGroup: formData.bloodGroup || null,
+          maritalStatus: formData.maritalStatus || null,
+          preferredLanguage: formData.preferredLanguage || "English",
+          mrn,
+          aadharNumber: formData.aadharNumber || null,
+          abhaId: formData.abhaId || null,
+          insuranceProvider: formData.insuranceProvider || null,
+          insurancePolicyNumber: formData.insurancePolicyNumber || null,
+          insuranceGroupNumber: formData.insuranceGroupNumber || null,
+          insuranceValidity: formData.insuranceValidity || null,
+          tpaName: formData.tpaName || null,
+          emergencyContactName: formData.emergencyContactName || null,
+          emergencyContactRelationship: formData.emergencyContactRelationship || null,
+          emergencyContactPhone: formData.emergencyContactPhone || null,
           allergies: formData.allergies ? formData.allergies.split(",").map(a => a.trim()).filter(Boolean) : [],
           chronicConditions: formData.chronicConditions ? formData.chronicConditions.split(",").map(c => c.trim()).filter(Boolean) : [],
-          lastVisit: new Date().toISOString(),
-          totalVisits: 0,
           specialty: formData.specialty || "General Medicine",
-          status: "Active",
-          recentVisits: [],
-        };
-        onPatientAdded(localPatient);
-        toast({ title: "Patient Registered", description: `${localPatient.name} added successfully` });
-        resetAndClose();
-        return;
+          notes: formData.notes || null,
+        }),
+      });
+
+      if (!response.ok) {
+        const errBody = await response.json().catch(() => ({}));
+        throw new Error(errBody.error || `Server error ${response.status}`);
       }
 
-      const { data, error } = await supabase.from("patients").insert({
-        user_id: session.session.user.id,
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        date_of_birth: formData.dateOfBirth,
-        age: calculateAge(formData.dateOfBirth),
-        gender: formData.gender,
-        phone: formData.phone,
-        email: formData.email || null,
-        address_line1: formData.addressLine1 || null,
-        address_line2: formData.addressLine2 || null,
-        city: formData.city || null,
-        state: formData.state || null,
-        pincode: formData.pincode || null,
-        blood_group: formData.bloodGroup || null,
-        marital_status: formData.maritalStatus || null,
-        preferred_language: formData.preferredLanguage || "English",
-        mrn,
-        aadhar_number: formData.aadharNumber || null,
-        abha_id: formData.abhaId || null,
-        insurance_provider: formData.insuranceProvider || null,
-        insurance_policy_number: formData.insurancePolicyNumber || null,
-        insurance_group_number: formData.insuranceGroupNumber || null,
-        insurance_validity: formData.insuranceValidity || null,
-        tpa_name: formData.tpaName || null,
-        emergency_contact_name: formData.emergencyContactName || null,
-        emergency_contact_relationship: formData.emergencyContactRelationship || null,
-        emergency_contact_phone: formData.emergencyContactPhone || null,
-        allergies: formData.allergies ? formData.allergies.split(",").map(a => a.trim()).filter(Boolean) : [],
-        chronic_conditions: formData.chronicConditions ? formData.chronicConditions.split(",").map(c => c.trim()).filter(Boolean) : [],
-        specialty: formData.specialty || "General Medicine",
-        notes: formData.notes || null,
-      }).select().single();
-
-      if (error) throw error;
+      const data = await response.json();
 
       const newPatient: Patient = {
         id: data.id,
-        name: `${data.first_name} ${data.last_name}`,
+        name: `${data.firstName} ${data.lastName}`,
         age: data.age || calculateAge(formData.dateOfBirth),
         gender: data.gender,
         mrn: data.mrn,
         phone: data.phone,
         email: data.email || undefined,
-        address: [data.address_line1, data.address_line2, data.city, data.state, data.pincode].filter(Boolean).join(", ") || undefined,
-        emergencyContact: data.emergency_contact_phone || undefined,
-        bloodGroup: data.blood_group || undefined,
+        address: [data.addressLine1, data.addressLine2, data.city, data.state, data.pincode].filter(Boolean).join(", ") || undefined,
+        emergencyContact: data.emergencyContactPhone || undefined,
+        bloodGroup: data.bloodGroup || undefined,
         allergies: data.allergies || [],
-        chronicConditions: data.chronic_conditions || [],
-        lastVisit: data.created_at,
+        chronicConditions: data.chronicConditions || [],
+        lastVisit: data.createdAt,
         totalVisits: 0,
         specialty: data.specialty || "General Medicine",
         status: data.status || "Active",

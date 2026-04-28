@@ -12,7 +12,7 @@ import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles,
 import { useNavigate } from "react-router-dom";
 import ProfileEditModal from "@/components/profile/ProfileEditModal";
 import { useTheme } from "next-themes";
-import { useAuth } from "@/contexts/SecurityContext";
+import { useClerk } from "@clerk/react";
 
 interface HeaderProps {
   currentUser: {
@@ -31,8 +31,9 @@ const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false,
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { logout } = useAuth();
+  const { signOut } = useClerk();
   const navigate = useNavigate();
+  const logout = () => { signOut(); navigate("/auth"); };
 
   const handleProfileUpdate = (updatedUser: any) => {
     setCurrentUser(updatedUser);
