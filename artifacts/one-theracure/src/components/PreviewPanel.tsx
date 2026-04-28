@@ -9,7 +9,6 @@ import PatientSummaryView from "./PatientSummaryView";
 import PrescriptionPreview from "./PrescriptionPreview";
 import { toast } from "@/hooks/use-toast";
 import { generateCombinedPDF } from "@/utils/pdf";
-import { logger } from '@/lib/logger';
 
 interface Medication {
   id: string;
@@ -116,7 +115,7 @@ const PreviewPanel = ({ formData, profileData, showHeader = true, onPopOut }: Pr
       await generateCombinedPDF(elements, filename);
       toast({ title: "PDF ready", description: "Download has started." });
     } catch (err) {
-      logger.error(err);
+      console.error(err);
       toast({ title: "Failed to generate PDF", description: "Please try again." });
     }
   };

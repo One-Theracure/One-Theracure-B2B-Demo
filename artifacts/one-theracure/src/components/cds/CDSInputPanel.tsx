@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Zap, Mic } from "lucide-react";
 import { CDSInputs, CDSMode } from "@/types/cds";
 import { mockPatients } from "@/data/mockPatients";
-import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 
 interface CDSInputPanelProps {
   inputs: CDSInputs;
@@ -85,8 +84,7 @@ const CDSInputPanel = ({
     if (!isSpeechSupported) return;
     stopRecording();
 
-    const SpeechRecognitionAPI = getSpeechRecognitionCtor();
-    if (!SpeechRecognitionAPI) return;
+    const SpeechRecognitionAPI = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     const recognition = new SpeechRecognitionAPI();
     recognitionRef.current = recognition;
 
@@ -102,7 +100,7 @@ const CDSInputPanel = ({
       }
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: any) => {
       let text = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
         if (event.results[i].isFinal) {

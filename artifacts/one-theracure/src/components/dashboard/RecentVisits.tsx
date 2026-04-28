@@ -3,7 +3,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Clock, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+const goTo = (tab: string) => {
+  window.dispatchEvent(new CustomEvent("command:navigate", { detail: tab }));
+};
 
 const recentVisits = [
   {
@@ -30,13 +33,12 @@ const recentVisits = [
 ];
 
 const RecentVisits = () => {
-  const navigate = useNavigate();
   return (
     <Card>
       <CardHeader className="pb-3 px-5 pt-5">
         <CardTitle className="flex items-center justify-between text-sm font-semibold text-foreground">
           Recent Visits
-          <Button variant="ghost" size="sm" className="text-xs h-7 font-medium text-muted-foreground hover:text-foreground" onClick={() => navigate("/frontdesk")}>
+          <Button variant="ghost" size="sm" className="text-xs h-7 font-medium text-muted-foreground hover:text-foreground" onClick={() => goTo("frontdesk")}>
             View All
             <ArrowRight className="h-3.5 w-3.5 ml-1" />
           </Button>
@@ -48,7 +50,7 @@ const RecentVisits = () => {
             <div
               key={visit.id}
               className="flex items-center justify-between p-3 rounded-xl border border-border hover:bg-muted/50 transition-colors cursor-pointer"
-              onClick={() => navigate("/frontdesk")}
+              onClick={() => goTo("frontdesk")}
             >
               <div className="flex items-center gap-3">
                 <div className="flex-shrink-0">

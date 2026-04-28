@@ -8,11 +8,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import CDSSafetyBanner from "./CDSSafetyBanner";
 import { CDSInputs, ChartChatMessage } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { mockPatients } from "@/data/mockPatients";
 import { MessageCircle, Send, Mic, MicOff, User, Sparkles, Trash2 } from "lucide-react";
-import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 
 const isSpeechSupported = typeof window !== "undefined" && ("webkitSpeechRecognition" in window || "SpeechRecognition" in window);
 
@@ -24,7 +23,7 @@ const CDSChartChat = () => {
   const [isListening, setIsListening] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
-  const { logGenerate } = useAuditLog();
+  const { logGenerate } = useCDSAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -97,13 +96,12 @@ const CDSChartChat = () => {
       setIsListening(false);
       return;
     }
-    const SR = getSpeechRecognitionCtor();
-    if (!SR) return;
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = "en-IN";
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
+    recognition.onresult = (e: any) => {
       const text = e.results[0]?.[0]?.transcript || "";
       if (text) setQuery((prev) => prev ? prev + " " + text : text);
     };

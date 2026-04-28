@@ -14,7 +14,6 @@ import { AttachmentMenu } from "@/components/media/AttachmentMenu";
 import { CameraCaptureDialog } from "@/components/media/CameraCaptureDialog";
 import { ScreenCaptureDialog } from "@/components/media/ScreenCaptureDialog";
 import { blobToFile } from "@/utils/file";
-import { logger } from '@/lib/logger';
 
 interface InvestigationsStepProps {
   formData: {
@@ -148,7 +147,7 @@ const InvestigationsStep = ({ formData, onInputChange }: InvestigationsStepProps
         }
       });
     } catch (error) {
-      logger.error('Document processing failed:', error);
+      console.error('Document processing failed:', error);
       toast({
         title: "Processing failed",
         description: "Failed to process the document. Please try again.",

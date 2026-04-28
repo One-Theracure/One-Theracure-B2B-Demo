@@ -8,46 +8,38 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play, Stethoscope } from "lucide-react";
+import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import ProfileEditModal from "@/components/profile/ProfileEditModal";
 import { useTheme } from "next-themes";
-
-interface HeaderUser {
-  name: string;
-  role: string;
-  id: string;
-  email?: string;
-}
+import { useClerk } from "@clerk/react";
 
 interface HeaderProps {
-  currentUser: HeaderUser;
-  onProfileUpdate?: (updatedProfile: HeaderUser) => void;
+  currentUser: {
+    name: string;
+    role: string;
+    id: string;
+  };
+  onProfileUpdate?: (updatedProfile: any) => void;
   accessible?: boolean;
   onAccessibilityToggle?: (val: boolean) => void;
   onStartDemo?: () => void;
-  /**
-   * Opens the Start Visit dialog. Persistent across pages so a clinician can
-   * begin a new encounter from anywhere in the app.
-   */
-  onStartVisit?: () => void;
-  /**
-   * Sign-out handler — provided by AppShell so this component never imports
-   * Clerk directly. In demo mode it pops a "demo" toast; in real auth mode
-   * it clears the Clerk session and redirects to /auth.
-   */
-  onSignOut?: () => void;
 }
 
-const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo, onStartVisit, onSignOut }: HeaderProps) => {
-  // Single source of truth: the parent (Index) owns currentUser. We only
-  // bubble profile updates back up; we never duplicate state here.
+const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo }: HeaderProps) => {
+  const [currentUser, setCurrentUser] = useState(initialUser);
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const logout = () => { onSignOut?.(); };
+  const { signOut } = useClerk();
+  const navigate = useNavigate();
+  const logout = () => { signOut(); navigate("/auth"); };
 
-  const handleProfileUpdate = (updated: { name: string; role: string; id: string; email?: string }) => {
-    onProfileUpdate?.({ name: updated.name, role: updated.role, id: updated.id, email: updated.email });
+  const handleProfileUpdate = (updatedUser: any) => {
+    setCurrentUser(updatedUser);
+    if (onProfileUpdate) {
+      onProfileUpdate(updatedUser);
+    }
   };
 
   return (
@@ -102,19 +94,6 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                 >
                   <Search className="h-4 w-4" />
                 </Button>
-
-                {/* Start Visit — persistent CTA, primary action for doctors */}
-                {onStartVisit && (
-                  <Button
-                    size="sm"
-                    onClick={onStartVisit}
-                    className="hidden sm:inline-flex gap-1.5 h-9 text-sm font-semibold bg-gradient-to-r from-primary to-violet-700 text-white shadow-sm"
-                    aria-label="Start a new visit"
-                  >
-                    <Stethoscope className="h-3.5 w-3.5 flex-shrink-0" />
-                    <span className="hidden md:inline">Start Visit</span>
-                  </Button>
-                )}
 
                 {/* Demo Tour */}
                 {onStartDemo && (
@@ -214,7 +193,7 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
 
                     <DropdownMenuItem
                         className="flex items-center gap-2 w-full cursor-pointer text-red-600 hover:text-red-700 focus:text-red-700"
-                        onSelect={() => { logout(); }}
+                        onSelect={() => { logout(); navigate("/auth"); }}
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Sign Out</span>
@@ -270,18 +249,6 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                   <Edit3 className="h-4 w-4 text-muted-foreground group-hover:text-foreground flex-shrink-0" />
                 </button>
 
-                {/* Start Visit (mobile) */}
-                {onStartVisit && (
-                  <Button
-                    size="sm"
-                    onClick={() => { setIsMobileMenuOpen(false); onStartVisit(); }}
-                    className="w-full gap-1.5 h-10 text-sm font-semibold bg-gradient-to-r from-primary to-violet-700 text-white"
-                  >
-                    <Stethoscope className="h-4 w-4" />
-                    Start Visit
-                  </Button>
-                )}
-
                 {/* Utility actions */}
                 <div className="grid grid-cols-2 gap-2">
                   <Button
@@ -311,7 +278,7 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                 <Button
                   variant="outline" size="sm"
                   className="w-full gap-2 h-9 text-sm text-red-600 hover:text-red-700 hover:bg-red-500/10 hover:border-red-500/30"
-                  onClick={() => { setIsMobileMenuOpen(false); logout(); }}
+                  onClick={() => { setIsMobileMenuOpen(false); logout(); navigate("/auth"); }}
                 >
                   <LogOut className="h-4 w-4" />
                   Sign Out

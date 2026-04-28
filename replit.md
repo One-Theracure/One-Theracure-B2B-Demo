@@ -46,44 +46,9 @@ A healthcare EMR (Electronic Medical Record) platform for Indian doctors ("AI-po
 
 **Supabase replacement**: `src/integrations/supabase/client.ts` is now a stub that falls through to the existing local-patient fallback in `PatientRegistrationModal.tsx`. No live database connection is required; auth is handled by the mock SecurityContext.
 
-**Routes** (all under `<ProtectedRoute>` except auth):
-- `/` → redirects to `/today`
-- `/today` — Doctor's day landing (Now Seeing, Queue, Follow-ups, Sign-offs)
-- `/patients` and `/patients/:id`
-- `/encounters/:id` (with nested `Outlet`):
-  - index → redirects to `/note`
-  - `/note` → full `EncounterWorkspace` (documentation surface)
-  - `/decision-support` → consult / DDx / A&P / chart-chat
-  - `/patient-outputs` → instructions / med-assist / templates (AVS in Phase 6)
-  - `/timeline` → audit-backed timeline
-- `/audit` — alias redirect to `/settings/audit`
-- `/insights` — Longitudinal patient analytics (`?patientId=` filter)
-- `/frontdesk` — Operational queue with one-click "Send to Doctor" handoff
-- `/settings/:view` — `profile|security|users|audit|specialties|integrations|notifications|preferences`
-- `/auth`, `/sign-in/*`, `/sign-up/*` — Public auth routes
-
-**Phase 3 patterns to preserve**:
-- Encounter selection is 100% URL-driven via `/encounters/:id`. `EncounterWorkspace` accepts optional `initialEncounterId`/`initialPatient` props; in URL mode, the patient picker creates the encounter then `navigate()`s to `/encounters/:newId/note` — it never mutates local encounter state. `EncounterNoteSurface` passes `key={encounter.id}` to force a clean remount on encounter switch.
-- Front-desk → doctor handoff goes through `eventBus.emit("queue.sent-to-doctor", ...)`; `TodayPage` subscribes via `eventBus.on()`.
-- Healthcare safety contract: clients NEVER post `providerId`, `providerName`, `orgId`, or `clinicId` on encounter create — those are stamped server-side from the Clerk session. Tests assert this for every create call site.
-
-**Demo mode (default ON, Task #20)**:
-The app ships with `DEMO_MODE` defaulted to **on** so the preview boots with zero env-var setup. Resolution lives in `src/lib/demoMode.ts`:
-1. `VITE_DEMO_MODE=false` → real auth + real API (Phase 1/2 production path).
-2. `VITE_DEMO_MODE=true` → demo (forces on).
-3. `MODE === "test"` → demo OFF (vitest tests mock `@clerk/react` and expect the real-auth provider path; opt-in to demo coverage with `vi.stubEnv("VITE_DEMO_MODE", "true")`).
-4. Otherwise → demo ON.
-
-When demo mode is on:
-- `App.tsx` skips `<ClerkProvider>` entirely. `SecurityProvider` resolves to `DemoSecurityProviderImpl`, hardcoded to **Dr. Ananya Sharma** (`DEMO_USER` in `demoMode.ts`) with `doctor` role + `isAuthenticated: true`.
-- `/auth`, `/login`, `/signin`, `/signup`, `/sign-in/*`, `/sign-up/*` and `/dashboard` all redirect to `/today`.
-- `apiClient` short-circuits — no network calls, never reads `window.Clerk`.
-- `encountersService` and `auditService` route through `src/lib/demoStore.ts`, an in-memory store seeded from `src/data/demoEncounters.ts` and `src/data/demoAuditLog.ts`. The store lives only for the page session — refresh = fresh demo.
-- The header's "Sign out" calls `useAuth().signOut()`; in demo mode that returns `null` and `AppShell` shows a sonner toast ("Demo mode — sign-out is disabled").
-
-**`ProtectedRoute` permission strings must match the `Permission` type** in `src/types/userRoles.ts` (colon notation: `"patients:read"`, `"encounters:write"`, etc.). Using an undeclared string makes `hasPermission` return `false`, which redirects to `/auth`, which in demo mode bounces to `/today`, which re-enters `ProtectedRoute` — an infinite loop. The single layout-level guard in `App.tsx` uses `requiredPermission="patients:read"` for that reason.
-
-**Adding more demo data**: append to `src/data/demoEncounters.ts` (encounter rows seeded into `demoStore`) and `src/data/demoAuditLog.ts` (audit events). Patients live in `src/data/mockPatients.ts` and are referenced by `patientId`. Tasks #14–#16 (audit durability, encounter immutability, real org membership) remain cancelled — they belong to the real-auth path only.
+**Routes**:
+- `/` — Main dashboard (ProtectedRoute)
+- `/auth` — Auth page (login/signup)
 
 ### `artifacts/api-server` — API Server
 

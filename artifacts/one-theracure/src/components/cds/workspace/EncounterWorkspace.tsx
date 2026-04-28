@@ -1,5 +1,4 @@
-import { useState, useCallback, useRef, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useCallback, useRef, useMemo } from "react";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
 import PatientWorkspaceHeader from "./PatientWorkspaceHeader";
 import ClinicalChat from "./ClinicalChat";
@@ -16,8 +15,7 @@ import { Patient } from "@/types/patient";
 import { CDSInputs, CDSOutput } from "@/types/cds";
 import { ExtractedEntity, EvidencePointer } from "@/types/document";
 import { eventBus } from "@/services/eventBus";
-import { encountersService } from "@/services/encountersService";
-import { logger } from "@/lib/logger";
+import { createEncounter } from "@/types/encounter";
 import { initializeGraphFromPatient } from "@/services/patientGraph";
 import { useToast } from "@/hooks/use-toast";
 import { useVisitForm } from "@/hooks/useVisitForm";
@@ -49,22 +47,8 @@ const CENTRAL_TABS: { id: CentralTab; label: string; icon: React.ElementType }[]
   { id: "documents", label: "Files", icon: Eye },
 ];
 
-interface EncounterWorkspaceProps {
-  /**
-   * When provided (e.g. from the `/encounters/:id` route), the workspace
-   * skips the picker-driven create call and uses this id directly. The sidebar
-   * still allows switching patients, which will trigger a new encounter.
-   */
-  initialEncounterId?: string;
-  /** Patient to pre-select. Pairs with `initialEncounterId`. */
-  initialPatient?: Patient | null;
-}
-
-const EncounterWorkspace = ({
-  initialEncounterId,
-  initialPatient = null,
-}: EncounterWorkspaceProps = {}) => {
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(initialPatient);
+const EncounterWorkspace = () => {
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [documentTabs, setDocumentTabs] = useState<DocumentTab[]>([OVERVIEW_TAB]);
   const [activeTabId, setActiveTabId] = useState("encounter-overview");
   const [timelineEntries, setTimelineEntries] = useState<TimelineEntry[]>([]);
@@ -76,7 +60,7 @@ const EncounterWorkspace = ({
   const [rightPanelView, setRightPanelView] = useState<RightPanelView>("timeline");
   const [mobilePanel, setMobilePanel] = useState<MobilePanel>("patients");
   const [codingDrawerOpen, setCodingDrawerOpen] = useState(false);
-  const [currentEncounterId, setCurrentEncounterId] = useState(initialEncounterId ?? "");
+  const [currentEncounterId, setCurrentEncounterId] = useState("");
   const [clinicalFormOpen, setClinicalFormOpen] = useState(false);
   const [docOutputOpen, setDocOutputOpen] = useState(false);
   const [centralTab, setCentralTab] = useState<CentralTab>("note");
@@ -157,92 +141,24 @@ const EncounterWorkspace = ({
     }
   }, [currentEncounterId, selectedPatient]);
 
-  const navigate = useNavigate();
-
-  // Refs let `handlePatientSelect` keep a stable identity (empty deps) while
-  // still reading the latest values for dedupe guards. Using stale closure
-  // values here would cause duplicate encounter creates — a clinical safety
-  // bug, since two encounters for the same visit fragment the chart.
-  const selectedPatientRef = useRef(selectedPatient);
-  const currentEncounterIdRef = useRef(currentEncounterId);
-  const initialEncounterIdRef = useRef(initialEncounterId);
-  const inFlightCreateForPatientRef = useRef<string | null>(null);
-  useEffect(() => { selectedPatientRef.current = selectedPatient; }, [selectedPatient]);
-  useEffect(() => { currentEncounterIdRef.current = currentEncounterId; }, [currentEncounterId]);
-  useEffect(() => { initialEncounterIdRef.current = initialEncounterId; }, [initialEncounterId]);
-
   const handlePatientSelect = useCallback((patient: Patient) => {
-    // Dedupe #1: same patient already selected and an encounter is loaded —
-    // re-clicking (or the route's pre-select) must not spawn a duplicate.
-    if (selectedPatientRef.current?.id === patient.id && currentEncounterIdRef.current) {
-      return;
-    }
-    // Dedupe #2: a create for this patient is already in flight (rapid
-    // double-click / re-render race).
-    if (inFlightCreateForPatientRef.current === patient.id) {
-      return;
-    }
-    inFlightCreateForPatientRef.current = patient.id;
-
-    // URL-driven mode (rendered inside `/encounters/:id`): switching patient
-    // means switching encounters. We DO NOT mutate local state here — instead
-    // we create the encounter and navigate so the route remounts with the new
-    // id. Mutating local state would desynchronize the URL/header/timeline
-    // (which key off the URL :id) from the note workspace, risking charting
-    // against the wrong encounter.
-    if (initialEncounterIdRef.current) {
-      encountersService
-        .create({
-          patientId: patient.id,
-          status: "active",
-          visitType: "follow-up",
-        })
-        .then((encounter) => {
-          eventBus.emit("encounter.created", {
-            patientId: patient.id,
-            encounterId: encounter.id,
-            payload: { patientName: patient.name },
-          });
-          navigate(`/encounters/${encounter.id}/note?patientId=${patient.id}`);
-        })
-        .catch((err) => {
-          logger.error("encounter.create failed", err);
-        })
-        .finally(() => {
-          inFlightCreateForPatientRef.current = null;
-        });
-      return;
-    }
-
-    // Legacy embedded mode (no route id provided). Behavior preserved.
     setSelectedPatient(patient);
     initializeGraphFromPatient(patient);
-    // Server-backed encounter create. Provider identity (id + name) is set
-    // SERVER-SIDE from the Clerk session — we never claim to be a different
-    // doctor from the client. UI updates optimistically with a temp id and
-    // swaps to the persisted id when the request resolves.
-    const tempId = `enc-temp-${Date.now()}`;
-    setCurrentEncounterId(tempId);
-    encountersService
-      .create({
-        patientId: patient.id,
-        status: "active",
-        visitType: "follow-up",
-      })
-      .then((encounter) => {
-        setCurrentEncounterId(encounter.id);
-        eventBus.emit("encounter.created", {
-          patientId: patient.id,
-          encounterId: encounter.id,
-          payload: { patientName: patient.name },
-        });
-      })
-      .catch((err) => {
-        logger.error("encounter.create failed", err);
-      })
-      .finally(() => {
-        inFlightCreateForPatientRef.current = null;
-      });
+    const encounter = createEncounter({
+      tenantId: "default",
+      clinicId: "default",
+      patientId: patient.id,
+      providerId: "dr-priya-sharma",
+      providerName: "Dr. Priya Sharma",
+      status: "active",
+      visitType: "follow-up",
+    });
+    setCurrentEncounterId(encounter.id);
+    eventBus.emit("encounter.created", {
+      patientId: patient.id,
+      encounterId: encounter.id,
+      payload: { patientName: patient.name },
+    });
     const overviewContent = `# ${patient.name}\n**MRN:** ${patient.mrn}  |  **Age:** ${patient.age}  |  **Gender:** ${patient.gender}\n\n## Active Conditions\n${patient.chronicConditions?.map((c) => `- ${c}`).join("\n") || "None on file"}\n\n## Allergies\n${patient.allergies?.map((a) => `- ${a}`).join("\n") || "NKDA"}\n\n## Recent Visits\n${patient.recentVisits?.map((v) => `- **${v.date}** — ${v.diagnosis} (Dr. ${v.doctor})`).join("\n") || "No recent visits"}\n\n---\n*Use the AI assistant or quick actions to generate clinical documents for this patient.*`;
     setDocumentTabs([{ ...OVERVIEW_TAB, contentMarkdown: overviewContent, createdAt: new Date().toISOString() }]);
     setActiveTabId("encounter-overview");

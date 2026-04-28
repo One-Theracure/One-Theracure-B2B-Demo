@@ -67,17 +67,13 @@ export function generatePatientInsights(
     makeItem(a, "critical", structuredProv)
   );
 
-  const currentMedications: InsightItem[] = (graph?.medications || []).slice(0, 5).map((m) => {
-    if (typeof m === "string") return makeItem(m, "info", structuredProv);
-    const med = m as { name?: string };
-    return makeItem(med.name ?? JSON.stringify(m), "info", structuredProv);
-  });
+  const currentMedications: InsightItem[] = (graph?.medications || []).slice(0, 5).map((m) =>
+    makeItem(typeof m === "string" ? m : (m as any).name || JSON.stringify(m), "info", structuredProv)
+  );
 
-  const recentLabs: InsightItem[] = (graph?.labs || []).slice(0, 3).map((l) => {
-    if (typeof l === "string") return makeItem(l, "info", structuredProv);
-    const lab = l as { test?: string; value?: string };
-    return makeItem(`${lab.test ?? "lab"}: ${lab.value ?? ""}`, "info", structuredProv);
-  });
+  const recentLabs: InsightItem[] = (graph?.labs || []).slice(0, 3).map((l) =>
+    makeItem(typeof l === "string" ? l : `${(l as any).test}: ${(l as any).value}`, "info", structuredProv)
+  );
 
   const openFollowUps: FollowUpGap[] = (patient.chronicConditions || []).map((c, i) => ({
     id: `fu-${i}`,

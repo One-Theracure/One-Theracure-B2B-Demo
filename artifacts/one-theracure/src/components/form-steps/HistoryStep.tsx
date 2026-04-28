@@ -14,7 +14,6 @@ import { useDocumentProcessor } from "@/hooks/useDocumentProcessor";
 import { useToast } from "@/hooks/use-toast";
 import { blobToFile } from "@/utils/file";
 import { Sparkles, Upload, X, CheckCircle, AlertCircle, ChevronDown, ChevronUp } from "lucide-react";
-import { logger } from '@/lib/logger';
 
 interface HistoryStepProps {
   formData: {
@@ -101,7 +100,7 @@ const HistoryStep = ({ formData, onInputChange }: HistoryStepProps) => {
         }
       });
     } catch (error) {
-      logger.error("Document processing failed:", error);
+      console.error("Document processing failed:", error);
       toast({
         title: "Processing failed",
         description: "Could not process the document. Please try again.",

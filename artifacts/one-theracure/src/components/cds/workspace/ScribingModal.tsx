@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { createAmbientSession, appendTranscript, stopAmbientSession } from "@/services/ambientSessionService";
 import { AmbientStructuredOutput, SpecialtyTemplate, SPECIALTY_TEMPLATE_LABELS, STRUCTURED_SECTION_LABELS } from "@/types/ambientSession";
 import { cn } from "@/lib/utils";
-import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 
 interface ScribingModalProps {
   open: boolean;
@@ -60,13 +59,13 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
 
     elapsedTimerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
 
-    const SpeechRecognition = getSpeechRecognitionCtor();
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = "en-IN";
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: any) => {
         let finalText = "";
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) finalText += event.results[i][0].transcript + " ";
@@ -110,13 +109,13 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
   const resumeListening = useCallback(() => {
     setIsPaused(false);
     elapsedTimerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
-    const SpeechRecognition = getSpeechRecognitionCtor();
+    const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = "en-IN";
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: any) => {
         let finalText = "";
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) finalText += event.results[i][0].transcript + " ";

@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Save, FileText } from "lucide-react";
 import { generateCombinedPDF } from "@/utils/pdf";
 import { toast } from "@/hooks/use-toast";
-import { logger } from '@/lib/logger';
 
 interface FormNavigationProps {
   currentStep: number;
@@ -30,7 +29,7 @@ const FormNavigation = ({ currentStep, totalSteps, onPrevStep, onNextStep }: For
       await generateCombinedPDF(elements, filename);
       toast({ title: "PDF ready", description: "Download has started." });
     } catch (e) {
-      logger.error(e);
+      console.error(e);
       toast({ title: "Failed to generate PDF", description: "Please try again." });
     }
   };

@@ -1,9 +1,3 @@
-import { initSentry } from "./lib/sentry";
-
-// Initialize Sentry FIRST — instrumentation hooks must register before
-// anything else imports / runs.
-initSentry();
-
 import app from "./app";
 import { logger } from "./lib/logger";
 

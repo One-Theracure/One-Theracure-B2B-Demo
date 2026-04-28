@@ -12,7 +12,6 @@ import { Plus, Search, Trash2, Pill, Clock, Calendar, AlertTriangle, Loader2, Sh
 import { checkMedicationInteractions, parseMedicationsFromText, type DrugInteraction } from "@/utils/drugInteractions";
 import { lookupDrugInteractions, type DrugInteractionEntry } from "@/data/drugInteractions";
 import { useToast } from "@/hooks/use-toast";
-import { logger } from '@/lib/logger';
 
 interface Medication {
   id: string;
@@ -180,7 +179,7 @@ const PrescriptionBuilder = ({ medications, onMedicationsChange, currentMedicati
           finalizeMedicationAdd(medication);
         }
       } catch (error) {
-        logger.error('Error checking interactions:', error);
+        console.error('Error checking interactions:', error);
         toast({
           title: "Warning",
           description: "Could not check for drug interactions. Medication added without interaction check.",
