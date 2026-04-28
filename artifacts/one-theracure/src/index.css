@@ -1,0 +1,338 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Premium Design System Foundation */
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    --primary: 222.2 47.4% 11.2%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+    --radius: 0.5rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-inter;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    font-optical-sizing: auto;
+  }
+
+  /* Premium Typography System */
+  h1, h2 {
+    @apply font-playfair;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.02em;
+    font-optical-sizing: auto;
+  }
+  h3, h4, h5, h6 {
+    @apply font-inter;
+    font-feature-settings: "kern" 1, "liga" 1;
+    letter-spacing: -0.01em;
+  }
+
+  .font-luxury {
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
+    letter-spacing: -0.01em;
+    font-optical-sizing: auto;
+  }
+
+  /* Premium Visual Effects */
+  .glass-effect {
+    background: hsl(var(--background) / 0.95);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: 
+      0 8px 32px hsl(var(--foreground) / 0.08),
+      0 4px 16px hsl(var(--foreground) / 0.04),
+      inset 0 1px 0 hsl(var(--background) / 0.6);
+  }
+
+  .luxury-shadow {
+    box-shadow: 
+      0 20px 25px -5px hsl(var(--foreground) / 0.08),
+      0 10px 10px -5px hsl(var(--foreground) / 0.04),
+      0 0 0 1px hsl(var(--background) / 0.05) inset,
+      0 2px 4px hsl(var(--foreground) / 0.02);
+  }
+
+  .premium-gradient {
+    background: linear-gradient(135deg, 
+      hsl(var(--background) / 0.98) 0%, 
+      hsl(var(--muted) / 0.95) 50%,
+      hsl(var(--muted) / 0.92) 100%
+    );
+  }
+
+  /* Enhanced Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.4s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .hover-lift {
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 
+      0 25px 50px -12px rgba(0, 0, 0, 0.15),
+      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+
+  .hover-scale {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.02);
+  }
+
+  /* Premium Button Styles */
+  .btn-luxury {
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700;
+    @apply text-white font-inter font-medium;
+    @apply shadow-lg hover:shadow-2xl;
+    @apply transition-all duration-300 ease-out;
+    @apply border-0 rounded-xl;
+    transform: translateY(0);
+    box-shadow: 
+      0 10px 15px -3px rgba(59, 130, 246, 0.3),
+      0 4px 6px -2px rgba(59, 130, 246, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  }
+
+  .btn-luxury:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 20px 25px -5px rgba(59, 130, 246, 0.4),
+      0 10px 10px -5px rgba(59, 130, 246, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+
+  /* Premium Card Styles */
+  .luxury-card {
+    @apply bg-card/95 backdrop-blur-xl;
+    @apply border border-border/60;
+    @apply rounded-xl;
+    @apply transition-all duration-300;
+    box-shadow: 
+      0 4px 6px -1px hsl(var(--foreground) / 0.05),
+      0 2px 4px -1px hsl(var(--foreground) / 0.03),
+      inset 0 1px 0 hsl(var(--background) / 0.7);
+  }
+
+  .luxury-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+      0 20px 25px -5px hsl(var(--foreground) / 0.1),
+      0 10px 10px -5px hsl(var(--foreground) / 0.04),
+      inset 0 1px 0 hsl(var(--background) / 0.8);
+  }
+}
+
+/* Premium Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(241, 245, 249, 0.8);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border-radius: 8px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #2563eb, #4f46e5);
+}
+
+/* Focus Styles for Accessibility */
+.focus-luxury:focus {
+  outline: none;
+  box-shadow: 
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 0 0 1px rgba(59, 130, 246, 0.3);
+}
+
+/* Premium Loading States */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.app-accessible {
+  font-size: 16px;
+  line-height: 1.8;
+}
+.app-accessible h2 {
+  font-size: 1.5rem;
+}
+.app-accessible h3 {
+  font-size: 1.25rem;
+}
+.app-accessible [class*="text-\[10px\]"],
+.app-accessible [class*="text-\[9px\]"] {
+  font-size: 0.875rem !important;
+  line-height: 1.6;
+}
+.app-accessible .text-xs {
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+.app-accessible .text-sm {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+.app-accessible .text-base {
+  font-size: 1.125rem;
+}
+.app-accessible .text-xl {
+  font-size: 1.5rem;
+}
+.app-accessible .text-gray-400,
+.app-accessible .text-gray-500,
+.app-accessible .text-slate-400,
+.app-accessible .text-slate-500 {
+  color: #374151 !important;
+}
+.app-accessible .text-muted-foreground {
+  color: #374151 !important;
+}
+.app-accessible label {
+  font-size: 0.9375rem;
+  font-weight: 500;
+}
+.app-accessible button, .app-accessible [role="button"] {
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+  font-size: 0.9375rem;
+}
+.app-accessible input, .app-accessible textarea, .app-accessible select, .app-accessible [role="combobox"] {
+  font-size: 1rem;
+  padding: 0.625rem;
+  min-height: 2.25rem;
+}
+.app-accessible .h-7,
+.app-accessible .h-8 {
+  min-height: 2.5rem;
+}
+.app-accessible *:focus-visible {
+  outline-width: 3px;
+  outline-offset: 2px;
+}
+.app-accessible .border {
+  border-width: 2px;
+}

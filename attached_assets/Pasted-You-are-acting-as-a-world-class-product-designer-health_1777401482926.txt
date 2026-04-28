@@ -1,0 +1,386 @@
+You are acting as a world-class product designer, healthcare SaaS architect, frontend engineer, clinical workflow expert, UX researcher, and senior code reviewer.
+
+You are reviewing the current One TheraCure B2B prototype inside this Replit project.
+
+IMPORTANT:
+Do not make any code changes yet.
+Do not refactor anything yet.
+Do not redesign anything yet.
+First review the existing product, screens, components, flows, and code structure.
+Then explain issues, tradeoffs, options, and ask for my decision before proceeding.
+
+Product context:
+One TheraCure B2B is an AI-powered clinical operating system for Indian doctors, clinics, nursing homes, and hospitals.
+
+The product should help doctors and clinic teams with:
+• AI clinical scribing
+• Patient timeline and longitudinal records
+• Visit documentation
+• AI CDSS / clinical decision support
+• After-visit summaries
+• Follow-up reminders
+• Appointment/workflow management
+• Front desk support
+• Doctor dashboard
+• Patient search
+• Encounter management
+• Possible future integrations with labs, pharmacy, billing, ABDM/ABHA, EMR/EHR, and hospital systems
+
+Target users:
+• Senior Indian doctors who may not be tech-savvy
+• Busy private practitioners seeing 40–80 patients/day
+• Clinic front desk staff
+• Small and mid-sized hospitals
+• Specialists and general physicians
+• Potential investors/demo viewers
+
+The product must feel:
+• Extremely simple
+• Fast
+• Premium
+• Trustworthy
+• Clinical
+• Not like a generic AI SaaS dashboard
+• Not overdesigned
+• Not cluttered
+• Usable by an 80-year-old doctor
+• Credible enough for top doctors and hospitals
+
+My engineering preferences:
+• DRY is important — flag repeated layouts, duplicated components, repeated logic, and inconsistent UI patterns aggressively.
+• Well-tested code is non-negotiable — I prefer too many tests over too few.
+• I want code that is engineered enough — not fragile/hacky, not over-engineered.
+• I prefer handling edge cases carefully.
+• Bias toward explicit over clever.
+• Healthcare workflows need safety, clarity, auditability, and reliability.
+• Do not sacrifice clinical trust for fancy UI.
+
+Before starting, ask me to choose one of two modes:
+
+1. BIG CHANGE:
+Work through this interactively one section at a time:
+Architecture → UX/Workflow → Visual Design → Components/DRY → Code Quality → Tests → Performance/Security → Implementation Plan.
+Use at most 4 top issues per section.
+
+2. SMALL CHANGE:
+Work through interactively with ONE most important question per review section.
+
+Use AskUserQuestion or a clear STOP AND ASK format before continuing.
+
+Rules for every issue:
+• Number each issue.
+• Letter each option.
+• Make the recommended option always Option A.
+• Include 2–3 options, including “do nothing” where reasonable.
+• For every option, include:
+  - Implementation effort
+  - Risk
+  - Impact on other code/screens
+  - Maintenance burden
+  - User impact
+• Give your opinionated recommendation and explain why.
+• Map the recommendation to my preferences: DRY, testing, explicitness, edge cases, healthcare trust, and engineered-enough quality.
+• Ask for my decision before proceeding.
+
+When asking me to choose, format it like this:
+
+AskUserQuestion:
+“For Issue 1, which direction do you want?
+A) [Recommended option] — recommended
+B) [Alternative option]
+C) Do nothing for now”
+
+Do not continue until I answer.
+
+---
+
+SECTION 1 — Architecture Review
+
+Evaluate:
+• Overall app structure
+• Routes/pages
+• Component boundaries
+• Dependency graph
+• State management
+• Data flow
+• API boundaries
+• Auth assumptions
+• Patient data access assumptions
+• Whether doctor, front desk, and admin workflows are clearly separated
+• Whether the architecture can later support real clinical workflows
+• Whether any part is too coupled, too fragile, or too abstract
+
+Pay special attention to:
+• Patient data privacy
+• Role-based access
+• Encounter lifecycle
+• AI scribe workflow
+• CDSS workflow
+• Audit trail needs
+• Clinic/hospital scalability
+• Front desk vs doctor permissions
+
+For each issue:
+• Mention exact files/components/routes where possible.
+• Explain the concrete problem.
+• Give options A/B/C.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 2 — UX & Clinical Workflow Review
+
+Evaluate:
+• Can a doctor understand the app in 5 seconds?
+• Can a doctor start a visit quickly?
+• Can a doctor find a patient quickly?
+• Can the doctor move from appointment → patient → encounter → scribe → note → AVS → follow-up?
+• Is the AI scribe flow obvious?
+• Is the CDSS flow safe and non-intrusive?
+• Does the app respect how Indian clinics actually work?
+• Does it reduce doctor effort or create new work?
+• Does it feel trustworthy enough for clinical use?
+
+Flag:
+• Too many clicks
+• Unclear CTAs
+• Confusing navigation
+• Generic dashboard widgets
+• Flows that look good in demo but fail in clinic reality
+• Anything that slows OPD velocity
+• Anything that could confuse senior doctors
+
+For each issue:
+• Name the exact screen/flow.
+• Explain the real-world clinic problem.
+• Give 2–3 options.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 3 — Visual Design Review
+
+Evaluate:
+• Whether the app looks premium and clinical
+• Typography
+• Spacing
+• Cards
+• Tables
+• Forms
+• Sidebar/topbar
+• Buttons
+• Status badges
+• Empty states
+• Color consistency
+• Trustworthiness
+• Whether it looks like a serious healthcare product or generic AI dashboard
+
+Be aggressive about:
+• Generic gradients
+• Random shadows
+• Inconsistent cards
+• Weak contrast
+• Repeated visual patterns
+• Too much whitespace or too much clutter
+• Overly playful UI
+• Anything that reduces doctor trust
+
+For each issue:
+• Describe the visual weakness.
+• Explain tradeoffs.
+• Give options A/B/C.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 4 — Component & DRY Review
+
+Evaluate:
+• Reusable components
+• Repeated UI blocks
+• Repeated form patterns
+• Repeated table/card layouts
+• Duplicate button styles
+• Repeated dashboard widgets
+• Duplicate page structures
+• Whether components are too large
+• Whether components are too fragmented
+• Whether abstractions are missing or premature
+
+Flag aggressively:
+• Copy-pasted cards
+• Similar modals with different implementations
+• Inconsistent spacing
+• Duplicate patient/visit/appointment components
+• Hardcoded values that should become constants
+• Repeated status badge logic
+• Repeated empty/loading/error states
+
+For each issue:
+• Mention file/component references.
+• Explain whether to extract a component or keep custom.
+• Give options.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 5 — Code Quality Review
+
+Evaluate:
+• File organization
+• Naming clarity
+• Type safety
+• Error handling
+• Edge cases
+• Form validation
+• Loading states
+• Empty states
+• Broken API assumptions
+• Technical debt
+• Under-engineered or over-engineered areas
+• Explicitness vs cleverness
+
+Healthcare-specific edge cases to check:
+• Patient not found
+• Duplicate patient records
+• Missing age/gender/contact details
+• Long clinical notes
+• AI response failure
+• Scribe transcript failure
+• Doctor edits AI note
+• Encounter left incomplete
+• Follow-up not scheduled
+• Appointment cancelled/no-show
+• Role without permission
+• Slow network
+• Offline/partial failure
+• Invalid clinical data
+• Long patient history
+
+For each issue:
+• Mention exact file and line references if possible.
+• Explain the concrete problem.
+• Give 2–3 options.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 6 — Test Review
+
+Evaluate:
+• Unit test coverage
+• Component tests
+• Integration tests
+• E2E tests
+• Critical workflow tests
+• Error path tests
+• Edge case tests
+• Assertion strength
+• Mock quality
+• Whether tests protect clinical workflows
+
+Required test areas:
+• Patient search
+• Appointment creation/editing
+• Start encounter
+• AI scribe state changes
+• AI note generation failure
+• Doctor note editing
+• Save encounter
+• Generate after-visit summary
+• Permission handling
+• Loading/empty/error states
+• Front desk workflow
+• Doctor workflow
+• Mobile/responsive behavior where relevant
+
+For each gap:
+• Explain risk.
+• Give options.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 7 — Performance & Security Review
+
+Evaluate:
+• N+1 patterns
+• Expensive renders
+• Slow search
+• Large patient lists
+• Memory usage
+• Unnecessary re-renders
+• Caching opportunities
+• API request patterns
+• Data access boundaries
+• Auth assumptions
+• Role-based access
+• Patient data exposure
+• Logging sensitive data
+• AI prompt/data leakage risks
+
+Healthcare-specific security concerns:
+• PHI/PII exposure
+• Patient records visible to wrong role
+• Clinical notes stored insecurely
+• AI transcript leaks
+• Debug logs containing patient data
+• Missing audit trail
+• Missing consent assumptions
+• Weak API validation
+
+For each issue:
+• Explain concrete risk.
+• Give 2–3 options.
+• Recommend Option A.
+• Ask for my input.
+
+Pause after this section.
+
+---
+
+SECTION 8 — Implementation Plan
+
+Only after I approve the review direction, create a step-by-step implementation plan.
+
+The plan must include:
+• What to change first
+• What not to change yet
+• Screen-level changes
+• Component-level changes
+• Tests to add
+• Edge cases to cover
+• Acceptance criteria
+• Rollback risk
+• Estimated complexity
+• Files likely to be touched
+
+Do not make code changes until I explicitly say:
+“Approved, implement Option A”
+or
+“Proceed with implementation.”
+
+Final instruction:
+Your first response should only ask me to choose:
+1. BIG CHANGE
+2. SMALL CHANGE
+
+Do not start reviewing until I choose.
