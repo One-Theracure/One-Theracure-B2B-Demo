@@ -44,7 +44,9 @@ const PatientList = () => {
     // from a server lookup) inside `useVisitForm` — nothing PHI-shaped lives
     // in the URL beyond the opaque id.
     setSelectedPatientId(patient.id);
-    window.dispatchEvent(new CustomEvent("command:navigate", { detail: "cds-scribe" }));
+    // Phase 3: open the global Start Visit picker (handled by AppShell)
+    // instead of routing into a defunct "cds-scribe" tab.
+    window.dispatchEvent(new CustomEvent("command:start-visit"));
     toast({
       title: "Starting New Visit",
       description: `New visit form opened for ${patient.name} with pre-filled details`,

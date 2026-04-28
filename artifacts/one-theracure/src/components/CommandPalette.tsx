@@ -26,10 +26,19 @@ const CommandPalette: React.FC = () => {
     };
   }, []);
 
-  const goToTab = (tab: string) => {
-    // We're already on "/"; dispatch to Index to switch tabs
-    navigate("/");
-    window.dispatchEvent(new CustomEvent("command:navigate", { detail: tab }));
+  // Phase 3: navigate by real route path instead of legacy tab IDs.
+  // The previous implementation dispatched `command:navigate` with tab
+  // strings like "dashboard" / "cds-scribe", which Index.tsx interpreted.
+  // Index.tsx is gone; AppShell now treats the detail as a route path,
+  // so passing legacy tab IDs would route to invalid paths.
+  const goPath = (path: string) => {
+    navigate(path);
+    setOpen(false);
+  };
+  const startVisit = () => {
+    // Dedicated event so any host (AppShell, future kiosk shells) can open
+    // the patient picker without depending on URL semantics.
+    window.dispatchEvent(new CustomEvent("command:start-visit"));
     setOpen(false);
   };
 
@@ -47,23 +56,23 @@ const CommandPalette: React.FC = () => {
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Navigation">
-          <CommandItem onSelect={() => goToTab("dashboard")}>
+          <CommandItem onSelect={() => goPath("/today")}>
             <LayoutDashboard className="mr-2 h-4 w-4" />
-            <span>Go to Dashboard</span>
+            <span>Go to Today</span>
           </CommandItem>
-          <CommandItem onSelect={() => goToTab("frontdesk")}>
+          <CommandItem onSelect={() => goPath("/frontdesk")}>
             <Users className="mr-2 h-4 w-4" />
             <span>Open Patient Queue</span>
           </CommandItem>
-          <CommandItem onSelect={() => goToTab("cds-scribe")}>
+          <CommandItem onSelect={startVisit}>
             <FilePlus2 className="mr-2 h-4 w-4" />
             <span>Start New Visit</span>
           </CommandItem>
-          <CommandItem onSelect={() => goToTab("cds-scribe")}>
+          <CommandItem onSelect={() => goPath("/insights")}>
             <Brain className="mr-2 h-4 w-4" />
-            <span>Open AI Clinical</span>
+            <span>Open Insights</span>
           </CommandItem>
-          <CommandItem onSelect={() => goToTab("settings")}>
+          <CommandItem onSelect={() => goPath("/settings")}>
             <Settings className="mr-2 h-4 w-4" />
             <span>Open Settings</span>
           </CommandItem>
@@ -73,7 +82,7 @@ const CommandPalette: React.FC = () => {
 
         <CommandGroup heading="Patients">
           {filteredPatients.map((p: any) => (
-            <CommandItem key={p.id} onSelect={() => goToTab("frontdesk")}>
+            <CommandItem key={p.id} onSelect={() => goPath(`/patients/${p.id}`)}>
               <Search className="mr-2 h-4 w-4" />
               <span>{p.name}</span>
             </CommandItem>
