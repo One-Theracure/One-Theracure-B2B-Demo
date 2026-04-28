@@ -36,7 +36,11 @@ export class ApiError extends Error {
 }
 
 async function authHeader(): Promise<HeadersInit> {
-  const token = await window.Clerk?.session?.getToken().catch(() => null);
+  // Demo mode: Clerk is not in the page (no ClerkProvider mounted), so don't
+  // even read window.Clerk. Services that hit this path in demo mode are a
+  // bug — but we'd rather send an unauthed request than throw.
+  if (typeof window === "undefined" || !window.Clerk?.session) return {};
+  const token = await window.Clerk.session.getToken().catch(() => null);
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 

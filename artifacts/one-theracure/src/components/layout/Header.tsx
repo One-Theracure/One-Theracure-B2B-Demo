@@ -9,10 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play, Stethoscope } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import ProfileEditModal from "@/components/profile/ProfileEditModal";
 import { useTheme } from "next-themes";
-import { useClerk } from "@clerk/react";
 
 interface HeaderUser {
   name: string;
@@ -32,17 +30,21 @@ interface HeaderProps {
    * begin a new encounter from anywhere in the app.
    */
   onStartVisit?: () => void;
+  /**
+   * Sign-out handler — provided by AppShell so this component never imports
+   * Clerk directly. In demo mode it pops a "demo" toast; in real auth mode
+   * it clears the Clerk session and redirects to /auth.
+   */
+  onSignOut?: () => void;
 }
 
-const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo, onStartVisit }: HeaderProps) => {
+const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibilityToggle, onStartDemo, onStartVisit, onSignOut }: HeaderProps) => {
   // Single source of truth: the parent (Index) owns currentUser. We only
   // bubble profile updates back up; we never duplicate state here.
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
-  const { signOut } = useClerk();
-  const navigate = useNavigate();
-  const logout = () => { signOut(); navigate("/auth"); };
+  const logout = () => { onSignOut?.(); };
 
   const handleProfileUpdate = (updated: { name: string; role: string; id: string; email?: string }) => {
     onProfileUpdate?.({ name: updated.name, role: updated.role, id: updated.id, email: updated.email });
@@ -212,7 +214,7 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
 
                     <DropdownMenuItem
                         className="flex items-center gap-2 w-full cursor-pointer text-red-600 hover:text-red-700 focus:text-red-700"
-                        onSelect={() => { logout(); navigate("/auth"); }}
+                        onSelect={() => { logout(); }}
                       >
                         <LogOut className="h-4 w-4" />
                         <span>Sign Out</span>
@@ -309,7 +311,7 @@ const Header = ({ currentUser, onProfileUpdate, accessible = false, onAccessibil
                 <Button
                   variant="outline" size="sm"
                   className="w-full gap-2 h-9 text-sm text-red-600 hover:text-red-700 hover:bg-red-500/10 hover:border-red-500/30"
-                  onClick={() => { setIsMobileMenuOpen(false); logout(); navigate("/auth"); }}
+                  onClick={() => { setIsMobileMenuOpen(false); logout(); }}
                 >
                   <LogOut className="h-4 w-4" />
                   Sign Out

@@ -1,5 +1,4 @@
 import { useCallback } from "react";
-import { useUser } from "@clerk/react";
 import { auditService, type AuditAction, type AuditEntityType } from "@/services/auditService";
 import type { CDSMode } from "@/types/cds";
 
@@ -34,10 +33,9 @@ export interface UseAuditLog {
 }
 
 export function useAuditLog(): UseAuditLog {
-  // We don't pass userId — the server derives it. The hook still depends on
-  // useUser() so re-renders stay coherent if Clerk hydrates mid-action.
-  useUser();
-
+  // We don't pass userId — the server derives it from the session. In demo
+  // mode the in-memory store stamps the demo doctor's id. Either way the
+  // hook stays stateless and works with or without Clerk in the tree.
   const log = useCallback<UseAuditLog["log"]>(async (entry) => {
     await auditService.log(entry);
   }, []);

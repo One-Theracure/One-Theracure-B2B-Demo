@@ -1,5 +1,7 @@
 import { api } from "@/lib/apiClient";
 import { logger } from "@/lib/logger";
+import { DEMO_MODE } from "@/lib/demoMode";
+import { demoAuditStore } from "@/lib/demoStore";
 
 /**
  * Client-side audit log service.
@@ -82,6 +84,7 @@ export const auditService = {
    * Returns the created event when successful so callers can correlate.
    */
   async log(entry: LogPayload): Promise<AuditEvent | null> {
+    if (DEMO_MODE) return demoAuditStore.log(entry);
     try {
       return await api.post<AuditEvent>("audit", {
         action: entry.action,
@@ -98,10 +101,12 @@ export const auditService = {
   },
 
   async query(filters: QueryFilters = {}): Promise<AuditEvent[]> {
+    if (DEMO_MODE) return demoAuditStore.query(filters);
     return api.get<AuditEvent[]>("audit", filters as Record<string, string | number | undefined>);
   },
 
   async count(): Promise<number> {
+    if (DEMO_MODE) return demoAuditStore.count();
     const r = await api.get<{ count: number }>("audit/count");
     return r.count;
   },

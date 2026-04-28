@@ -1,32 +1,27 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/react";
+import { toast } from "sonner";
 import Header from "@/components/layout/Header";
 import DemoWalkthrough from "@/components/demo/DemoWalkthrough";
 import StartVisitDialog from "@/components/encounter/StartVisitDialog";
+import { useAuth, type CurrentUser } from "@/contexts/SecurityContext";
+import { DEMO_MODE } from "@/lib/demoMode";
 
 const ACCESSIBILITY_KEY = "app_accessibility";
-
-interface CurrentUser {
-  name: string;
-  role: string;
-  id: string;
-  email?: string;
-}
 
 /**
  * AppShell — single chrome (header + demo walkthrough + start-visit dialog)
  * around the routed content. Replaces the old tab-based Index.tsx so that
  * URL is the single source of truth for "what page am I on".
  *
- * Why a layout component (not a route element):
- *   - The header survives navigation, so the user keeps the Start Visit CTA
- *     and command palette while moving across /today, /patients, /encounters.
- *   - The demo walkthrough opens from any page (Header → onStartDemo) and
- *     drives navigation by dispatching `command:navigate` with a path.
+ * Identity is read from `useAuth()` (SecurityContext), NOT directly from
+ * Clerk. SecurityContext is the only file that knows whether we're in
+ * demo or real auth mode — everything else just consumes the unified
+ * shape. That's what lets the demo branch run without ClerkProvider in
+ * the tree.
  */
 const AppShell = () => {
-  const { user, isLoaded } = useUser();
+  const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
 
   const [showWalkthrough, setShowWalkthrough] = useState(false);
@@ -35,35 +30,27 @@ const AppShell = () => {
     try { return localStorage.getItem(ACCESSIBILITY_KEY) === "true"; } catch { return false; }
   });
 
-  const baseUser: CurrentUser = useMemo(() => {
-    const meta = (user?.publicMetadata ?? {}) as Record<string, unknown>;
-    const fallbackName =
-      user?.fullName ||
-      [user?.firstName, user?.lastName].filter(Boolean).join(" ") ||
-      user?.primaryEmailAddress?.emailAddress ||
-      "Doctor";
-    return {
-      name: fallbackName,
-      role: typeof meta.role === "string" ? meta.role : "Doctor",
-      id: user?.id ?? "guest",
-      email: user?.primaryEmailAddress?.emailAddress,
-    };
-  }, [user]);
-
-  const [currentUser, setCurrentUser] = useState<CurrentUser>(baseUser);
+  // Profile-edit overrides (display only — backing identity is owned by
+  // SecurityContext / Clerk and not mutated here).
+  const [overrides, setOverrides] = useState<Partial<CurrentUser>>({});
+  const displayUser: CurrentUser = { ...currentUser, ...overrides };
 
   useEffect(() => {
-    if (!isLoaded) return;
-    setCurrentUser((prev) => (prev.id === "guest" ? baseUser : prev));
-  }, [isLoaded, baseUser]);
-
-  useEffect(() => {
-    try { localStorage.setItem(ACCESSIBILITY_KEY, String(accessible)); } catch {}
+    try { localStorage.setItem(ACCESSIBILITY_KEY, String(accessible)); } catch {
+      /* localStorage unavailable (private mode etc.) — accessibility resets per session */
+    }
   }, [accessible]);
 
-  // Header bubbles profile updates back; we only care about name/role display
-  // here. Richer profile fields (specialty, clinic) are owned by ProfileEditModal.
-  const handleProfileUpdate = (u: CurrentUser) => setCurrentUser(u);
+  const handleProfileUpdate = (u: CurrentUser) => setOverrides(u);
+
+  const handleSignOut = async () => {
+    if (DEMO_MODE) {
+      toast.info("Demo mode — sign-out is disabled. Refresh to reset the demo.");
+      return;
+    }
+    const next = await signOut();
+    if (next) navigate(next);
+  };
 
   // Command palette + demo walkthrough drive navigation by dispatching
   // `command:navigate` with a route path string. `command:start-visit` opens
@@ -90,12 +77,13 @@ const AppShell = () => {
 
       <div className="relative z-10">
         <Header
-          currentUser={currentUser}
+          currentUser={displayUser}
           onProfileUpdate={handleProfileUpdate}
           accessible={accessible}
           onAccessibilityToggle={setAccessible}
           onStartDemo={() => setShowWalkthrough(true)}
           onStartVisit={() => setShowStartVisit(true)}
+          onSignOut={handleSignOut}
         />
 
         <main
