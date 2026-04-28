@@ -9,6 +9,31 @@ import * as Sentry from "@sentry/node";
  * no-op so local development never accidentally ships PHI to a third party.
  */
 
+/**
+ * Auth/session header keys that must NEVER reach Sentry, regardless of PHI
+ * scrubbing. These are bearer credentials — leaking one to a third-party
+ * error tracker is a takeover vector. Matched case-insensitively.
+ */
+const AUTH_HEADER_KEYS = new Set([
+  "authorization",
+  "cookie",
+  "set-cookie",
+  "x-clerk-auth-token",
+  "x-api-key",
+  "proxy-authorization",
+]);
+
+const stripAuthHeaders = (
+  headers: Record<string, unknown> | undefined,
+): Record<string, unknown> | undefined => {
+  if (!headers) return headers;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(headers)) {
+    out[k] = AUTH_HEADER_KEYS.has(k.toLowerCase()) ? "[redacted]" : v;
+  }
+  return out;
+};
+
 const PHI_KEYS = new Set([
   "firstName", "lastName", "dateOfBirth", "phone", "email",
   "addressLine1", "addressLine2", "city", "state", "pincode",
@@ -60,7 +85,11 @@ export function initSentry(): boolean {
         event.request.data = stripPhi(event.request.data);
         event.request.query_string = undefined;
         if (event.request.headers) {
-          event.request.headers = stripPhi(event.request.headers);
+          // Defense in depth: drop auth/session secrets BEFORE generic PHI
+          // scrub, since stripPhi only matches our PHI_KEYS allowlist.
+          event.request.headers = stripPhi(
+            stripAuthHeaders(event.request.headers as Record<string, unknown>),
+          );
         }
       }
       event.extra = stripPhi(event.extra);
@@ -97,7 +126,19 @@ export function initSentry(): boolean {
       return event;
     },
     beforeBreadcrumb(crumb) {
-      if (crumb.data) crumb.data = stripPhi(crumb.data);
+      if (crumb.data) {
+        // HTTP breadcrumbs frequently carry request/response headers that may
+        // include Authorization / Cookie. Strip those keys at every nested
+        // level the SDK might place them under.
+        const data = crumb.data as Record<string, unknown>;
+        for (const key of ["headers", "request_headers", "response_headers"]) {
+          const v = data[key];
+          if (v && typeof v === "object") {
+            data[key] = stripAuthHeaders(v as Record<string, unknown>);
+          }
+        }
+        crumb.data = stripPhi(data);
+      }
       if (crumb.message) crumb.message = scrubString(crumb.message);
       return crumb;
     },
@@ -106,4 +147,9 @@ export function initSentry(): boolean {
 }
 
 export const sentryEnabled = (): boolean => Boolean(process.env.SENTRY_DSN);
-export { Sentry, stripPhi as __stripPhiForTests, scrubString as __scrubStringForTests };
+export {
+  Sentry,
+  stripPhi as __stripPhiForTests,
+  scrubString as __scrubStringForTests,
+  stripAuthHeaders as __stripAuthHeadersForTests,
+};
