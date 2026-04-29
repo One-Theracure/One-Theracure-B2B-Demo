@@ -1,1 +1,3 @@
-// no schema yet
+export * from "./patients";
+export * from "./audit";
+export * from "./encounters";
