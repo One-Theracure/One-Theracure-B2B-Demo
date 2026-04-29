@@ -39,14 +39,14 @@ A frontend-only investor demo of the One TheraCure clinic OS. **No backend, no a
 **State**:
 - `src/stores/useDemoStore.ts` — zustand store (key `one-theracure-demo-v1`) holding personas, patients, appointments, follow-ups, integrations, approved encounters, and dev toggles.
 - `src/contexts/DemoContext.tsx` — exposes `currentPersona`, `switchPersona`, `resetDemo`, `signOut`.
-- `src/data/seed/` — staged demo data: 8 patients (P001 = Mrs. Lakshmi Iyer is the hero scribe patient), appointments, follow-ups, scribe script, AVS in 4 languages, 12-month analytics, integration partners, clinic profile.
+- `src/data/seed/` — staged demo data: 8 patients (P001 = Mrs. Lakshmi Iyer is the hero scribe patient), appointments, follow-ups, scribe scripts (P001 diabetes, P002 cardiology post-MI, P003 dermatology eczema, P004 oncology cycle review — registered in `scribeScripts` map / `getScribeScript()`), AVS in 4 languages (Lakshmi only; other staged patients fall back to a single-language English summary on the Rx page), 12-month analytics, integration partners, clinic profile.
 
 **Personas (no real auth)**: Doctor (Dr. Priya Sharma), Admin (Rajesh Mehta), Front Desk (Anita Verma). Selected on `/persona`; `PersonaGate` enforces per-route access.
 
 **Key flows**:
 1. `/persona` — Persona picker (hero doctor card)
 2. `/dashboard` — 4 narrative cards + "Now seeing" hero
-3. `/consultation/P001` — Cinematic ambient scribe (waveform + transcript bubbles + live SOAP panel + plan + Approve bar)
+3. `/consultation/:patientId` — Cinematic ambient scribe (waveform + transcript bubbles + live SOAP panel + plan + Approve bar). Staged for P001 (diabetes), P002 (cardiology post-MI), P003 (dermatology eczema), P004 (oncology). Other patientIds show an empty-state listing the staged consults.
 4. `/prescriptions` — Rx letterhead + AVS in English/Hindi/Marathi/Tamil with QR
 5. `/follow-ups` — AI-segmented outreach with bulk-send animation
 6. `/admin`, `/admin/analytics`, `/admin/settings` — KPI command center, recharts analytics, integration partner toggles

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useDemoStore } from "@/stores/useDemoStore";
 import { lakshmiAvs, type AvsKey } from "@/data/seed/avsContent";
-import { lakshmiScribeScript } from "@/data/seed/scribeScript";
+import { getScribeScript, lakshmiScribeScript } from "@/data/seed/scribeScript";
 import { clinic } from "@/data/seed/clinic";
 import { motion } from "framer-motion";
 
@@ -20,9 +20,11 @@ export default function Prescriptions() {
   const [delivered, setDelivered] = useState(false);
 
   const recent = approvedEncounters.find((e) => e.patientId === patientId);
-  const meds = lakshmiScribeScript.plan.filter((p) => p.kind === "medication");
-  const labs = lakshmiScribeScript.plan.filter((p) => p.kind === "lab");
-  const followUp = lakshmiScribeScript.plan.find((p) => p.kind === "follow-up");
+  const script = getScribeScript(patientId) ?? lakshmiScribeScript;
+  const meds = script.plan.filter((p) => p.kind === "medication");
+  const labs = script.plan.filter((p) => p.kind === "lab");
+  const followUp = script.plan.find((p) => p.kind === "follow-up");
+  const hasMultilangAvs = patientId === "P001";
 
   if (!patient) return <div className="py-16 text-center text-sm text-muted-foreground">Patient not found.</div>;
 
@@ -41,7 +43,7 @@ export default function Prescriptions() {
               </span>
             )}
           </h1>
-          <div className="text-xs text-muted-foreground">{recent?.diagnosisSummary ?? "Diabetes intensification — empagliflozin add-on, glimepiride down-titration"}</div>
+          <div className="text-xs text-muted-foreground">{recent?.diagnosisSummary ?? script.diagnoses[0]?.name ?? "Encounter summary pending"}</div>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
@@ -123,7 +125,7 @@ export default function Prescriptions() {
 
             <div className="mt-4">
               <div className="text-xs uppercase font-semibold tracking-wide text-muted-foreground">Diagnosis</div>
-              <div className="text-sm mt-1">{lakshmiScribeScript.diagnoses.map((d) => d.name).join(" · ")}</div>
+              <div className="text-sm mt-1">{script.diagnoses.map((d) => d.name).join(" · ")}</div>
             </div>
 
             <div className="mt-5">
@@ -186,8 +188,53 @@ export default function Prescriptions() {
             <Sparkles className="h-3 w-3 text-[#B7791F]" /> AI-generated · After-Visit Summary
           </div>
           <h3 className="text-lg font-bold font-playfair mt-1">Patient-friendly care plan</h3>
-          <p className="text-xs text-muted-foreground">Available in 4 languages · auto-delivered to the patient app and via WhatsApp.</p>
+          <p className="text-xs text-muted-foreground">
+            {hasMultilangAvs
+              ? "Available in 4 languages · auto-delivered to the patient app and via WhatsApp."
+              : "Auto-generated from the approved plan · auto-delivered to the patient app and via WhatsApp."}
+          </p>
 
+          {!hasMultilangAvs && (
+            <div className="mt-4 space-y-3">
+              <div>
+                <div className="text-sm font-semibold">Dear {patient.name},</div>
+                <p className="text-xs text-foreground/80 mt-1 leading-relaxed">
+                  Here is a plain-language summary of today's visit. Your doctor has reviewed and approved every item below.
+                </p>
+              </div>
+              <div>
+                <div className="text-[10px] uppercase font-bold text-amber-800 dark:text-amber-300">Your medicines</div>
+                <div className="mt-1.5 space-y-1.5">
+                  {meds.map((m, i) => (
+                    <div key={i} className="text-xs p-2 bg-white/60 dark:bg-card border border-border/40 rounded-md">
+                      <div className="font-semibold">{m.label}</div>
+                      <div className="text-foreground/70">{m.detail}</div>
+                      {m.warning && <div className="text-[11px] text-red-700 mt-1">⚠ {m.warning}</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {labs.length > 0 && (
+                <div>
+                  <div className="text-[10px] uppercase font-bold text-blue-700">Tests + Follow-up</div>
+                  <ul className="text-xs space-y-0.5 mt-1.5">
+                    {labs.map((l, i) => <li key={`lb${i}`}>• {l.label} — <span className="text-foreground/70">{l.detail}</span></li>)}
+                    {followUp && <li>• {followUp.label} — <span className="text-foreground/70">{followUp.detail}</span></li>}
+                  </ul>
+                </div>
+              )}
+              <div className="bg-gradient-to-br from-violet-50 to-blue-50 dark:from-violet-950/30 dark:to-blue-950/30 border border-violet-200/50 dark:border-violet-900/40 rounded-lg p-3 flex items-center gap-3">
+                <div className="w-12 h-12 bg-white dark:bg-card border border-border/40 rounded-md flex items-center justify-center flex-shrink-0">
+                  <QrCode className="h-8 w-8 text-violet-700" />
+                </div>
+                <div className="text-[11px] text-foreground/85 leading-snug">
+                  Scan this QR with the One TheraCure app — your prescription, instructions, and lab orders save instantly. Hindi, Marathi and Tamil translations are queued for this consult.
+                </div>
+              </div>
+            </div>
+          )}
+
+          {hasMultilangAvs && (
           <Tabs defaultValue="english" className="mt-4">
             <TabsList className="bg-muted/50 grid grid-cols-4 h-9">
               {LANGS.map((l) => (
@@ -259,6 +306,7 @@ export default function Prescriptions() {
               );
             })}
           </Tabs>
+          )}
         </motion.div>
       </div>
 

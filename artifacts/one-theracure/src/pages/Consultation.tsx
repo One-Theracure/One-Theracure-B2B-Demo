@@ -8,7 +8,7 @@ import AIBlock from "@/components/ai/AIBlock";
 import RedFlagAlert from "@/components/ai/RedFlagAlert";
 import ConfidenceChip from "@/components/ai/ConfidenceChip";
 import { useDemoStore } from "@/stores/useDemoStore";
-import { lakshmiScribeScript } from "@/data/seed/scribeScript";
+import { getScribeScript, scribeScripts } from "@/data/seed/scribeScript";
 import { cn } from "@/lib/utils";
 
 export default function Consultation() {
@@ -31,7 +31,7 @@ export default function Consultation() {
     setBlockStatus((prev) => ({ ...prev, [key]: s }));
 
   const patient = patients.find((p) => p.id === patientId);
-  const script = patientId === "P001" ? lakshmiScribeScript : null;
+  const script = getScribeScript(patientId);
 
   const visibleSoap = useMemo(
     () => script?.soap.filter((s) => s.triggerLine <= currentLine) ?? [],
@@ -48,6 +48,9 @@ export default function Consultation() {
   }
 
   if (!script) {
+    const scriptedPatients = Object.keys(scribeScripts)
+      .map((id) => patients.find((p) => p.id === id))
+      .filter((p): p is NonNullable<typeof p> => !!p);
     return (
       <div className="space-y-4">
         <Link to={`/patients/${patient.id}`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
@@ -57,11 +60,25 @@ export default function Consultation() {
           <Sparkles className="h-8 w-8 mx-auto text-violet-600 mb-3" />
           <h2 className="text-xl font-semibold font-playfair">Consult room not staged for {patient.name}</h2>
           <p className="text-sm text-muted-foreground mt-2 max-w-md mx-auto">
-            The cinematic AI scribe is currently demo-staged for Mrs. Lakshmi Iyer (P001). Try her flow to see the full ambient consultation experience.
+            The cinematic AI scribe is currently demo-staged for the patients below. Open any of them to see the full ambient consultation experience for that specialty.
           </p>
-          <Button asChild className="mt-5 bg-gradient-to-r from-blue-600 to-violet-600 text-white">
-            <Link to="/consultation/P001">Open Lakshmi's consult →</Link>
-          </Button>
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
+            {scriptedPatients.map((p) => (
+              <Button
+                key={p.id}
+                asChild
+                variant="outline"
+                className="bg-white/70 dark:bg-background/40 border-violet-200 hover:border-violet-400"
+              >
+                <Link to={`/consultation/${p.id}`}>
+                  <span className="font-semibold">{p.name}</span>
+                  <span className="ml-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+                    {p.primarySpecialty}
+                  </span>
+                </Link>
+              </Button>
+            ))}
+          </div>
         </div>
       </div>
     );
