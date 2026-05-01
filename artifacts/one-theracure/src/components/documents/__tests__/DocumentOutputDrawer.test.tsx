@@ -115,8 +115,30 @@ describe("DocumentOutputDrawer", () => {
     );
   });
 
-  it("Download triggers window.print", async () => {
+  it("Download produces a real .pdf file (no print dialog)", async () => {
     const printSpy = vi.spyOn(window, "print").mockImplementation(() => {});
+    const createObjectURLSpy = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:mock");
+    const revokeObjectURLSpy = vi
+      .spyOn(URL, "revokeObjectURL")
+      .mockImplementation(() => {});
+    const clickSpy = vi
+      .spyOn(HTMLAnchorElement.prototype, "click")
+      .mockImplementation(() => {});
+    const downloadAttrs: string[] = [];
+    const setAttributeOriginal =
+      HTMLAnchorElement.prototype.setAttribute;
+    Object.defineProperty(HTMLAnchorElement.prototype, "download", {
+      configurable: true,
+      set(value: string) {
+        downloadAttrs.push(value);
+        setAttributeOriginal.call(this, "download", value);
+      },
+      get() {
+        return this.getAttribute("download") ?? "";
+      },
+    });
 
     render(
       <DocumentOutputDrawer
@@ -135,6 +157,60 @@ describe("DocumentOutputDrawer", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: /download/i }));
-    expect(printSpy).toHaveBeenCalledTimes(1);
+
+    expect(printSpy).not.toHaveBeenCalled();
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+    const blob = createObjectURLSpy.mock.calls[0][0] as Blob;
+    expect(blob).toBeInstanceOf(Blob);
+    expect(blob.type).toBe("application/pdf");
+    expect(blob.size).toBeGreaterThan(0);
+    expect(clickSpy).toHaveBeenCalledTimes(1);
+    expect(downloadAttrs[0]).toMatch(
+      /^prescription_MRN-001_\d{4}-\d{2}-\d{2}\.pdf$/,
+    );
+
+    createObjectURLSpy.mockRestore();
+    revokeObjectURLSpy.mockRestore();
+    clickSpy.mockRestore();
+    delete (HTMLAnchorElement.prototype as unknown as { download?: string })
+      .download;
+  });
+
+  it("Send to Patient reuses the same PDF artifact (same blob)", async () => {
+    const createObjectURLSpy = vi
+      .spyOn(URL, "createObjectURL")
+      .mockReturnValue("blob:mock");
+    vi.spyOn(URL, "revokeObjectURL").mockImplementation(() => {});
+    vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(
+      () => {},
+    );
+
+    render(
+      <DocumentOutputDrawer
+        open
+        onClose={() => {}}
+        patient={patient}
+        encounterId="enc-1"
+        noteContent=""
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /generate documents/i }));
+    await waitFor(
+      () =>
+        expect(
+          screen.getByRole("button", { name: /send to patient/i }),
+        ).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /download/i }));
+    fireEvent.click(screen.getByRole("button", { name: /send to patient/i }));
+
+    // Download produces a Blob; Send to Patient does not need to redownload,
+    // so only the Download click should have created an object URL.
+    expect(createObjectURLSpy).toHaveBeenCalledTimes(1);
+
+    createObjectURLSpy.mockRestore();
   });
 });

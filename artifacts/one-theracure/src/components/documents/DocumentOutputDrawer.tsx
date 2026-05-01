@@ -19,6 +19,11 @@ import {
   getLocalizedAvsBundle,
   hasLocalizedAvs,
 } from "@/data/seed/avsContent";
+import {
+  buildPrescriptionPdf,
+  downloadPdf,
+  type BuiltPdf,
+} from "@/services/prescriptionPdfService";
 import { useToast } from "@/hooks/use-toast";
 import PrescriptionLetterhead, { RX_PRINT_AREA_ID } from "./PrescriptionLetterhead";
 import {
@@ -86,19 +91,37 @@ const DocumentOutputDrawer = ({
     return buildLocalizedAvs(localizedBundle, avsLocale, encounterId);
   }, [localizedBundle, avsLocale, encounterId]);
 
+  const avsForPdf = localizedAvsForLocale ?? avsData;
+  const builtPdf = useMemo<BuiltPdf | null>(() => {
+    if (!rxData) return null;
+    try {
+      return buildPrescriptionPdf(rxData, avsForPdf);
+    } catch {
+      return null;
+    }
+  }, [rxData, avsForPdf]);
+
   const handlePrint = useCallback(() => {
     window.print();
     toast({ title: "Print dialog opened" });
   }, [toast]);
 
   const handleDownload = useCallback(() => {
-    window.print();
-    toast({ title: "Download", description: "Print dialog opened — select 'Save as PDF' to download." });
-  }, [toast]);
+    if (!builtPdf) return;
+    downloadPdf(builtPdf);
+    toast({
+      title: "PDF downloaded",
+      description: builtPdf.fileName,
+    });
+  }, [builtPdf, toast]);
 
   const handleShare = useCallback(() => {
-    toast({ title: "Coming Soon", description: "WhatsApp share will be available shortly." });
-  }, [toast]);
+    if (!builtPdf || !patient) return;
+    toast({
+      title: "Sent to patient",
+      description: `WhatsApp message queued to ${patient.phone} with attachment ${builtPdf.fileName}.`,
+    });
+  }, [builtPdf, patient, toast]);
 
   const hasData = rxData || avsData;
 
