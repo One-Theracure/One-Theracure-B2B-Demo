@@ -11,6 +11,7 @@ import {
 import { User, LogOut, Edit3, Menu, X, Search, Sun, Moon, Eye, EyeOff, Sparkles, ChevronDown, Play } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ProfileEditModal from "@/components/profile/ProfileEditModal";
+import { LogoRing } from "@/components/brand/LogoRing";
 import { useTheme } from "next-themes";
 import { useClerk } from "@clerk/react";
 
@@ -49,48 +50,9 @@ const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false,
           <div className="py-2.5">
             <div className="flex items-center justify-between gap-3">
 
-              {/* Logo Block — protective Trust-Blue ring + brand wordmark + tagline (Batch 1, issue 1.4) */}
               <div className="flex items-center gap-3 flex-shrink-0">
-                <div className="relative w-11 h-11 sm:w-12 sm:h-12">
-                  <svg
-                    aria-hidden
-                    viewBox="0 0 48 48"
-                    className="absolute inset-0 w-full h-full"
-                  >
-                    <circle
-                      cx="24" cy="24" r="22"
-                      fill="none"
-                      stroke="hsl(var(--brand-trust))"
-                      strokeOpacity="0.2"
-                      strokeWidth="1.25"
-                    />
-                    <circle
-                      cx="24" cy="24" r="22"
-                      fill="none"
-                      stroke="hsl(var(--brand-trust))"
-                      strokeWidth="1.25"
-                      strokeLinecap="round"
-                      strokeDasharray="4 5"
-                      className="opacity-65"
-                    />
-                  </svg>
-                  <div className="absolute inset-1 bg-card border border-border/30 rounded-full flex items-center justify-center shadow-sm overflow-hidden">
-                    <img
-                      src="/lovable-uploads/one-theracure-logo.jpeg"
-                      alt="One TheraCure Logo"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                  {/* System status dot */}
-                  <span
-                    className="absolute -bottom-0 -right-0 w-2.5 h-2.5 bg-brand-success border-2 border-background rounded-full"
-                    title="System Online"
-                  />
-                </div>
+                <LogoRing size="sm" showStatusDot />
                 <div className="flex flex-col leading-none">
-                  {/* Wordmark — modest 600 weight, single Inter family.
-                      Visual heft comes from the protective ring + tagline,
-                      not from a heavy display serif. */}
                   <h1 className="text-display-md text-brand-navy">
                     One TheraCure
                   </h1>
@@ -141,9 +103,6 @@ const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false,
                   </Button>
                 )}
 
-                {/* Upgrade — single brand voltage, no second accent.
-                    Airbnb uses Rausch for promotional CTAs too; we mirror
-                    that with Trust Blue rather than introducing amber. */}
                 <Button
                   size="sm"
                   className="hidden sm:inline-flex gap-1.5 bg-brand-trust hover:bg-brand-navy text-white h-9 text-button-sm rounded-airbnb-sm"
@@ -161,7 +120,6 @@ const Header = ({ currentUser: initialUser, onProfileUpdate, accessible = false,
                         className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-border/60 bg-muted/60 hover:bg-accent hover:border-accent-foreground/20 transition-all duration-200 h-9 group"
                         aria-label="Open user menu"
                       >
-                        {/* Avatar — flat brand-trust circle, no gradient, no shadow. */}
                         <div className="w-6 h-6 bg-brand-trust rounded-airbnb-pill flex items-center justify-center flex-shrink-0">
                           <User className="h-3.5 w-3.5 text-white" />
                         </div>

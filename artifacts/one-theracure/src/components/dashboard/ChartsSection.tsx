@@ -2,7 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart as RechartsPieChart, Pie, Cell, Legend } from "recharts";
-import { chartColor, chartPalette } from "@/lib/chartTheme";
+import { chartColor, chartPalette, chartTooltipProps } from "@/lib/chartTheme";
 
 const monthlyVisits = [
   { month: "Jan", visits: 45, newPatients: 12 },
@@ -53,7 +53,7 @@ const ChartsSection = () => {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 13 }} className="fill-muted-foreground" />
                 <YAxis tick={{ fontSize: 13 }} className="fill-muted-foreground" />
-                <Tooltip />
+                <Tooltip {...chartTooltipProps} />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
                 <Bar dataKey="visits" fill={chartColor("trust")} name="Total Visits" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="newPatients" fill={chartColor("success")} name="New Patients" radius={[3, 3, 0, 0]} />
@@ -73,7 +73,7 @@ const ChartsSection = () => {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="day" tick={{ fontSize: 13 }} className="fill-muted-foreground" />
                 <YAxis tick={{ fontSize: 13 }} className="fill-muted-foreground" />
-                <Tooltip />
+                <Tooltip {...chartTooltipProps} />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
                 <Line type="monotone" dataKey="avgTime" stroke={chartColor("warning")} name="Avg Time (min)" strokeWidth={2} dot={{ r: 3 }} />
                 <Line type="monotone" dataKey="visits" stroke={chartColor("trust")} name="Visits" strokeWidth={2} dot={{ r: 3 }} />
@@ -106,7 +106,7 @@ const ChartsSection = () => {
                     />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
+                <Tooltip {...chartTooltipProps} formatter={(value) => `${value}%`} />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 4 }} />
               </RechartsPieChart>
             </ResponsiveContainer>

@@ -14,7 +14,7 @@ import {
   Activity
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, LineChart, Line, Pie } from "recharts";
-import { chartColor, chartPalette, type BrandToken } from "@/lib/chartTheme";
+import { chartColor, chartPalette, chartTooltipProps, type BrandToken } from "@/lib/chartTheme";
 
 const Analytics = () => {
   const monthlyVisits = [
@@ -170,7 +170,7 @@ const Analytics = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip {...chartTooltipProps} />
                     <Bar dataKey="visits" fill={chartColor("trust")} name="Total Visits" />
                     <Bar dataKey="newPatients" fill={chartColor("success")} name="New Patients" />
                   </BarChart>
@@ -189,7 +189,7 @@ const Analytics = () => {
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="day" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip {...chartTooltipProps} />
                     <Line type="monotone" dataKey="avgTime" stroke={chartColor("warning")} name="Avg Time (min)" />
                     <Line type="monotone" dataKey="visits" stroke={chartColor("trust")} name="Visits" />
                   </LineChart>
@@ -228,7 +228,7 @@ const Analytics = () => {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip {...chartTooltipProps} />
                   <Bar dataKey="visits" fill={chartColor("trust")} />
                 </BarChart>
               </ResponsiveContainer>
@@ -258,7 +258,7 @@ const Analytics = () => {
                         <Cell key={`cell-${index}`} fill={chartColor(entry.token)} />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip {...chartTooltipProps} />
                   </RechartsPieChart>
                 </ResponsiveContainer>
               </CardContent>

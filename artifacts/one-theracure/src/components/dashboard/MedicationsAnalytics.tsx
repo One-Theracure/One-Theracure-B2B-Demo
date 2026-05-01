@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart as RechartsPieChart, Pie, Cell, Legend } from "recharts";
 import { Pill, TrendingUp } from "lucide-react";
-import { chartColor, chartPalette, type BrandToken } from "@/lib/chartTheme";
+import { chartColor, chartPalette, chartTooltipProps, type BrandToken } from "@/lib/chartTheme";
 
 const MedicationsAnalytics = () => {
   const topMedications = [
@@ -91,7 +91,7 @@ const MedicationsAnalytics = () => {
                     <Cell key={`cell-${index}`} fill={chartColor(entry.token)} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value) => `${value}%`} />
+                <Tooltip {...chartTooltipProps} formatter={(value) => `${value}%`} />
                 <Legend wrapperStyle={{ fontSize: 12, paddingTop: 4 }} />
               </RechartsPieChart>
             </ResponsiveContainer>
@@ -111,7 +111,7 @@ const MedicationsAnalytics = () => {
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                 <XAxis dataKey="month" tick={{ fontSize: 13 }} className="text-muted-foreground" />
                 <YAxis tick={{ fontSize: 13 }} className="text-muted-foreground" />
-                <Tooltip />
+                <Tooltip {...chartTooltipProps} />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
                 <Bar dataKey="total" fill={chartColor("trust")} name="Total Prescriptions" radius={[3, 3, 0, 0]} />
                 <Bar dataKey="antibiotics" fill={chartColor("warning")} name="Antibiotics" radius={[3, 3, 0, 0]} />

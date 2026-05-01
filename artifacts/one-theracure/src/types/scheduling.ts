@@ -123,20 +123,6 @@ export interface Appointment {
   tags?: string[]; // specialty-specific tags like "Cycle Day 7", "RCT Phase 2"
 }
 
-/**
- * Appointment status palette — Brand Foundation Batch 1 (issue 6.2).
- *
- * Booked / Confirmed → Trust Blue (primary scheduled state).
- * Arrived           → Soft-Blue background with a Success-green dot (the
- *                     dot is rendered alongside the label in DailySchedule).
- * In-Consult / In-Procedure → Sky Blue (live, in-progress).
- * Completed         → Success green.
- * No-Show           → Warning amber (NOT red — no-show is operational, not clinical).
- * Cancelled         → Slate with strikethrough (administrative, not alarming).
- * Rescheduled       → Slate (calm, neutral).
- *
- * Red is reserved for clinical emergency surfaces only.
- */
 export const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string }> = {
   booked:         { label: "Booked",       color: "bg-brand-soft text-brand-trust border-brand-trust/25" },
   confirmed:      { label: "Confirmed",    color: "bg-brand-trust/10 text-brand-trust border-brand-trust/30" },

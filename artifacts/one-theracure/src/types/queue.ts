@@ -42,11 +42,11 @@ export const QUEUE_STATUS_LABELS: Record<QueueStatus, string> = {
 };
 
 export const QUEUE_STATUS_COLORS: Record<QueueStatus, string> = {
-  "waiting-verification": "bg-amber-100 text-amber-700 border-amber-200",
-  "booked": "bg-blue-100 text-blue-700 border-blue-200",
-  "arrived": "bg-cyan-100 text-cyan-700 border-cyan-200",
-  "in-consult": "bg-violet-100 text-violet-700 border-violet-200",
-  "completed": "bg-emerald-100 text-emerald-700 border-emerald-200",
-  "no-show": "bg-red-100 text-red-700 border-red-200",
-  "reschedule-requested": "bg-orange-100 text-orange-700 border-orange-200",
+  "waiting-verification": "bg-brand-warning/15 text-brand-warning border-brand-warning/30",
+  "booked": "bg-brand-soft text-brand-trust border-brand-trust/25",
+  "arrived": "bg-brand-soft text-brand-sky border-brand-sky/30",
+  "in-consult": "bg-brand-trust/10 text-brand-navy border-brand-trust/30",
+  "completed": "bg-brand-success/10 text-brand-success border-brand-success/25",
+  "no-show": "bg-muted text-brand-slate border-border",
+  "reschedule-requested": "bg-brand-warning/10 text-brand-warning border-brand-warning/25",
 };

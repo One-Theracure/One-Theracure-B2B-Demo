@@ -7,20 +7,14 @@
 
 @layer base {
   :root {
-    /* ─────────────────────────────────────────────────────────────
-       One TheraCure — Brand Foundation (Batch 1)
-       Canonical palette. Use these via the `brand-*` Tailwind colors
-       (e.g. bg-brand-trust, text-brand-navy) or via hsl(var(--brand-*)).
-       Red is reserved for clinical emergency only — do NOT use for
-       cancellations, inactive states, or destructive UI affordance.
-       ───────────────────────────────────────────────────────────── */
-    --brand-navy:    218 53% 20%;   /* #172B4D — Deep Navy (headings, primary text) */
-    --brand-trust:   214 100% 40%;  /* #0052CC — Trust Blue (primary CTA, active) */
-    --brand-sky:     214 100% 57%;  /* #2684FF — Sky Blue (in-progress, focus) */
-    --brand-soft:    213 100% 96%;  /* #EAF2FF — Soft Blue (light surface wash) */
-    --brand-slate:   217 25% 35%;   /* #42526E — Slate (secondary text, cancelled) */
-    --brand-success: 146 67% 37%;   /* #1F9D55 — Success / Arrived dot */
-    --brand-warning: 28 87% 62%;    /* #F2994A — Warning / No-show */
+    /* Brand palette — red reserved for clinical emergency only. */
+    --brand-navy:    218 53% 20%;
+    --brand-trust:   214 100% 40%;
+    --brand-sky:     214 100% 57%;
+    --brand-soft:    213 100% 96%;
+    --brand-slate:   217 25% 35%;
+    --brand-success: 146 67% 37%;
+    --brand-warning: 28 87% 62%;
 
     --background: 0 0% 100%;
     --foreground: 218 53% 20%;
@@ -97,15 +91,6 @@
     font-optical-sizing: auto;
   }
 
-  /* ─────────────────────────────────────────────────────────────
-     Typography (Batch 2 — Airbnb Discipline).
-     One type family (Inter), modest weights. Display headlines sit
-     at 600, never 700+. The system trusts whitespace and imagery
-     for visual heft, not typographic muscle.
-     Playfair Display is intentionally NOT applied to h1/h2 anymore;
-     a callsite that genuinely needs an editorial serif can opt in
-     with `font-playfair`.
-     ───────────────────────────────────────────────────────────── */
   h1, h2, h3, h4, h5, h6 {
     @apply font-inter;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
@@ -121,13 +106,6 @@
     font-optical-sizing: auto;
   }
 
-  /* ─────────────────────────────────────────────────────────────
-     Visual Effects — Airbnb caps elevation at one soft halo.
-     `.glass-effect` keeps the blur for sticky nav use, but its
-     shadow collapses to the single Airbnb tier. `.luxury-shadow`
-     is rebound to the same single tier so any stale callsites
-     don't render the old 3-layer drop-shadow.
-     ───────────────────────────────────────────────────────────── */
   .glass-effect {
     background: hsl(var(--background) / 0.95);
     backdrop-filter: blur(24px);
@@ -144,8 +122,6 @@
     background: hsl(var(--background));
   }
 
-  /* Animations kept (cheap, on-brand) but transform-on-hover removed.
-     Airbnb shifts background, not position. */
   .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
   }
@@ -154,9 +130,6 @@
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  /* Hover halo uses the SAME single Airbnb tier as resting elevation.
-     There is no second/third tier — the hover state is a state change
-     applied to the one halo, not a stronger shadow. */
   .hover-lift {
     transition: box-shadow 0.2s ease-out;
   }
@@ -171,11 +144,6 @@
     background-color: hsl(var(--brand-soft));
   }
 
-  /* ─────────────────────────────────────────────────────────────
-     Brand CTA — `.btn-luxury` (preserved class name, ~80 callers).
-     Airbnb discipline: solid voltage, NO drop shadow, NO transform,
-     8px radius, modest weight. Hover darkens to Deep Navy.
-     ───────────────────────────────────────────────────────────── */
   .btn-luxury {
     @apply text-white font-inter font-medium;
     @apply transition-colors duration-150 ease-out;
@@ -194,11 +162,27 @@
       0 0 0 1px hsl(var(--brand-trust));
   }
 
-  /* ─────────────────────────────────────────────────────────────
-     Card surfaces — flat by default (border for definition, no
-     shadow), single Airbnb halo on hover. 14px radius matches
-     Airbnb property cards.
-     ───────────────────────────────────────────────────────────── */
+  .btn-luxury-outline {
+    @apply font-inter font-medium;
+    @apply transition-colors duration-150 ease-out;
+    @apply rounded-airbnb-sm bg-transparent;
+    color: hsl(var(--brand-trust));
+    border: 1px solid hsl(var(--brand-trust));
+  }
+
+  .btn-luxury-outline:hover {
+    background-color: hsl(var(--brand-soft));
+    color: hsl(var(--brand-navy));
+    border-color: hsl(var(--brand-navy));
+  }
+
+  .btn-luxury-outline:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px hsl(var(--brand-sky) / 0.35),
+      0 0 0 1px hsl(var(--brand-trust));
+  }
+
   .luxury-card {
     @apply bg-card border border-border/60;
     @apply rounded-airbnb-md;

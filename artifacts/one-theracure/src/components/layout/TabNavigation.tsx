@@ -8,14 +8,6 @@ interface TabNavigationProps {
   onTabChange: (value: string) => void;
 }
 
-/**
- * TabNavigation — primary product tabs (Brand Foundation Batch 1, issue 1.3).
- *
- * Reference design: 32px icon above label, 2px Trust-Blue ink underline for
- * the active tab, no per-tab gradient. Replaces the four conflicting gradient
- * pills (blue/indigo, teal/cyan, violet/fuchsia, gray/slate) with a single
- * unified Trust-Blue identity.
- */
 const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
   const { t } = useLanguage();
 
@@ -66,7 +58,6 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
               >
                 {tab.label}
               </span>
-              {/* 2px Trust-Blue ink underline — active indicator */}
               <span
                 aria-hidden
                 className={cn(

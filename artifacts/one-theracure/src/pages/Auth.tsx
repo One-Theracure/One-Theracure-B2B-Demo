@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Shield, Zap, FileText } from "lucide-react";
 import LoginModal from "@/components/auth/LoginModal";
 import SignUpFlow from "@/components/auth/SignUpFlow";
+import { LogoRing } from "@/components/brand/LogoRing";
 
 const FEATURES = [
   { icon: Zap, label: "AI Scribe", desc: "Hands-free clinical notes" },
@@ -19,44 +20,9 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-3xl mx-auto text-center space-y-10">
 
-        {/* Logo + Brand + Tagline */}
         <div className="flex items-center justify-center gap-4">
-          {/* Logo with protective brand ring (Batch 1, issue 1.4) */}
-          <div className="relative w-16 h-16 flex-shrink-0">
-            <svg
-              aria-hidden
-              viewBox="0 0 64 64"
-              className="absolute inset-0 w-full h-full"
-            >
-              <circle
-                cx="32" cy="32" r="30"
-                fill="none"
-                stroke="hsl(var(--brand-trust))"
-                strokeOpacity="0.18"
-                strokeWidth="1.5"
-              />
-              <circle
-                cx="32" cy="32" r="30"
-                fill="none"
-                stroke="hsl(var(--brand-trust))"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeDasharray="6 6"
-                className="opacity-70"
-              />
-            </svg>
-            <div className="absolute inset-1.5 bg-card border border-border/50 rounded-full flex items-center justify-center shadow-md overflow-hidden">
-              <img
-                src="/lovable-uploads/one-theracure-logo.jpeg"
-                alt="One TheraCure Logo"
-                className="w-full h-full object-contain"
-              />
-            </div>
-          </div>
+          <LogoRing size="lg" />
           <div className="flex flex-col items-start text-left">
-            {/* Modest weight (600), single type family — Airbnb discipline.
-                The wordmark gets visual heft from the protective ring + tagline,
-                not from a heavy 700+ display serif. */}
             <h1 className="text-display-xl text-brand-navy">One TheraCure</h1>
             <p className="mt-1 text-body-sm italic tracking-wide text-brand-trust">
               Enhancing Life
@@ -64,8 +30,6 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Hero copy — display-lg/600, generous breathing room.
-            The whitespace + Trust-Blue voltage do the work. */}
         <div className="space-y-4">
           <h2 className="text-display-xl text-foreground">
             Run an AI-powered clinic in minutes.
@@ -76,7 +40,6 @@ const Auth = () => {
           </p>
         </div>
 
-        {/* Feature pills — Airbnb pill-shape, flat surface, no shadow. */}
         <div className="flex flex-wrap items-center justify-center gap-3">
           {FEATURES.map(({ icon: Icon, label, desc }) => (
             <div
@@ -92,10 +55,7 @@ const Auth = () => {
           ))}
         </div>
 
-        {/* Equal-ratio action cards — flat by default, single Airbnb halo on hover.
-            No more translate-y, no more chunky shadow-xl. */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
-          {/* Card 1 — Log In */}
           <div
             className="flex flex-col bg-card border border-border/60 rounded-airbnb-md p-8 transition-shadow duration-200 hover:shadow-airbnb cursor-pointer group"
             onClick={() => setShowLogin(true)}
@@ -118,7 +78,6 @@ const Auth = () => {
             </Button>
           </div>
 
-          {/* Card 2 — Sign Up */}
           <div
             className="flex flex-col bg-card border border-border/60 rounded-airbnb-md p-8 transition-shadow duration-200 hover:shadow-airbnb cursor-pointer group"
             onClick={() => setShowSignUp(true)}

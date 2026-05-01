@@ -2,11 +2,6 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-/**
- * Input — Airbnb discipline (Batch 2). Tall (h-12 = 48px), 8px radius,
- * generous 14px horizontal padding, body-md type. Uses `--ring` so
- * focus picks up the One TheraCure Trust-Blue voltage automatically.
- */
 const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
   ({ className, type, ...props }, ref) => {
     return (

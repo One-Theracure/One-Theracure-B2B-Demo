@@ -2,13 +2,6 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 
-/**
- * Card — Airbnb discipline (Batch 2).
- * Flat by default with a 1px hairline border for definition.
- * 14px radius (rounded-airbnb-md) matches Airbnb property cards.
- * No drop shadow until hover, then the single Airbnb halo.
- * Padding bumped to p-6 (24px) for generous content rhythm.
- */
 const Card = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>

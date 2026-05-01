@@ -9,8 +9,6 @@ import UserRoleManagement from "./UserRoleManagement";
 
 type SettingsView = "main" | "templates" | "signature" | "roles";
 
-/* Single-accent discipline: every settings tile reads on Trust-Blue.
-   Differentiation comes from the icon glyph, not from a per-tile hue. */
 const SETTINGS_ITEMS = [
   {
     id: "templates" as const,

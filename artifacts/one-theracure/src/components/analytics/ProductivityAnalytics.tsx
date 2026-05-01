@@ -18,7 +18,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { chartColor } from "@/lib/chartTheme";
+import { chartColor, chartTooltipProps } from "@/lib/chartTheme";
 
 interface ProductivityMetrics {
   documentationTime: {
@@ -247,7 +247,7 @@ export const ProductivityAnalytics = ({ showHeader = true, timeRange: initialTim
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="date" />
                     <YAxis />
-                    <Tooltip />
+                    <Tooltip {...chartTooltipProps} />
                     <Area
                       type="monotone"
                       dataKey="manualTime"
@@ -304,7 +304,7 @@ export const ProductivityAnalytics = ({ showHeader = true, timeRange: initialTim
                   <XAxis dataKey="week" />
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip />
+                  <Tooltip {...chartTooltipProps} />
                   <Bar yAxisId="left" dataKey="patients" fill={chartColor("trust")} name="Patients Seen" />
                   <Line
                     yAxisId="right"

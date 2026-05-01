@@ -7,11 +7,6 @@ const navigate = (tab: string) => {
   window.dispatchEvent(new CustomEvent("command:navigate", { detail: tab }));
 };
 
-/**
- * QuickActions — primary "start your day" actions on the dashboard.
- * Brand Foundation Batch 1 (issue 3.3): solid Soft-Blue surface, Trust-Blue
- * icons, Deep-Navy headings. No more blue→indigo gradient.
- */
 const QuickActions = () => {
   return (
     <Card className="bg-brand-soft border border-brand-trust/15 shadow-sm">
