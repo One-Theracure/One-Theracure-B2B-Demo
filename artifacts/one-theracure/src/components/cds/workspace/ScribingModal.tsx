@@ -44,6 +44,13 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
   const transcriptRef = useRef("");
   const sessionIdRef = useRef<string | null>(null);
 
+  // Scripted-stream state — keeps the sentence cursor across pause/resume so a
+  // doctor can pause mid-script and pick up exactly where the demo left off.
+  const scriptSentencesRef = useRef<string[]>([]);
+  const scriptIndexRef = useRef(0);
+  const scriptIntervalMsRef = useRef(1500);
+  const scriptStreamTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => { transcriptRef.current = transcript; }, [transcript]);
   useEffect(() => { sessionIdRef.current = sessionId; }, [sessionId]);
 
@@ -53,6 +60,8 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
       setIsPaused(false); setStructured(null); setReviewMode(false);
       setApprovedSections(new Set()); setSessionId(null);
       setDismissedAlertIds(new Set()); setResolvedAlertTitles([]);
+      scriptSentencesRef.current = [];
+      scriptIndexRef.current = 0;
     }
     return cleanup;
   }, [open]);
@@ -60,7 +69,34 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
   const cleanup = () => {
     if (recognitionRef.current) { recognitionRef.current.stop(); recognitionRef.current = null; }
     if (elapsedTimerRef.current) { clearInterval(elapsedTimerRef.current); elapsedTimerRef.current = null; }
+    if (scriptStreamTimerRef.current) { clearInterval(scriptStreamTimerRef.current); scriptStreamTimerRef.current = null; }
   };
+
+  // Emit one scripted sentence into the transcript + structured panel. The
+  // module-level `appendTranscript` already re-runs the SOAP regex window on
+  // each chunk, so feeding sentences one-by-one makes the right-hand panel
+  // populate progressively, matching the live-AI-scribe narrative.
+  const tickScriptStream = useCallback(() => {
+    if (scriptIndexRef.current >= scriptSentencesRef.current.length) {
+      if (scriptStreamTimerRef.current) {
+        clearInterval(scriptStreamTimerRef.current);
+        scriptStreamTimerRef.current = null;
+      }
+      return;
+    }
+    const sentence = scriptSentencesRef.current[scriptIndexRef.current++];
+    setTranscript((prev) => prev + (prev ? " " : "") + sentence);
+    if (sessionIdRef.current) {
+      const updated = appendTranscript(sessionIdRef.current, sentence);
+      if (updated) setStructured({ ...updated.structuredOutput });
+    }
+  }, []);
+
+  const startScriptStream = useCallback(() => {
+    if (scriptStreamTimerRef.current) return;
+    if (scriptIndexRef.current >= scriptSentencesRef.current.length) return;
+    scriptStreamTimerRef.current = setInterval(tickScriptStream, scriptIntervalMsRef.current);
+  }, [tickScriptStream]);
 
   const startListening = useCallback(() => {
     // If this patient has a scripted demo registered, we bypass the
@@ -85,12 +121,28 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
     elapsedTimerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
 
     if (script) {
-      // Scripted demo path — populate immediately, no audio dependency.
-      setTranscript(script.transcript);
-      if (session.id) {
-        const updated = appendTranscript(session.id, script.transcript);
-        if (updated) setStructured({ ...updated.structuredOutput });
-      }
+      // Scripted demo path — stream the transcript sentence-by-sentence so
+      // the modal mimics a real speech-to-text session: words land in the
+      // raw transcript over ~15–25s, and the SOAP panel populates piece by
+      // piece as each clinical phrase arrives. Splitting on sentence
+      // terminators preserves natural punctuation in the rendered output.
+      const sentences = script.transcript
+        .split(/(?<=[.?!])\s+/)
+        .map((s) => s.trim())
+        .filter(Boolean);
+      scriptSentencesRef.current = sentences;
+      scriptIndexRef.current = 0;
+      // Target ~18s total stream; clamp per-sentence interval so very short
+      // or very long scripts still feel like live speech (1.2s–2.4s/line).
+      const TARGET_TOTAL_MS = 18000;
+      scriptIntervalMsRef.current = Math.min(
+        2400,
+        Math.max(1200, Math.round(TARGET_TOTAL_MS / Math.max(1, sentences.length))),
+      );
+      // Land the first sentence immediately so the panel never looks frozen
+      // for a beat after pressing Start.
+      tickScriptStream();
+      startScriptStream();
       return;
     }
 
@@ -131,17 +183,30 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
         if (updated) setStructured({ ...updated.structuredOutput });
       }
     }
-  }, [patientId, encounterId, template]);
+  }, [patientId, encounterId, template, tickScriptStream, startScriptStream]);
 
   const pauseListening = useCallback(() => {
     setIsPaused(true);
     if (recognitionRef.current) { recognitionRef.current.stop(); recognitionRef.current = null; }
+    if (scriptStreamTimerRef.current) { clearInterval(scriptStreamTimerRef.current); scriptStreamTimerRef.current = null; }
     if (elapsedTimerRef.current) { clearInterval(elapsedTimerRef.current); elapsedTimerRef.current = null; }
   }, []);
 
   const resumeListening = useCallback(() => {
     setIsPaused(false);
     elapsedTimerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
+    // If we're inside a scripted demo, resume the sentence stream from the
+    // cursor instead of re-attaching SpeechRecognition (the script path
+    // never owned a recognition instance to begin with). If the script
+    // already finished before the user paused, no-op the resume — we must
+    // NOT fall through to SpeechRecognition, otherwise an exhausted scripted
+    // patient would suddenly try to attach a mic mid-session.
+    if (scriptSentencesRef.current.length > 0) {
+      if (scriptIndexRef.current < scriptSentencesRef.current.length) {
+        startScriptStream();
+      }
+      return;
+    }
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
@@ -164,7 +229,7 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
       recognition.start();
       recognitionRef.current = recognition;
     }
-  }, []);
+  }, [startScriptStream]);
 
   const stopListening = useCallback(() => {
     cleanup();
