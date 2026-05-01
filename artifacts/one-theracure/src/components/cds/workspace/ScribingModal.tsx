@@ -1,11 +1,15 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Mic, MicOff, Pause, Play, Square, CheckCircle, RotateCcw, FileText } from "lucide-react";
+import { Mic, MicOff, Pause, Play, Square, CheckCircle, RotateCcw, FileText, AlertTriangle, ShieldCheck, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { createAmbientSession, appendTranscript, stopAmbientSession } from "@/services/ambientSessionService";
-import { AmbientStructuredOutput, SpecialtyTemplate, SPECIALTY_TEMPLATE_LABELS, STRUCTURED_SECTION_LABELS } from "@/types/ambientSession";
+import {
+  AmbientStructuredOutput, SafetyAlert, SpecialtyTemplate,
+  SPECIALTY_TEMPLATE_LABELS, STRUCTURED_SECTION_LABELS,
+  applySafetyAlertPatch,
+} from "@/types/ambientSession";
 import { cn } from "@/lib/utils";
 import { getScribeScript } from "@/data/seed/scribeScript";
 
@@ -32,6 +36,8 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [reviewMode, setReviewMode] = useState(false);
   const [approvedSections, setApprovedSections] = useState<Set<string>>(new Set());
+  const [dismissedAlertIds, setDismissedAlertIds] = useState<Set<string>>(new Set());
+  const [resolvedAlertTitles, setResolvedAlertTitles] = useState<string[]>([]);
 
   const recognitionRef = useRef<any>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -46,6 +52,7 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
       setTranscript(""); setElapsed(0); setIsListening(false);
       setIsPaused(false); setStructured(null); setReviewMode(false);
       setApprovedSections(new Set()); setSessionId(null);
+      setDismissedAlertIds(new Set()); setResolvedAlertTitles([]);
     }
     return cleanup;
   }, [open]);
@@ -182,6 +189,33 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
     });
   };
 
+  const dismissAlert = useCallback((alertId: string) => {
+    setDismissedAlertIds((prev) => {
+      const next = new Set(prev);
+      next.add(alertId);
+      return next;
+    });
+  }, []);
+
+  const acceptAlertQuickAction = useCallback((alert: SafetyAlert) => {
+    if (!alert.quickAction) return;
+    setStructured((prev) => {
+      if (!prev) return prev;
+      let next = prev;
+      for (const patch of alert.quickAction!.patches) {
+        next = applySafetyAlertPatch(next, patch);
+      }
+      return next;
+    });
+    setResolvedAlertTitles((prev) => (prev.includes(alert.title) ? prev : [...prev, alert.title]));
+    dismissAlert(alert.id);
+  }, [dismissAlert]);
+
+  const visibleAlerts: SafetyAlert[] = useMemo(() => {
+    if (!structured?.safetyAlerts?.length) return [];
+    return structured.safetyAlerts.filter((a) => !dismissedAlertIds.has(a.id));
+  }, [structured, dismissedAlertIds]);
+
   const fmtElapsed = (s: number) =>
     `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
 
@@ -269,7 +303,7 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
 
           <div className="w-1/2 flex flex-col">
             <div className="px-4 py-2.5 bg-muted/30 border-b border-border/60 flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Structured Extraction</span>
+              <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">AI Insights</span>
               {reviewMode && hasContent && (
                 <span className="text-xs text-violet-600 dark:text-violet-400">
                   {approvedSections.size}/{SECTION_KEYS.filter((k) => structured?.[k]?.content).length} approved
@@ -277,6 +311,49 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
               )}
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {visibleAlerts.length > 0 && (
+                <div
+                  className="space-y-2"
+                  role="region"
+                  aria-label="Safety alerts"
+                  data-testid="safety-alerts"
+                >
+                  {visibleAlerts.map((alert) => (
+                    <SafetyAlertCard
+                      key={alert.id}
+                      alert={alert}
+                      onAccept={() => acceptAlertQuickAction(alert)}
+                      onDismiss={() => dismissAlert(alert.id)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {resolvedAlertTitles.length > 0 && (
+                <div
+                  className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 flex items-start gap-2"
+                  data-testid="safety-alerts-resolved"
+                >
+                  <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wide">
+                      Safer alternative applied
+                    </p>
+                    <p className="text-xs text-emerald-700/90 dark:text-emerald-300/80 mt-0.5">
+                      {resolvedAlertTitles.join(" • ")}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {visibleAlerts.length === 0 && resolvedAlertTitles.length === 0 && hasContent && (
+                <div className="px-1 pb-1">
+                  <span className="text-[10px] font-semibold text-muted-foreground/70 uppercase tracking-wider">
+                    Structured Extraction
+                  </span>
+                </div>
+              )}
+
               {!hasContent ? (
                 <div className="text-center py-12 text-muted-foreground/50">
                   <FileText className="h-10 w-10 text-muted-foreground/20 mx-auto mb-3" />
@@ -369,6 +446,8 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
                   setStructured(null);
                   setApprovedSections(new Set());
                   setSessionId(null);
+                  setDismissedAlertIds(new Set());
+                  setResolvedAlertTitles([]);
                 }}
                 className="gap-1.5"
                 size="sm"
@@ -389,6 +468,106 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
         </div>
       </DialogContent>
     </Dialog>
+  );
+};
+
+interface SafetyAlertCardProps {
+  alert: SafetyAlert;
+  onAccept: () => void;
+  onDismiss: () => void;
+}
+
+const SEVERITY_STYLES: Record<SafetyAlert["severity"], {
+  card: string; iconWrap: string; pill: string; pillLabel: string;
+}> = {
+  critical: {
+    card: "border-red-500/50 bg-red-500/10 dark:bg-red-500/15",
+    iconWrap: "bg-red-500 text-white",
+    pill: "bg-red-500/20 text-red-700 dark:text-red-300",
+    pillLabel: "Critical",
+  },
+  high: {
+    card: "border-red-500/50 bg-red-500/10 dark:bg-red-500/15",
+    iconWrap: "bg-red-500 text-white",
+    pill: "bg-red-500/20 text-red-700 dark:text-red-300",
+    pillLabel: "High Risk",
+  },
+  moderate: {
+    card: "border-amber-500/50 bg-amber-500/10 dark:bg-amber-500/15",
+    iconWrap: "bg-amber-500 text-white",
+    pill: "bg-amber-500/20 text-amber-700 dark:text-amber-300",
+    pillLabel: "Moderate",
+  },
+  info: {
+    card: "border-sky-500/40 bg-sky-500/10 dark:bg-sky-500/15",
+    iconWrap: "bg-sky-500 text-white",
+    pill: "bg-sky-500/20 text-sky-700 dark:text-sky-300",
+    pillLabel: "Info",
+  },
+};
+
+const SafetyAlertCard = ({ alert, onAccept, onDismiss }: SafetyAlertCardProps) => {
+  const style = SEVERITY_STYLES[alert.severity];
+  return (
+    <div
+      className={cn(
+        "rounded-xl border-2 p-3 shadow-sm animate-in fade-in slide-in-from-top-2 duration-300",
+        style.card,
+      )}
+      data-testid={`safety-alert-${alert.id}`}
+      role="alert"
+    >
+      <div className="flex items-start gap-2.5">
+        <div className={cn("h-7 w-7 rounded-lg flex items-center justify-center shrink-0", style.iconWrap)}>
+          <AlertTriangle className="h-4 w-4" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className={cn("text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded", style.pill)}>
+              {style.pillLabel}
+            </span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Drug Interaction
+            </span>
+          </div>
+          <p className="text-sm font-bold text-foreground mt-1 leading-tight">
+            {alert.title}
+          </p>
+          <p className="text-xs text-foreground/80 mt-1 leading-relaxed">
+            {alert.description}
+          </p>
+          {alert.recommendation && (
+            <p className="text-xs text-foreground/70 italic mt-1.5 leading-relaxed">
+              <span className="font-semibold not-italic">AI Recommendation:</span>{" "}
+              {alert.recommendation}
+            </p>
+          )}
+          <div className="flex items-center gap-2 mt-2.5">
+            {alert.quickAction && (
+              <Button
+                size="sm"
+                onClick={onAccept}
+                className="h-7 px-2.5 text-xs gap-1.5 bg-foreground text-background hover:bg-foreground/90"
+                data-testid={`safety-alert-accept-${alert.id}`}
+              >
+                <CheckCircle className="h-3 w-3" />
+                {alert.quickAction.label}
+              </Button>
+            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={onDismiss}
+              className="h-7 px-2 text-xs gap-1 text-muted-foreground hover:text-foreground"
+              data-testid={`safety-alert-dismiss-${alert.id}`}
+            >
+              <X className="h-3 w-3" />
+              Dismiss
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

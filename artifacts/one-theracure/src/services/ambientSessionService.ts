@@ -1,5 +1,5 @@
 import {
-  AmbientSession, AmbientStructuredOutput, SpecialtyTemplate,
+  AmbientSession, AmbientStructuredOutput, SafetyAlert, SpecialtyTemplate,
   createEmptyStructuredOutput
 } from "@/types/ambientSession";
 import { eventBus } from "@/services/eventBus";
@@ -177,11 +177,17 @@ export function __resetAmbientSessionCacheForTests(): void {
 // ── Internals ──────────────────────────────────────────────────────────────
 
 function extractStructured(transcript: string, prev: AmbientStructuredOutput): AmbientStructuredOutput {
-  const output = { ...prev };
+  const output: AmbientStructuredOutput = {
+    ...prev,
+    safetyAlerts: prev.safetyAlerts ? [...prev.safetyAlerts] : [],
+  };
   const t = transcript.toLowerCase();
   const now = new Date().toISOString();
 
-  const update = (section: keyof AmbientStructuredOutput, content: string) => {
+  const update = (
+    section: Exclude<keyof AmbientStructuredOutput, "safetyAlerts">,
+    content: string,
+  ) => {
     if (content && output[section].content !== content) {
       output[section] = { ...output[section], content, lastUpdated: now };
     }
@@ -215,7 +221,77 @@ function extractStructured(transcript: string, prev: AmbientStructuredOutput): A
   const followMatch = transcript.match(/(?:follow.?up|review|return)[:\s]+(?:in\s+)?([^.]{5,50})/i);
   if (followMatch) update("followUp", `Follow-up: ${followMatch[1].trim()}`);
 
+  // ── Safety-alert detection ───────────────────────────────────────────
+  // Append-only detection: alerts already present (by id) are kept untouched
+  // so a partial-streaming chunk never wipes a fired alert. Dismissal is a UI
+  // concern handled in ScribingModal, not here.
+  for (const alert of detectSafetyAlerts(t)) {
+    if (!output.safetyAlerts.some((a) => a.id === alert.id)) {
+      output.safetyAlerts.push(alert);
+    }
+  }
+
   return output;
+}
+
+/**
+ * Lightweight rule-based safety-alert detector. Mirrors the kind of insights
+ * a clinical-decision-support pass would surface during ambient scribing.
+ *
+ * Today this hard-codes the warfarin + NSAID interaction that the Mrs. Meera
+ * Joshi (P005) demo script exercises — investors expect to *see* the AI catch
+ * the bleeding-risk red flag, not just read it as a transcript line. New rules
+ * can be added here without changing the panel UI.
+ */
+function detectSafetyAlerts(transcriptLower: string): SafetyAlert[] {
+  const alerts: SafetyAlert[] = [];
+
+  const mentionsWarfarin = /\bwarfarin\b/.test(transcriptLower);
+  const nsaidMatch = transcriptLower.match(/\b(ibuprofen|naproxen|diclofenac|ketorolac|aspirin)\b/);
+  if (mentionsWarfarin && nsaidMatch) {
+    const nsaid = nsaidMatch[1];
+    const isOral = !/topical\s+diclofenac/.test(transcriptLower) || nsaid !== "diclofenac";
+    if (isOral) {
+      alerts.push({
+        id: "drug-interaction:warfarin+nsaid",
+        severity: "high",
+        category: "drug-interaction",
+        title: `Warfarin + ${capitalise(nsaid)} — bleeding risk`,
+        description:
+          `Concurrent ${capitalise(nsaid)} (NSAID) and Warfarin substantially increases bleeding risk ` +
+          `(GI haemorrhage, intracranial bleed). Patient already shows new ecchymosis on exam.`,
+        recommendation:
+          `Stop ${capitalise(nsaid)} immediately. Use scheduled Paracetamol 500mg TID ± topical Diclofenac for analgesia. ` +
+          `Check INR today and again in 5 days.`,
+        quickAction: {
+          label: "Replace with Paracetamol",
+          patches: [
+            {
+              section: "plan",
+              setContent:
+                "Stop Ibuprofen immediately (drug-interaction with Warfarin). " +
+                "Replace with Paracetamol 500mg three times daily for knee pain, plus topical Diclofenac gel. " +
+                "Check INR today and repeat in 5 days. Continue Warfarin at current dose pending INR result. " +
+                "Schedule pharmacist-led deprescribing consult.",
+            },
+            {
+              section: "assessment",
+              setContent:
+                "Polypharmacy with high-risk Warfarin + NSAID interaction — Ibuprofen discontinued and " +
+                "replaced with Paracetamol; bleeding risk mitigated. QT-prolongation concern with Bisoprolol-Digoxin " +
+                "combination still warrants monitoring.",
+            },
+          ],
+        },
+      });
+    }
+  }
+
+  return alerts;
+}
+
+function capitalise(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 function generateAVSDraft(output: AmbientStructuredOutput, transcript: string): string {

@@ -59,6 +59,45 @@ describe("ambientSessionService", () => {
     expect(exam).toContain("Pulse: 78");
   });
 
+  it("extractStructured raises a Warfarin+NSAID safety alert when the transcript pairs warfarin with ibuprofen", () => {
+    const s = createAmbientSession("p005", "enc-meera");
+    const u = appendTranscript(
+      s.id,
+      "Patient on Warfarin 5mg daily. She started taking over-the-counter Ibuprofen 400mg three times daily for knee pain.",
+    );
+    expect(u).not.toBeNull();
+    const alerts = u!.structuredOutput.safetyAlerts;
+    expect(alerts).toHaveLength(1);
+    expect(alerts[0].id).toBe("drug-interaction:warfarin+nsaid");
+    expect(alerts[0].severity).toBe("high");
+    expect(alerts[0].title.toLowerCase()).toContain("warfarin");
+    expect(alerts[0].title.toLowerCase()).toContain("ibuprofen");
+    expect(alerts[0].quickAction?.label).toMatch(/paracetamol/i);
+  });
+
+  it("extractStructured does not duplicate the same safety alert across multiple appends", () => {
+    const s = createAmbientSession("p005", "enc-meera");
+    appendTranscript(s.id, "Patient is on Warfarin 5mg daily.");
+    const u = appendTranscript(s.id, "Started Ibuprofen 400mg today for knee pain.");
+    appendTranscript(s.id, "Continue Warfarin and stop Ibuprofen.");
+    expect(u).not.toBeNull();
+    const refetched = getSession(s.id)!;
+    const sameIdAlerts = refetched.structuredOutput.safetyAlerts.filter(
+      (a) => a.id === "drug-interaction:warfarin+nsaid",
+    );
+    expect(sameIdAlerts).toHaveLength(1);
+  });
+
+  it("extractStructured does NOT raise the Warfarin+NSAID alert when only topical Diclofenac is mentioned alongside Warfarin", () => {
+    const s = createAmbientSession("p005", "enc-meera");
+    const u = appendTranscript(
+      s.id,
+      "Patient on Warfarin 5mg daily; knee pain managed with topical Diclofenac gel only.",
+    );
+    expect(u).not.toBeNull();
+    expect(u!.structuredOutput.safetyAlerts).toHaveLength(0);
+  });
+
   it("stopAmbientSession marks completed and generates AVS draft", () => {
     const s = createAmbientSession("p1", "enc1");
     appendTranscript(s.id, "Patient complaining of fatigue. Plan to start metformin. Follow-up in 2 weeks.");
