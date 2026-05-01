@@ -13,6 +13,13 @@ import {
   SmartPrescriptionData,
   DigitalAVSData,
 } from "@/services/documentOutputService";
+import {
+  AVS_LOCALES,
+  AvsLocale,
+  buildLocalizedAvs,
+  getLocalizedAvsBundle,
+  hasLocalizedAvs,
+} from "@/data/seed/avsContent";
 import { useToast } from "@/hooks/use-toast";
 import {
   FileText,
@@ -51,20 +58,35 @@ const DocumentOutputDrawer = ({
   const [activeDoc, setActiveDoc] = useState<"prescription" | "avs">("prescription");
   const [rxData, setRxData] = useState<SmartPrescriptionData | null>(null);
   const [avsData, setAvsData] = useState<DigitalAVSData | null>(null);
+  const [avsLocale, setAvsLocale] = useState<AvsLocale>("en");
   const [generating, setGenerating] = useState(false);
   const { toast } = useToast();
+
+  const localizedBundle = useMemo(
+    () => (patient ? getLocalizedAvsBundle(patient.id) : null),
+    [patient],
+  );
+  const hasLocalizedAvsForPatient = !!localizedBundle;
 
   const handleGenerate = useCallback(async () => {
     if (!patient) return;
     setGenerating(true);
     await new Promise((r) => setTimeout(r, 600));
     const rx = generateSmartPrescription(patient, encounterId, noteContent);
-    const avs = generateDigitalAVS(patient, encounterId, noteContent);
+    const avs = localizedBundle
+      ? buildLocalizedAvs(localizedBundle, "en", encounterId)
+      : generateDigitalAVS(patient, encounterId, noteContent);
     setRxData(rx);
     setAvsData(avs);
+    setAvsLocale("en");
     setGenerating(false);
     toast({ title: "Documents Generated", description: "Prescription & AVS ready for review." });
-  }, [patient, encounterId, noteContent, toast]);
+  }, [patient, encounterId, noteContent, toast, localizedBundle]);
+
+  const localizedAvsForLocale = useMemo(() => {
+    if (!localizedBundle) return null;
+    return buildLocalizedAvs(localizedBundle, avsLocale, encounterId);
+  }, [localizedBundle, avsLocale, encounterId]);
 
   const handlePrint = useCallback(() => {
     window.print();
@@ -150,7 +172,15 @@ const DocumentOutputDrawer = ({
                   {rxData && <PrescriptionView data={rxData} />}
                 </TabsContent>
                 <TabsContent value="avs" className="px-5 pb-5 mt-0">
-                  {avsData && <AVSView data={avsData} />}
+                  {avsData && hasLocalizedAvsForPatient && localizedAvsForLocale ? (
+                    <LocalizedAVSView
+                      data={localizedAvsForLocale}
+                      activeLocale={avsLocale}
+                      onLocaleChange={setAvsLocale}
+                    />
+                  ) : (
+                    avsData && <AVSView data={avsData} />
+                  )}
                 </TabsContent>
               </ScrollArea>
             </Tabs>
@@ -421,6 +451,40 @@ const AVSView = ({ data }: { data: DigitalAVSData }) => (
         Digital copy powered by One TheraCure
       </p>
     </div>
+  </div>
+);
+
+/* ─── Localized AVS Wrapper (4-language tabs) ─── */
+
+const LocalizedAVSView = ({
+  data,
+  activeLocale,
+  onLocaleChange,
+}: {
+  data: DigitalAVSData;
+  activeLocale: AvsLocale;
+  onLocaleChange: (locale: AvsLocale) => void;
+}) => (
+  <div className="space-y-3 pt-4">
+    <div className="rounded-xl bg-rose-50/60 border border-rose-100/60 p-2.5 print:hidden">
+      <p className="text-[10px] font-semibold text-rose-700 mb-1.5 uppercase tracking-wide">
+        Care plan available in 4 languages
+      </p>
+      <Tabs value={activeLocale} onValueChange={(v) => onLocaleChange(v as AvsLocale)}>
+        <TabsList className="grid grid-cols-4 h-auto p-0.5 bg-white/70">
+          {AVS_LOCALES.map((loc) => (
+            <TabsTrigger
+              key={loc.code}
+              value={loc.code}
+              className="text-[11px] py-1 data-[state=active]:bg-rose-500 data-[state=active]:text-white"
+            >
+              <span className="font-medium">{loc.native}</span>
+            </TabsTrigger>
+          ))}
+        </TabsList>
+      </Tabs>
+    </div>
+    <AVSView data={data} />
   </div>
 );
 

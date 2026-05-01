@@ -58,6 +58,63 @@ describe("DocumentOutputDrawer", () => {
     expect(await screen.findByText(/Your Visit Summary/i)).toBeInTheDocument();
   });
 
+  it("renders 4-language AVS tabs for seeded patients (P002)", async () => {
+    const seeded: Patient = {
+      ...patient,
+      id: "P002",
+      name: "Mr. Raj Kumar",
+      gender: "Male",
+      chronicConditions: ["Diabetes Type 2"],
+    };
+
+    render(
+      <DocumentOutputDrawer
+        open
+        onClose={() => {}}
+        patient={seeded}
+        encounterId="enc-p002"
+        noteContent=""
+      />,
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /generate documents/i }));
+    await waitFor(
+      () => expect(screen.getByRole("tab", { name: /patient avs/i })).toBeInTheDocument(),
+      { timeout: 2000 },
+    );
+
+    const user = userEvent.setup();
+    await user.click(screen.getByRole("tab", { name: /patient avs/i }));
+
+    // The localized header and language tabs should appear
+    expect(await screen.findByText(/Care plan available in 4 languages/i)).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /English/i })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /हिन्दी/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /मराठी/ })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: /தமிழ்/ })).toBeInTheDocument();
+
+    // English content should be visible by default (Raj Kumar's HbA1c finding)
+    expect(screen.getByText(/HbA1c is 8\.2%/i)).toBeInTheDocument();
+
+    // Switch to Hindi — translated finding (Hindi-specific phrasing) should appear
+    await user.click(screen.getByRole("tab", { name: /हिन्दी/ }));
+    await waitFor(() =>
+      expect(screen.getByText(/लक्ष्य 7% से थोड़ा अधिक/)).toBeInTheDocument(),
+    );
+
+    // Switch to Marathi — Marathi-specific phrasing should appear
+    await user.click(screen.getByRole("tab", { name: /मराठी/ }));
+    await waitFor(() =>
+      expect(screen.getByText(/लक्ष्य 7% पेक्षा थोडासा जास्त/)).toBeInTheDocument(),
+    );
+
+    // Switch to Tamil — Tamil-specific phrasing should appear
+    await user.click(screen.getByRole("tab", { name: /தமிழ்/ }));
+    await waitFor(() =>
+      expect(screen.getByText(/இலக்கான 7%-ஐ விட சற்று அதிகம்/)).toBeInTheDocument(),
+    );
+  });
+
   it("Download triggers window.print", async () => {
     const printSpy = vi.spyOn(window, "print").mockImplementation(() => {});
 
