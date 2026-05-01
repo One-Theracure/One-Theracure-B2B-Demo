@@ -2,80 +2,107 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard, Monitor, Brain, Settings, ChevronRight, ChevronLeft,
-  X, Sparkles, BarChart3, Users, Mic, FileText, Pill, Heart
+  Mic, ShieldAlert, Pill, QrCode, Languages, Sparkles,
+  ChevronRight, ChevronLeft, X,
 } from "lucide-react";
 
 interface WalkthroughStep {
   id: string;
+  /** Top-level Index tab to switch to (dashboard / cds-scribe / frontdesk / settings). */
   tab?: string;
   title: string;
   subtitle: string;
+  /** One-line caption shown beneath the title. */
+  caption: string;
   description: string;
   icon: React.ReactNode;
   highlights: string[];
   accent: string;
 }
 
+/**
+ * Narrative pitch tour. Order mirrors the 10-minute pitch script
+ * (`docs/pitch-script.md`):
+ *   Welcome → Scribe → Safety alert → Rx → ABDM handoff → Multilingual AVS → Wrap.
+ * The tour ends on the patient-facing After-Visit Summary moment so the
+ * presenter can land on "what the patient walks out with".
+ */
 const WALKTHROUGH_STEPS: WalkthroughStep[] = [
   {
     id: "welcome",
-    title: "Welcome to One TheraCure",
-    subtitle: "AI-Powered Clinic Operating System",
-    description: "A unified platform that transforms how clinics operate — from front desk to clinical documentation to analytics. Let's walk through the key capabilities.",
-    icon: <Sparkles className="h-6 w-6" />,
-    highlights: ["25+ specialties supported", "AI-powered documentation", "End-to-end clinic ops"],
-    accent: "from-blue-500 to-indigo-600",
-  },
-  {
-    id: "dashboard",
     tab: "dashboard",
-    title: "Clinical Intelligence Dashboard",
-    subtitle: "Real-time operational visibility",
-    description: "A single-glance view of clinic performance: today's visits, pending notes, patient volume, and AI-generated productivity insights. Designed for clinic owners and doctors who need instant operational awareness.",
-    icon: <BarChart3 className="h-6 w-6" />,
-    highlights: ["Live KPI cards", "AI trend insights", "Revenue & coding accuracy", "Specialty distribution analytics"],
-    accent: "from-emerald-500 to-teal-600",
+    title: "One TheraCure",
+    subtitle: "The 10-minute guided demo",
+    caption: "We'll walk one patient end-to-end — capture, safety, prescription, ABDM handoff, and what the patient walks home with.",
+    description:
+      "This is a narrative tour, not a feature catalog. Each stop matches a section of the pitch script so you can speak along with what's on screen.",
+    icon: <Sparkles className="h-6 w-6" />,
+    highlights: ["1 patient · 5 stops · ~10 minutes", "Scribe → Safety → Rx → ABDM → AVS"],
+    accent: "from-brand-trust to-brand-sky",
   },
   {
-    id: "frontdesk",
-    tab: "frontdesk",
-    title: "Multi-Specialty Front Desk",
-    subtitle: "Universal booking engine with specialty intelligence",
-    description: "A resource-aware scheduling engine supporting 25+ specialties. Each specialty activates its own visit types, resource requirements, and follow-up rules. Staff book faster with contextual suggestions.",
-    icon: <Users className="h-6 w-6" />,
-    highlights: ["Specialty-aware booking", "Resource tracking (rooms, devices, staff)", "Follow-up first logic", "Patient package management"],
-    accent: "from-violet-500 to-purple-600",
-  },
-  {
-    id: "clinical",
+    id: "scribe",
     tab: "cds-scribe",
-    title: "AI Clinical Workspace",
-    subtitle: "Ambient scribing & intelligent documentation",
-    description: "Doctors select a patient and the workspace activates: ambient voice scribing captures the encounter, AI drafts DDx, A&P, and progress notes. Live preview shows the document as it's built. All outputs are clearly marked as AI drafts for clinician review.",
-    icon: <Brain className="h-6 w-6" />,
-    highlights: ["Ambient voice scribe", "AI DDx & Assessment generation", "Live document preview", "Specialty-aware context"],
-    accent: "from-amber-500 to-orange-600",
-  },
-  {
-    id: "scribing",
-    title: "Smart Prescription & AVS",
-    subtitle: "Patient-ready outputs in seconds",
-    description: "Generate Smart Prescriptions with drug interaction checks, digital After-Visit Summaries in patient-friendly language, and downloadable clinical documents — all branded to your clinic.",
-    icon: <Pill className="h-6 w-6" />,
-    highlights: ["Drug interaction alerts", "Digital After-Visit Summary", "Clinic-branded documents", "One-click download/print"],
-    accent: "from-rose-500 to-pink-600",
+    title: "Ambient Scribe",
+    subtitle: "Stop 1 · Capture the encounter, hands-free",
+    caption: "Doctor talks to the patient. We listen, structure, and draft the note.",
+    description:
+      "Open the Encounter Workspace and start an ambient scribing session. As the conversation flows, we draft the SOAP note in the live preview — no typing. The doctor reviews and edits before anything is final.",
+    icon: <Mic className="h-6 w-6" />,
+    highlights: ["Live SOAP draft", "Specialty-aware prompts", "Always editable, always marked AI-draft"],
+    accent: "from-brand-trust to-brand-navy",
   },
   {
     id: "safety",
-    title: "Safety & Compliance",
-    subtitle: "Built for Indian healthcare regulations",
-    description: "Every AI output is labeled as a draft requiring clinician review. The system is HIPAA-compliant, NMC-verified, and ABDM-ready. Role-based access control, audit logging, and 256-bit encryption protect patient data.",
-    icon: <Heart className="h-6 w-6" />,
-    highlights: ["AI outputs always marked as drafts", "HIPAA & NMC compliant", "Role-based access control", "Full audit trail"],
-    accent: "from-cyan-500 to-blue-600",
+    tab: "cds-scribe",
+    title: "AI Safety Alert",
+    subtitle: "Stop 2 · An interaction is caught — and swapped",
+    caption: "Safety check fires before the prescription is signed. Doctor accepts the safer alternative.",
+    description:
+      "When medications are added, the safety engine flags an interaction with the patient's chronic condition or another active drug. The doctor sees a clear alternative and accepts the swap — the change carries through to the Rx automatically.",
+    icon: <ShieldAlert className="h-6 w-6" />,
+    highlights: ["Interaction & allergy rules", "One-click safer alternative", "Audit trail on every override"],
+    accent: "from-brand-warning to-brand-trust",
+  },
+  {
+    id: "rx",
+    tab: "cds-scribe",
+    title: "Smart Prescription",
+    subtitle: "Stop 3 · Generate the Rx, download the PDF",
+    caption: "From note to printable prescription in one click — clinic letterhead, dosing, follow-up.",
+    description:
+      "The Rx builder pulls the accepted plan, formats it on clinic letterhead, and produces a printable PDF the doctor can sign. Patients can scan a QR to open the same prescription on their phone.",
+    icon: <Pill className="h-6 w-6" />,
+    highlights: ["Clinic-branded letterhead", "QR for patient pickup", "Per-visit Rx history"],
+    accent: "from-brand-sky to-brand-trust",
+  },
+  {
+    id: "abdm",
+    tab: "cds-scribe",
+    title: "ABDM Inbound Handoff",
+    subtitle: "Stop 4 · A new patient arrives with their records already in hand",
+    caption: "Scan an ABHA QR — past encounters, vitals, and meds materialise on the timeline.",
+    description:
+      "Select Mrs. Fatima Sheikh (P008) to trigger the simulated ABHA scan. Records from another clinic stream in, populate the encounter timeline, and seed the overview note — no faxes, no re-asking, no re-typing.",
+    icon: <QrCode className="h-6 w-6" />,
+    highlights: ["ABHA QR scan flow", "Cross-clinic timeline merge", "Overview note auto-seeded"],
+    accent: "from-brand-navy to-brand-trust",
+  },
+  {
+    id: "avs",
+    tab: "cds-scribe",
+    title: "Multilingual After-Visit Summary",
+    subtitle: "Stop 5 · What the patient walks home with",
+    caption: "The same plan, in the patient's language — English, Hindi, Marathi, Tamil — printable or on phone.",
+    description:
+      "Open the document drawer and switch the AVS language tabs. Every patient leaves with a plain-language summary of the diagnosis, medications, red-flag symptoms, and the next visit — in the language they actually read. This is the moment to land the demo on: 'this is what the patient walks out with.'",
+    icon: <Languages className="h-6 w-6" />,
+    highlights: ["English · हिन्दी · मराठी · தமிழ்", "Plain-language, action-oriented", "Print or QR to phone"],
+    accent: "from-brand-success to-brand-trust",
   },
 ];
+
+const PROGRESS_KEY = "demo_walkthrough_step";
 
 interface DemoWalkthroughProps {
   isOpen: boolean;
@@ -84,9 +111,22 @@ interface DemoWalkthroughProps {
 }
 
 export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWalkthroughProps) {
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(() => {
+    try {
+      const stored = sessionStorage.getItem(PROGRESS_KEY);
+      const parsed = stored ? Number(stored) : 0;
+      return Number.isFinite(parsed) && parsed >= 0 && parsed < WALKTHROUGH_STEPS.length ? parsed : 0;
+    } catch {
+      return 0;
+    }
+  });
   const step = WALKTHROUGH_STEPS[currentStep];
   const totalSteps = WALKTHROUGH_STEPS.length;
+
+  // Persist progress within the session.
+  useEffect(() => {
+    try { sessionStorage.setItem(PROGRESS_KEY, String(currentStep)); } catch {}
+  }, [currentStep]);
 
   const goNext = useCallback(() => {
     if (currentStep < totalSteps - 1) {
@@ -94,6 +134,12 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
       if (nextStep.tab && onNavigate) onNavigate(nextStep.tab);
       setCurrentStep((s) => s + 1);
     } else {
+      // Finished — reset both the in-memory step and persisted progress so
+      // the next "Take the tour" click starts fresh from step 1. The component
+      // stays mounted (just hidden) inside Index, so without this reset the
+      // tour would re-open on the last step.
+      try { sessionStorage.removeItem(PROGRESS_KEY); } catch {}
+      setCurrentStep(0);
       onClose();
     }
   }, [currentStep, totalSteps, onNavigate, onClose]);
@@ -118,16 +164,12 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
     return () => window.removeEventListener("keydown", handler);
   }, [isOpen, goNext, goPrev, onClose]);
 
-  // Navigate to step's tab on open
+  // Navigate to step's tab on open (resume where the user left off).
   useEffect(() => {
     if (isOpen && step.tab && onNavigate) {
       onNavigate(step.tab);
     }
-  }, [isOpen]);
-
-  // Reset on close
-  useEffect(() => {
-    if (!isOpen) setCurrentStep(0);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   if (!isOpen) return null;
@@ -143,7 +185,7 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
       >
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-brand-navy/60 backdrop-blur-sm"
           onClick={onClose}
         />
 
@@ -167,14 +209,15 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
                   {step.icon}
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                  <p className="text-xs font-semibold text-brand-trust uppercase tracking-wider">
                     Step {currentStep + 1} of {totalSteps}
                   </p>
-                  <h3 className="text-lg font-bold text-foreground leading-snug">{step.title}</h3>
+                  <h3 className="text-lg font-bold text-brand-navy leading-snug font-inter">{step.title}</h3>
                 </div>
               </div>
               <button
                 onClick={onClose}
+                aria-label="Close demo tour"
                 className="w-8 h-8 rounded-lg hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
               >
                 <X className="h-4 w-4" />
@@ -186,6 +229,12 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
               <p className={`text-sm font-semibold bg-gradient-to-r ${step.accent} bg-clip-text text-transparent mb-2`}>
                 {step.subtitle}
               </p>
+
+              {/* One-line caption — the speaker's prompt for this stop. */}
+              <p className="text-sm font-medium text-brand-navy/90 mb-2.5 leading-snug">
+                {step.caption}
+              </p>
+
               <p className="text-sm text-muted-foreground leading-relaxed mb-4">
                 {step.description}
               </p>
@@ -195,7 +244,7 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
                 {step.highlights.map((h) => (
                   <span
                     key={h}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-muted/80 text-xs font-medium text-foreground border border-border/40"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-brand-soft text-xs font-medium text-brand-navy border border-brand-trust/15"
                   >
                     <span className={`w-1.5 h-1.5 rounded-full bg-gradient-to-r ${step.accent}`} />
                     {h}
@@ -211,6 +260,7 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
                 {WALKTHROUGH_STEPS.map((_, i) => (
                   <button
                     key={i}
+                    aria-label={`Go to step ${i + 1}`}
                     onClick={() => {
                       const target = WALKTHROUGH_STEPS[i];
                       if (target.tab && onNavigate) onNavigate(target.tab);
@@ -220,7 +270,7 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
                       i === currentStep
                         ? `w-6 bg-gradient-to-r ${step.accent}`
                         : i < currentStep
-                        ? "w-2 bg-primary/40"
+                        ? "w-2 bg-brand-trust/40"
                         : "w-2 bg-muted-foreground/20"
                     }`}
                   />
@@ -246,7 +296,7 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
                       <ChevronRight className="h-4 w-4" />
                     </>
                   ) : (
-                    "Start Using"
+                    "Finish tour"
                   )}
                 </Button>
               </div>
@@ -254,8 +304,8 @@ export default function DemoWalkthrough({ isOpen, onClose, onNavigate }: DemoWal
           </div>
 
           {/* Keyboard hint */}
-          <p className="text-center text-xs text-white/50 mt-2.5 hidden sm:block">
-            Use ← → arrow keys to navigate · Esc to close
+          <p className="text-center text-xs text-white/70 mt-2.5 hidden sm:block">
+            Use ← → arrow keys to navigate · Esc to close · progress is remembered until you finish
           </p>
         </motion.div>
       </motion.div>

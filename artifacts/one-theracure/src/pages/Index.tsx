@@ -54,6 +54,13 @@ const Index = () => {
     return () => window.removeEventListener("command:navigate", handler as EventListener);
   }, []);
 
+  // Allow any component (e.g. dashboard QuickActions) to start the guided tour.
+  useEffect(() => {
+    const handler = () => setShowWalkthrough(true);
+    window.addEventListener("demo:start-tour", handler);
+    return () => window.removeEventListener("demo:start-tour", handler);
+  }, []);
+
   const renderTabContent = () => {
     const content = (() => {
       switch (activeTab) {
