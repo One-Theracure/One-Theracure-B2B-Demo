@@ -7,6 +7,10 @@ import { Badge } from "@/components/ui/badge";
 import { createAmbientSession, appendTranscript, stopAmbientSession } from "@/services/ambientSessionService";
 import { AmbientStructuredOutput, SpecialtyTemplate, SPECIALTY_TEMPLATE_LABELS, STRUCTURED_SECTION_LABELS } from "@/types/ambientSession";
 import { cn } from "@/lib/utils";
+import { getScribeScript } from "@/data/seed/scribeScript";
+
+const GENERIC_DEMO_TRANSCRIPT =
+  "Patient is a 58-year-old male presenting with follow-up for hypertension and diabetes type 2. He complains of mild fatigue since last visit. Blood pressure today is 138/88. No chest pain, no shortness of breath. Currently on Metformin 500mg twice daily and Amlodipine 5mg once daily. Plan to adjust Amlodipine dose to 10mg. HbA1c due next month. Follow-up in 4 weeks.";
 
 interface ScribingModalProps {
   open: boolean;
@@ -52,12 +56,36 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
   };
 
   const startListening = useCallback(() => {
-    const session = createAmbientSession(patientId, encounterId, undefined, template);
+    // If this patient has a scripted demo registered, we bypass the
+    // browser SpeechRecognition entirely and seed the script transcript
+    // immediately. This guarantees every registered patient produces a
+    // populated consult — investors never land on an empty state, even
+    // in browsers where SpeechRecognition exists but never errors and
+    // never receives audio. Unregistered patients (e.g. `p-test` in
+    // unit tests) retain the original speech-recognition + demo-fallback
+    // behaviour.
+    const script = getScribeScript(patientId);
+    const effectiveTemplate: SpecialtyTemplate = script?.specialtyTemplate ?? template;
+
+    const session = createAmbientSession(patientId, encounterId, undefined, effectiveTemplate);
     setSessionId(session.id);
     setIsListening(true);
     setIsPaused(false);
+    if (script?.specialtyTemplate && script.specialtyTemplate !== template) {
+      setTemplate(script.specialtyTemplate);
+    }
 
     elapsedTimerRef.current = setInterval(() => setElapsed((e) => e + 1), 1000);
+
+    if (script) {
+      // Scripted demo path — populate immediately, no audio dependency.
+      setTranscript(script.transcript);
+      if (session.id) {
+        const updated = appendTranscript(session.id, script.transcript);
+        if (updated) setStructured({ ...updated.structuredOutput });
+      }
+      return;
+    }
 
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
@@ -80,10 +108,9 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
       };
       recognition.onerror = () => {
         if (!transcriptRef.current) {
-          const demo = "Patient is a 58-year-old male presenting with follow-up for hypertension and diabetes type 2. He complains of mild fatigue since last visit. Blood pressure today is 138/88. No chest pain, no shortness of breath. Currently on Metformin 500mg twice daily and Amlodipine 5mg once daily. Plan to adjust Amlodipine dose to 10mg. HbA1c due next month. Follow-up in 4 weeks.";
-          setTranscript(demo);
+          setTranscript(GENERIC_DEMO_TRANSCRIPT);
           if (sessionIdRef.current) {
-            const updated = appendTranscript(sessionIdRef.current, demo);
+            const updated = appendTranscript(sessionIdRef.current, GENERIC_DEMO_TRANSCRIPT);
             if (updated) setStructured({ ...updated.structuredOutput });
           }
         }
@@ -91,10 +118,9 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
       recognition.start();
       recognitionRef.current = recognition;
     } else {
-      const demo = "Patient is a 58-year-old male presenting with follow-up for hypertension and diabetes type 2. He complains of mild fatigue since last visit. Blood pressure today is 138/88. No chest pain, no shortness of breath. Currently on Metformin 500mg twice daily and Amlodipine 5mg once daily. Plan to adjust Amlodipine dose to 10mg. HbA1c due next month. Follow-up in 4 weeks.";
-      setTranscript(demo);
+      setTranscript(GENERIC_DEMO_TRANSCRIPT);
       if (session.id) {
-        const updated = appendTranscript(session.id, demo);
+        const updated = appendTranscript(session.id, GENERIC_DEMO_TRANSCRIPT);
         if (updated) setStructured({ ...updated.structuredOutput });
       }
     }
