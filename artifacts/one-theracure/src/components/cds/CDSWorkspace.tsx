@@ -9,7 +9,7 @@ import CDSOutputPanel from "./CDSOutputPanel";
 import CDSLivePreview from "./CDSLivePreview";
 import { CDSInputs, CDSMode, CDSOutput, CDSSession } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
 
 const buildSessionId = () => `sess-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`;
@@ -36,7 +36,7 @@ const CDSWorkspace = () => {
   const [includeCitations, setIncludeCitations] = useState(true);
   const [loading, setLoading] = useState(false);
   const [session, setSession] = useState<CDSSession | null>(null);
-  const { logGenerate } = useAuditLog();
+  const { logGenerate } = useCDSAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => {

@@ -222,7 +222,7 @@ export default function AppointmentCopilot() {
           </div>
         )}
 
-        {confirmed && selectedSlot && (
+        {confirmed && (
           <div className="mt-5 border-t border-border pt-5">
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-4 text-center">
               <CheckCircle className="h-8 w-8 text-emerald-500 mx-auto mb-2" />

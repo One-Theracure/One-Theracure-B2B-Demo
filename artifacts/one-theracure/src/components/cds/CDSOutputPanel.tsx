@@ -7,7 +7,7 @@ import { Copy, CheckCircle, Edit3, Save, BookOpen, ClipboardCheck, ChevronDown, 
 import { CDSOutput, CDSCitation, ICD10Suggestion } from "@/types/cds";
 import { generateICD10Suggestions } from "@/services/mockAI";
 import { useToast } from "@/hooks/use-toast";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 
 interface CDSOutputPanelProps {
   output: CDSOutput;
@@ -38,7 +38,7 @@ const CDSOutputPanel = ({ output, onFinalize, onUpdate }: CDSOutputPanelProps) =
   const [icdLoading, setIcdLoading] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const { toast } = useToast();
-  const { logCopy, logFinalize, logEdit } = useAuditLog();
+  const { logCopy, logFinalize, logEdit } = useCDSAuditLog();
 
   useEffect(() => {
     let cancelled = false;

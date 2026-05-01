@@ -1,5 +1,3 @@
-import { logger } from '@/lib/logger';
-
 export interface DrugInteraction {
   severity: 'high' | 'moderate' | 'low';
   description: string;
@@ -99,7 +97,7 @@ export async function getRxCUI(drugName: string): Promise<string | null> {
     rxcuiCache.set(normalizedName, '');
     return null;
   } catch (error) {
-    logger.error('Error fetching RxCUI', error);
+    console.error('Error fetching RxCUI:', error);
     return null;
   }
 }
@@ -127,9 +125,8 @@ export async function checkDrugInteraction(rxcui1: string, rxcui2: string): Prom
             if (interactionType.interactionPair) {
               for (const pair of interactionType.interactionPair) {
                 // Check if this interaction involves our second drug
-                const involves2ndDrug = pair.interactionConcept.some(
-                  (concept: { minConceptItem: { rxcui: string } }) =>
-                    concept.minConceptItem.rxcui === rxcui2,
+                const involves2ndDrug = pair.interactionConcept.some((concept: any) => 
+                  concept.minConceptItem.rxcui === rxcui2
                 );
                 
                 if (involves2ndDrug && pair.description) {
@@ -149,7 +146,7 @@ export async function checkDrugInteraction(rxcui1: string, rxcui2: string): Prom
     
     return interactions;
   } catch (error) {
-    logger.error('Error checking drug interactions', error);
+    console.error('Error checking drug interactions:', error);
     return [];
   }
 }
@@ -241,7 +238,7 @@ export async function checkMedicationInteractions(
       }
     }
   } catch (error) {
-    logger.warn('API interaction check failed, using fallback database', error);
+    console.warn('API interaction check failed, using fallback database:', error);
   }
   
   // Always also check the fallback database for common interactions

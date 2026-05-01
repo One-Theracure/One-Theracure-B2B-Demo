@@ -7,9 +7,7 @@
     "dev": "vite --config vite.config.ts --host 0.0.0.0",
     "build": "vite build --config vite.config.ts",
     "serve": "vite preview --config vite.config.ts --host 0.0.0.0",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -45,7 +43,6 @@
     "@replit/vite-plugin-runtime-error-modal": "catalog:",
     "@tailwindcss/typography": "^0.5.15",
     "@tanstack/react-query": "catalog:",
-    "@testing-library/dom": "^10.4.1",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
@@ -82,12 +79,10 @@
     "@clerk/react": "^6.4.5",
     "@clerk/themes": "^2.4.57",
     "@huggingface/transformers": "^4.2.0",
-    "@sentry/react": "^10.50.0",
-    "@testing-library/jest-dom": "^6.9.1",
+    "@supabase/supabase-js": "^2.105.0",
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "html2canvas": "^1.4.1",
-    "jsdom": "^29.1.0",
     "jspdf": "^4.2.1",
     "qrcode.react": "^4.2.0",
     "react-router-dom": "^7.14.2",

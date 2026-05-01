@@ -12,9 +12,8 @@ import CDSOutputPanel from "./CDSOutputPanel";
 import CDSLivePreview from "./CDSLivePreview";
 import { CDSMode, CDSOutput, CDSInputs, ScribeInsights, ScribeCustomization, INDIAN_LANGUAGES, SpeakerSegment } from "@/types/cds";
 import { generateCDSContent, generateLiveInsights } from "@/services/mockAI";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
-import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import {
   Mic, MicOff, Activity, HelpCircle, Stethoscope, ArrowRight, FileText, Sparkles, Eye,
   Languages, Users, Settings, Save, WifiOff, ChevronDown, ChevronUp
@@ -63,7 +62,7 @@ const CDSAmbientScribe = () => {
   const insightTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const offlineTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const { logGenerate } = useAuditLog();
+  const { logGenerate } = useCDSAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -141,13 +140,14 @@ const CDSAmbientScribe = () => {
       });
     }, 20000);
 
-    const SpeechRecognition = getSpeechRecognitionCtor();
+    const SpeechRecognition =
+      (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = language;
-      recognition.onresult = (event: SpeechRecognitionEvent) => {
+      recognition.onresult = (event: any) => {
         let finalText = "";
         for (let i = 0; i < event.results.length; i++) {
           if (event.results[i].isFinal) finalText += event.results[i][0].transcript + " ";

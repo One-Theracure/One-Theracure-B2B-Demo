@@ -2,11 +2,8 @@
 import { useState, useEffect } from "react";
 import { VisitFormData, Medication } from "@/types/visitForm";
 import { diagnosisTemplates } from "@/data/diagnosisTemplates";
-import { mockPatients } from "@/data/mockPatients";
-import { usePatientSelection } from "@/hooks/usePatientSelection";
 
 export const useVisitForm = () => {
-  const { selectedPatientId, setSelectedPatient } = usePatientSelection();
   const [formData, setFormData] = useState<VisitFormData>({
     // Patient Demographics
     patientName: "",
@@ -61,32 +58,23 @@ export const useVisitForm = () => {
     advice: ""
   });
 
-  // Hydrate the form from the patient pointed at by `?patientId=...`. This
-  // replaces the previous sessionStorage handoff. We:
-  //   1. Look up the patient by opaque id (PHI never lives in the URL).
-  //   2. Pre-fill demographics + the bits the visit form needs.
-  //   3. Clear the URL param so a refresh doesn't re-overwrite manual edits
-  //      the clinician may have already typed.
+  // Load patient data from sessionStorage when component mounts
   useEffect(() => {
-    if (!selectedPatientId) return;
-    const patient = mockPatients.find((p) => p.id === selectedPatientId);
-    if (!patient) {
-      setSelectedPatient(null);
-      return;
+    const storedPatientData = sessionStorage.getItem('selectedPatientForVisit');
+    if (storedPatientData) {
+      try {
+        const patientData = JSON.parse(storedPatientData);
+        setFormData(prev => ({
+          ...prev,
+          ...patientData
+        }));
+        // Clear the stored data after using it
+        sessionStorage.removeItem('selectedPatientForVisit');
+      } catch (error) {
+        console.error('Error parsing stored patient data:', error);
+      }
     }
-    setFormData((prev) => ({
-      ...prev,
-      patientName: patient.name,
-      mrn: patient.mrn,
-      age: patient.age.toString(),
-      gender: patient.gender.toLowerCase(),
-      contactNumber: patient.phone,
-      specialty: patient.specialty.toLowerCase(),
-      allergies: patient.allergies?.join(", ") || "",
-      consultationType: "followup",
-    }));
-    setSelectedPatient(null);
-  }, [selectedPatientId, setSelectedPatient]);
+  }, []);
 
   // Dynamic form update effect — only populate fields that are currently empty
   useEffect(() => {

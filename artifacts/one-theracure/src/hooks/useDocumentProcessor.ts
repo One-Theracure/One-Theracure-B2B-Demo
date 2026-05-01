@@ -1,7 +1,6 @@
 import { useCallback } from "react";
 import { createWorker } from "tesseract.js";
 import { pipeline } from "@huggingface/transformers";
-import { logger } from '@/lib/logger';
 
 interface ProcessingStatus {
   classification?: {
@@ -83,7 +82,7 @@ export const useDocumentProcessor = () => {
         confidence: confidence > 0 ? confidence : 0.1
       };
     } catch (error) {
-      logger.error("Classification failed:", error);
+      console.error("Classification failed:", error);
       return {
         type: 'junk',
         confidence: 0.1
@@ -207,7 +206,7 @@ export const useDocumentProcessor = () => {
       onStatusUpdate('completed', 100, { classification, extracted, rawText: text });
 
     } catch (error) {
-      logger.error('Document processing failed:', error);
+      console.error('Document processing failed:', error);
       onStatusUpdate('error', 0);
       throw error;
     }

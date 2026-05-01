@@ -8,10 +8,7 @@ export type EventType =
   | 'encounter.updated'
   | 'patient.updated'
   | 'ai.called'
-  | 'carepath.activated'
-  // Phase 3 — front-desk → doctor handoff. Today page subscribes so a new
-  // queue handoff appears without a manual refresh.
-  | 'queue.sent-to-doctor';
+  | 'carepath.activated';
 
 export interface AppEvent {
   id: string;
@@ -26,26 +23,12 @@ export interface AppEvent {
 
 type EventHandler = (event: AppEvent) => void;
 
-/**
- * In-memory pub-sub for cross-component coordination within a single tab.
- *
- * Phase 2 removed the `localStorage` persistence layer (`app_event_store`)
- * for two reasons:
- *   1. Healthcare safety — events frequently mention patientId / encounterId
- *      and the persisted blob was readable by anyone who opened DevTools or
- *      installed a malicious browser extension.
- *   2. Cross-tab smearing — two clinicians sharing a kiosk would inadvertently
- *      see each other's selections through the storage event.
- *
- * Durable, attributable history now lives in the server-side audit log
- * (`POST /api/audit`). This bus is for ephemeral, in-tab UI coordination
- * only. Anything that must survive a refresh MUST go through the audit log.
- */
+const STORAGE_KEY = 'app_event_store';
+const MAX_EVENTS = 1000;
+
 class EventBus {
   private handlers: Map<EventType, Set<EventHandler>> = new Map();
   private wildcardHandlers: Set<EventHandler> = new Set();
-  private recent: AppEvent[] = [];
-  private readonly MAX_RECENT = 200;
 
   private generateId(): string {
     return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -59,19 +42,25 @@ class EventBus {
       ...data,
     };
 
-    this.recent.unshift(event);
-    if (this.recent.length > this.MAX_RECENT) {
-      this.recent.length = this.MAX_RECENT;
-    }
+    this.persist(event);
 
     const typeHandlers = this.handlers.get(type);
     if (typeHandlers) {
       typeHandlers.forEach((handler) => {
-        try { handler(event); } catch { /* handler error — silently continue */ }
+        try {
+          handler(event);
+        } catch {
+          /* handler error — silently continue */
+        }
       });
     }
+
     this.wildcardHandlers.forEach((handler) => {
-      try { handler(event); } catch { /* handler error — silently continue */ }
+      try {
+        handler(event);
+      } catch {
+        /* handler error — silently continue */
+      }
     });
 
     return event;
@@ -89,32 +78,53 @@ class EventBus {
 
   onAll(handler: EventHandler): () => void {
     this.wildcardHandlers.add(handler);
-    return () => { this.wildcardHandlers.delete(handler); };
+    return () => {
+      this.wildcardHandlers.delete(handler);
+    };
   }
 
   off(type: EventType, handler: EventHandler): void {
     this.handlers.get(type)?.delete(handler);
   }
 
-  /** In-memory recent events — does NOT survive refresh. */
+  private persist(event: AppEvent): void {
+    try {
+      const events = this.getAll();
+      events.unshift(event);
+      const trimmed = events.slice(0, MAX_EVENTS);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+    } catch {
+      /* storage full — silently continue */
+    }
+  }
+
   getAll(): AppEvent[] {
-    return [...this.recent];
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
   }
 
   getByType(type: EventType): AppEvent[] {
-    return this.recent.filter((e) => e.type === type);
+    return this.getAll().filter((e) => e.type === type);
   }
 
   getByPatient(patientId: string): AppEvent[] {
-    return this.recent.filter((e) => e.patientId === patientId);
+    return this.getAll().filter((e) => e.patientId === patientId);
   }
 
   getByEncounter(encounterId: string): AppEvent[] {
-    return this.recent.filter((e) => e.encounterId === encounterId);
+    return this.getAll().filter((e) => e.encounterId === encounterId);
   }
 
   clear(): void {
-    this.recent = [];
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      /* silently continue */
+    }
   }
 }
 

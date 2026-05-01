@@ -3,19 +3,10 @@ import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/SecurityContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import type { Permission } from '@/types/userRoles';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  /**
-   * Must be a declared `Permission` from `types/userRoles.ts` (colon
-   * notation: `"patients:read"`, `"encounters:write"`, …). Passing a
-   * string that isn't in `ROLE_PERMISSIONS` makes `hasPermission` return
-   * `false`, which redirects to `/auth`, which in demo mode bounces back
-   * to `/today` — an infinite render loop. Strong-typing this prop makes
-   * that mistake a compile error.
-   */
-  requiredPermission?: Permission;
+  requiredPermission?: string;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({

@@ -13,7 +13,6 @@ import {
   Sparkles
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { logger } from '@/lib/logger';
 
 interface SmartSuggestion {
   field: string;
@@ -66,7 +65,7 @@ export const SmartEMRFields = ({
       setShowSuggestions(true);
       
     } catch (error) {
-      logger.error('Error generating suggestions:', error);
+      console.error('Error generating suggestions:', error);
     } finally {
       setIsGenerating(false);
     }

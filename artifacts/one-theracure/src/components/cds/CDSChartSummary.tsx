@@ -7,7 +7,7 @@ import CDSInputPanel from "./CDSInputPanel";
 import CDSOutputPanel from "./CDSOutputPanel";
 import { CDSInputs, CDSMode, CDSOutput } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
 
 type SummaryTab = "summarize" | "previsit-summary" | "conditions-advisor" | "hospital-stay-summary";
@@ -26,7 +26,7 @@ const CDSChartSummary = () => {
   const [inputs, setInputs] = useState<CDSInputs>(EMPTY);
   const [loading, setLoading] = useState(false);
   const [outputs, setOutputs] = useState<Record<string, CDSOutput>>({});
-  const { logGenerate } = useAuditLog();
+  const { logGenerate } = useCDSAuditLog();
   const { toast } = useToast();
 
   const handleInputChange = useCallback((field: keyof CDSInputs, value: string) => setInputs((p) => ({ ...p, [field]: value })), []);

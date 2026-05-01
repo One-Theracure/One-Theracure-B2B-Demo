@@ -1,9 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { getSpeechRecognitionCtor } from "@/lib/speechRecognition";
 import { CDSInputs, CDSMode, CDSOutput, ChartChatMessage } from "@/types/cds";
 import { generateCDSContent } from "@/services/mockAI";
-import { useAuditLog } from "@/hooks/useAuditLog";
+import { useCDSAuditLog } from "@/hooks/useCDSAuditLog";
 import { useToast } from "@/hooks/use-toast";
 import { checkDataSufficiency, SufficiencyResult } from "@/services/dataSufficiency";
 import DataSufficiencyGate from "@/components/cds/workspace/DataSufficiencyGate";
@@ -76,7 +75,7 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
   const chatEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const { logGenerate } = useAuditLog();
+  const { logGenerate } = useCDSAuditLog();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -191,13 +190,12 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
       setIsListening(false);
       return;
     }
-    const SR = getSpeechRecognitionCtor();
-    if (!SR) return;
+    const SR = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
     const recognition = new SR();
     recognition.continuous = false;
     recognition.interimResults = false;
     recognition.lang = "en-IN";
-    recognition.onresult = (e: SpeechRecognitionEvent) => {
+    recognition.onresult = (e: any) => {
       const text = e.results[0]?.[0]?.transcript || "";
       if (text) setQuery((prev) => prev ? prev + " " + text : text);
     };

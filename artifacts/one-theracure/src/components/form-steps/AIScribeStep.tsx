@@ -11,9 +11,7 @@ interface AIScribeStepProps {
 
 const AIScribeStep = ({ formData }: AIScribeStepProps) => {
   const handleGoToAIClinical = () => {
-    // Phase 3: AI Clinical no longer has a top-level tab; trigger the
-    // global Start Visit picker so the doctor lands inside an encounter.
-    window.dispatchEvent(new CustomEvent("command:start-visit"));
+    window.dispatchEvent(new CustomEvent("command:navigate", { detail: "cds-scribe" }));
   };
 
   return (
