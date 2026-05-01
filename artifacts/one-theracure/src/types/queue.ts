@@ -47,6 +47,6 @@ export const QUEUE_STATUS_COLORS: Record<QueueStatus, string> = {
   "arrived": "bg-brand-soft text-brand-sky border-brand-sky/30",
   "in-consult": "bg-brand-trust/10 text-brand-navy border-brand-trust/30",
   "completed": "bg-brand-success/10 text-brand-success border-brand-success/25",
-  "no-show": "bg-muted text-brand-slate border-border",
+  "no-show": "bg-brand-warning/15 text-brand-warning border-brand-warning/30",
   "reschedule-requested": "bg-brand-warning/10 text-brand-warning border-brand-warning/25",
 };

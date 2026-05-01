@@ -28,8 +28,8 @@
     --secondary-foreground: 218 53% 20%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 217 25% 35%;
-    --accent: 213 100% 96%;
-    --accent-foreground: 218 53% 20%;
+    --accent: 214 100% 57%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
@@ -53,19 +53,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 218 53% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 214 100% 57%;            /* Sky Blue — brighter for dark surfaces */
+    --primary: 214 100% 40%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 218 40% 18%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 213 100% 96%;
+    --secondary-foreground: 218 53% 20%;
     --muted: 218 40% 18%;
     --muted-foreground: 215 20.2% 75%;
-    --accent: 218 40% 18%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 214 100% 57%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 45%;
     --destructive-foreground: 210 40% 98%;
     --border: 218 40% 22%;
     --input: 218 40% 22%;
-    --ring: 214 100% 57%;
+    --ring: 214 100% 40%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
