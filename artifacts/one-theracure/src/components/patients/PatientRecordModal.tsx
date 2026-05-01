@@ -14,6 +14,7 @@ import {
   Plus
 } from "lucide-react";
 import { Patient } from "@/types/patient";
+import PrintRxButton from "@/components/documents/PrintRxButton";
 
 interface PatientRecordModalProps {
   isOpen: boolean;
@@ -145,14 +146,27 @@ const PatientRecordModal = ({ isOpen, onClose, patient, onStartNewVisit }: Patie
               <div className="space-y-2">
                 {patient.recentVisits.map((visit, index) => (
                   <div key={index} className="bg-muted/50 p-3 rounded-lg">
-                    <div className="flex justify-between items-start">
-                      <div>
+                    <div className="flex justify-between items-start gap-3">
+                      <div className="min-w-0">
                         <p className="font-medium">{visit.diagnosis}</p>
                         <p className="text-sm text-muted-foreground">Dr. {visit.doctor}</p>
                       </div>
-                      <span className="text-sm text-muted-foreground">
-                        {new Date(visit.date).toLocaleDateString()}
-                      </span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-sm text-muted-foreground">
+                          {new Date(visit.date).toLocaleDateString()}
+                        </span>
+                        <PrintRxButton
+                          patient={patient}
+                          visit={{
+                            date: visit.date,
+                            diagnosis: visit.diagnosis,
+                            doctor: visit.doctor,
+                            encounterId: `${patient.id}-${visit.date}`,
+                          }}
+                          variant="ghost"
+                          size="sm"
+                        />
+                      </div>
                     </div>
                   </div>
                 ))}

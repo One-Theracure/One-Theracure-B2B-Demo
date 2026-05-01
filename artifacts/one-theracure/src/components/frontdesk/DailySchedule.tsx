@@ -12,6 +12,8 @@ import { MOCK_TODAYS_APPOINTMENTS, getVisitTypeConfig } from "@/data/schedulingD
 import { SPECIALTY_PACKS, getSpecialtyVisitTypes, getAllDoctors } from "@/data/specialtyPacks";
 import type { Appointment, AppointmentStatus } from "@/types/scheduling";
 import { STATUS_CONFIG } from "@/types/scheduling";
+import { mockPatients } from "@/data/mockPatients";
+import PrintRxButton from "@/components/documents/PrintRxButton";
 
 const CATEGORY_BADGES: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20" },
@@ -251,6 +253,37 @@ export default function DailySchedule({ onReschedule, onFollowUp, activeSpecialt
                         <CalendarPlus className="h-3.5 w-3.5" />
                       </button>
                     )}
+                    {(() => {
+                      const reprintPatient = mockPatients.find(
+                        (p) => p.id === apt.patientId || p.mrn === apt.mrn,
+                      ) ?? {
+                        id: apt.patientId,
+                        name: apt.patientName,
+                        age: 0,
+                        gender: "",
+                        mrn: apt.mrn,
+                        phone: apt.patientPhone,
+                        lastVisit: apt.date,
+                        totalVisits: 0,
+                        specialty: apt.specialty,
+                        status: "Active",
+                      };
+                      return (
+                        <PrintRxButton
+                          patient={reprintPatient}
+                          visit={{
+                            date: apt.date,
+                            doctor: apt.doctorName,
+                            encounterId: apt.id,
+                          }}
+                          variant="ghost"
+                          size="icon"
+                          iconOnly
+                          title="Print Rx"
+                          className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground p-0"
+                        />
+                      );
+                    })()}
                     <button onClick={() => setExpandedId(isExpanded ? null : apt.id)}
                       className="w-7 h-7 rounded-lg bg-muted hover:bg-muted/80 flex items-center justify-center text-muted-foreground">
                       <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", isExpanded && "rotate-180")} />

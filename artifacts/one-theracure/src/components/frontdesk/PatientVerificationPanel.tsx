@@ -8,6 +8,7 @@ import { clinicalOpsService } from "@/services/clinicalOpsService";
 import { PatientVerificationAttempt, VerificationMethod, VERIFICATION_RULES } from "@/types/verification";
 import { mockPatients } from "@/data/mockPatients";
 import { cn } from "@/lib/utils";
+import PrintRxButton from "@/components/documents/PrintRxButton";
 
 const STATUS_CONFIG = {
   "verified": { icon: CheckCircle, color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200", label: "Verified" },
@@ -136,6 +137,28 @@ export default function PatientVerificationPanel() {
               <p className="text-xs text-muted-foreground mt-1">{result.notes}</p>
             )}
             <p className="text-xs text-muted-foreground/60 mt-2">Attempt ID: {result.id}</p>
+            {result.status === "verified" && (() => {
+              const verifiedPatient = mockPatients.find((p) => p.id === selectedPatientId);
+              const lastVisit = verifiedPatient?.recentVisits?.[0];
+              if (!verifiedPatient) return null;
+              return (
+                <div className="mt-3 pt-3 border-t border-border/40 flex items-center justify-between gap-2">
+                  <p className="text-xs text-muted-foreground">
+                    Reprint the most recent prescription on the clinic letterhead.
+                  </p>
+                  <PrintRxButton
+                    patient={verifiedPatient}
+                    visit={lastVisit ? {
+                      date: lastVisit.date,
+                      diagnosis: lastVisit.diagnosis,
+                      doctor: lastVisit.doctor,
+                      encounterId: `${verifiedPatient.id}-${lastVisit.date}`,
+                    } : undefined}
+                    label="Print last Rx"
+                  />
+                </div>
+              );
+            })()}
           </div>
         )}
       </div>

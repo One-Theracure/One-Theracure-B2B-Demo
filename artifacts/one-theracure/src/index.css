@@ -336,3 +336,33 @@
 .app-accessible .border {
   border-width: 2px;
 }
+
+/* ─────────────────────────────────────────────────────────────────
+   Printable Rx Letterhead
+   Any persona (doctor, front-desk, admin, patient timeline) can open
+   a Print Rx dialog. When the browser print is invoked, we hide
+   everything except the #rx-print-area block so the printed output
+   stays consistent across entry points.
+   ───────────────────────────────────────────────────────────────── */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #rx-print-area,
+  #rx-print-area * {
+    visibility: visible !important;
+  }
+  #rx-print-area {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    background: #ffffff !important;
+    padding: 16px !important;
+    color: #111827 !important;
+  }
+  /* Hide UI chrome that isn't part of the letterhead */
+  .print\:hidden {
+    display: none !important;
+  }
+}
