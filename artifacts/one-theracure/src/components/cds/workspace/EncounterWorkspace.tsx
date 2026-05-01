@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useMemo } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { WorkspaceSidebar } from "./WorkspaceSidebar";
 import PatientWorkspaceHeader from "./PatientWorkspaceHeader";
 import ClinicalChat from "./ClinicalChat";
@@ -8,6 +8,8 @@ import ScribingModal from "./ScribingModal";
 import ScribeCompleteModal from "./ScribeCompleteModal";
 import UploadContextModal from "./UploadContextModal";
 import ConnectEHRModal from "./ConnectEHRModal";
+import AbhaScanOverlay from "./AbhaScanOverlay";
+import { getAbdmImportProfile, formatRelativeFromNow, type AbdmImportProfile } from "@/data/abdmImports";
 
 import ClinicalFormDrawer from "./ClinicalFormDrawer";
 import DocumentOutputDrawer from "@/components/documents/DocumentOutputDrawer";
@@ -67,6 +69,23 @@ const EncounterWorkspace = () => {
 
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
+
+  // ABDM cross-clinic QR handoff visualisation. When a patient with a
+  // scripted ABDM profile is selected (currently P008 Mrs. Fatima Sheikh),
+  // we briefly show a "Scanning ABHA QR…" overlay, then materialise the
+  // imported records into the encounter timeline + overview note.
+  const [abhaScan, setAbhaScan] = useState<{
+    profile: AbdmImportProfile;
+    patientName: string;
+    phase: "scanning" | "fetching" | "complete";
+  } | null>(null);
+  const abhaTimersRef = useRef<number[]>([]);
+  useEffect(() => {
+    return () => {
+      abhaTimersRef.current.forEach((t) => window.clearTimeout(t));
+      abhaTimersRef.current = [];
+    };
+  }, []);
 
   const { formData, handleInputChange, handleVitalSignChange, handleMedicationsChange } = useVisitForm();
 
@@ -159,8 +178,8 @@ const EncounterWorkspace = () => {
       encounterId: encounter.id,
       payload: { patientName: patient.name },
     });
-    const overviewContent = `# ${patient.name}\n**MRN:** ${patient.mrn}  |  **Age:** ${patient.age}  |  **Gender:** ${patient.gender}\n\n## Active Conditions\n${patient.chronicConditions?.map((c) => `- ${c}`).join("\n") || "None on file"}\n\n## Allergies\n${patient.allergies?.map((a) => `- ${a}`).join("\n") || "NKDA"}\n\n## Recent Visits\n${patient.recentVisits?.map((v) => `- **${v.date}** — ${v.diagnosis} (Dr. ${v.doctor})`).join("\n") || "No recent visits"}\n\n---\n*Use the AI assistant or quick actions to generate clinical documents for this patient.*`;
-    setDocumentTabs([{ ...OVERVIEW_TAB, contentMarkdown: overviewContent, createdAt: new Date().toISOString() }]);
+    const baseOverview = `# ${patient.name}\n**MRN:** ${patient.mrn}  |  **Age:** ${patient.age}  |  **Gender:** ${patient.gender}\n\n## Active Conditions\n${patient.chronicConditions?.map((c) => `- ${c}`).join("\n") || "None on file"}\n\n## Allergies\n${patient.allergies?.map((a) => `- ${a}`).join("\n") || "NKDA"}\n\n## Recent Visits\n${patient.recentVisits?.map((v) => `- **${v.date}** — ${v.diagnosis} (Dr. ${v.doctor})`).join("\n") || "No recent visits"}\n\n---\n*Use the AI assistant or quick actions to generate clinical documents for this patient.*`;
+    setDocumentTabs([{ ...OVERVIEW_TAB, contentMarkdown: baseOverview, createdAt: new Date().toISOString() }]);
     setActiveTabId("encounter-overview");
     setTimelineEntries([]);
     // Auto-collapse sidebar after selection on smaller screens
@@ -168,6 +187,97 @@ const EncounterWorkspace = () => {
       leftPanelRef.current?.collapse();
     }
     setMobilePanel("editor");
+
+    // If this patient has an ABDM cross-clinic import profile, run the
+    // scripted "Scanning ABHA QR → records imported" sequence. Doing this
+    // *after* the base overview / empty timeline are set ensures the
+    // imported entries clearly appear as a result of the scan.
+    const profile = getAbdmImportProfile(patient.id);
+    // Clear any in-flight scan from a previous patient.
+    abhaTimersRef.current.forEach((t) => window.clearTimeout(t));
+    abhaTimersRef.current = [];
+    if (!profile) {
+      setAbhaScan(null);
+      return;
+    }
+
+    setAbhaScan({ profile, patientName: patient.name, phase: "scanning" });
+
+    abhaTimersRef.current.push(
+      window.setTimeout(() => {
+        setAbhaScan((s) => (s ? { ...s, phase: "fetching" } : s));
+      }, 900),
+    );
+
+    abhaTimersRef.current.push(
+      window.setTimeout(() => {
+        setAbhaScan((s) => (s ? { ...s, phase: "complete" } : s));
+
+        // Materialise imported records into the encounter timeline.
+        const importedEntries: TimelineEntry[] = profile.records.map((r) => ({
+          id: r.id,
+          type: "abdm",
+          title: r.title,
+          detail: r.detail,
+          timestamp: r.recordedAt,
+          status: "completed",
+          sourceClinic: `${r.sourceClinic}, ${r.sourceCity}`,
+          abdmKind: r.kind,
+        }));
+        const scanEntry: TimelineEntry = {
+          id: `abdm-scan-${patient.id}`,
+          type: "abdm",
+          title: "ABHA QR scanned — records imported",
+          detail: `${profile.records.length} records pulled from ${profile.sourceFacilities.length} clinic${
+            profile.sourceFacilities.length === 1 ? "" : "s"
+          } via ABDM`,
+          timestamp: new Date().toISOString(),
+          status: "completed",
+          sourceClinic: profile.sourceFacilities.join(" + "),
+        };
+        // Newest first; the scan event sits at the top.
+        const sortedImports = [...importedEntries].sort(
+          (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+        );
+        setTimelineEntries([scanEntry, ...sortedImports]);
+
+        // Update the encounter overview note so the doctor's context
+        // already acknowledges the imported history — no manual entry.
+        const importedSection = [
+          "",
+          "## Imported via ABDM (cross-clinic handoff)",
+          `*Pulled from ${profile.sourceFacilities.join(" and ")} at registration — ABHA ${profile.abhaNumberMasked}.*`,
+          "",
+          ...profile.records.map((r) => {
+            const rel = formatRelativeFromNow(r.recordedAt);
+            const detail = r.detail ? ` — ${r.detail}` : "";
+            return `- **${r.title}**${detail}  \n  _${r.sourceClinic}, ${r.sourceCity} · ${rel} · ABDM-verified_`;
+          }),
+          "",
+          "> Continuity of care established without manual data entry. The plan below builds on the imported history.",
+        ].join("\n");
+        const overviewWithAbdm = `${baseOverview}\n${importedSection}`;
+        setDocumentTabs((prev) =>
+          prev.map((t) =>
+            t.id === "encounter-overview"
+              ? { ...t, contentMarkdown: overviewWithAbdm, createdAt: new Date().toISOString() }
+              : t,
+          ),
+        );
+        eventBus.emit("document.uploaded", {
+          patientId: patient.id,
+          encounterId: encounter.id,
+          payload: { source: "abdm", recordCount: profile.records.length },
+        });
+      }, 2100),
+    );
+
+    // Dismiss the overlay shortly after we land on "complete".
+    abhaTimersRef.current.push(
+      window.setTimeout(() => {
+        setAbhaScan(null);
+      }, 3100),
+    );
   }, []);
 
   const handleTabClose = useCallback((tabId: string) => {
@@ -273,9 +383,17 @@ const EncounterWorkspace = () => {
 
   return (
     <div
-      className="flex flex-col bg-background rounded-2xl border border-border/60 shadow-lg overflow-hidden"
+      className="relative flex flex-col bg-background rounded-2xl border border-border/60 shadow-lg overflow-hidden"
       style={{ height: "calc(100vh - 220px)", minHeight: "560px", maxHeight: "calc(100vh - 160px)" }}
     >
+      {abhaScan && (
+        <AbhaScanOverlay
+          open
+          patientName={abhaScan.patientName}
+          profile={abhaScan.profile}
+          phase={abhaScan.phase}
+        />
+      )}
       <PatientWorkspaceHeader
         patient={selectedPatient}
         onStartScribing={scribe.handleStartScribing}
