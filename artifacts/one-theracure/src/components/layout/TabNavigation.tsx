@@ -33,8 +33,9 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
               aria-current={isActive ? "page" : undefined}
               className={cn(
                 "group relative flex flex-col items-center justify-end gap-1.5",
-                "rounded-none bg-transparent p-2 pt-2.5 pb-2",
-                "data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+                "rounded-airbnb-sm p-2 pt-2.5 pb-3",
+                "bg-brand-soft hover:bg-brand-soft/80",
+                "data-[state=active]:bg-brand-soft data-[state=active]:shadow-none",
                 "transition-colors duration-200 min-h-[64px]",
               )}
             >
@@ -44,7 +45,7 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
                   "h-8 w-8 transition-colors duration-200",
                   isActive
                     ? "text-brand-trust"
-                    : "text-brand-slate group-hover:text-brand-navy",
+                    : "text-brand-slate group-hover:text-brand-trust",
                 )}
                 strokeWidth={isActive ? 2 : 1.6}
               />
@@ -52,8 +53,8 @@ const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
                 className={cn(
                   "font-inter text-xs sm:text-sm leading-none tracking-tight transition-colors",
                   isActive
-                    ? "text-brand-navy font-semibold"
-                    : "text-brand-slate font-medium group-hover:text-brand-navy",
+                    ? "text-brand-trust font-semibold"
+                    : "text-brand-slate font-medium group-hover:text-brand-trust",
                 )}
               >
                 {tab.label}

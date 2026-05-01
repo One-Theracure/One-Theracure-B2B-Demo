@@ -31,9 +31,6 @@ export default {
                                 ring: 'hsl(var(--ring))',
                                 background: 'hsl(var(--background))',
                                 foreground: 'hsl(var(--foreground))',
-                                /* One TheraCure brand palette — Batch 1 Brand Foundation.
-                                   Use these instead of raw blue/indigo/teal/red Tailwind
-                                   shades. Red is reserved for clinical emergency only. */
                                 brand: {
                                         navy: 'hsl(var(--brand-navy))',
                                         trust: 'hsl(var(--brand-trust))',
@@ -82,35 +79,23 @@ export default {
                                         ring: 'hsl(var(--sidebar-ring))'
                                 }
                         },
-                        /* Airbnb-style soft-rounding scale (Batch 2 Design Discipline).
-                           Existing shadcn aliases (sm/md/lg via --radius) are preserved
-                           for back-compat; the new keys (airbnb-sm/md/lg/xl/pill) are the
-                           canonical surface radii. */
                         borderRadius: {
                                 lg: 'var(--radius)',
                                 md: 'calc(var(--radius) - 2px)',
                                 sm: 'calc(var(--radius) - 4px)',
                                 'airbnb-xs':   '4px',
-                                'airbnb-sm':   '8px',   /* buttons, inputs, segments */
-                                'airbnb-md':   '14px',  /* cards, photo tiles */
-                                'airbnb-lg':   '20px',  /* large hero cards */
-                                'airbnb-xl':   '32px',  /* category strips, large pills */
-                                'airbnb-pill': '9999px' /* search bar, icon buttons */
+                                'airbnb-sm':   '8px',
+                                'airbnb-md':   '14px',
+                                'airbnb-lg':   '20px',
+                                'airbnb-xl':   '32px',
+                                'airbnb-pill': '9999px',
                         },
-                        /* ONE elevation tier — Airbnb caps shadow at a single soft halo.
-                           Use shadow-airbnb on cards/dropdowns/popovers; nothing else.
-                           No second/third tier exists by design. Cards are flat by
-                           default and earn their halo only on hover. */
                         boxShadow: {
                                 'airbnb': '0 1px 2px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.06)',
                         },
-                        /* Airbnb spacing rhythm: 8px base with a 64px section beat. */
                         spacing: {
                                 'section': '64px',
                         },
-                        /* Modest-weight typography scale modelled on Airbnb Cereal.
-                           Display sits at 22–28px in 500/600 — NOT 700+ — because
-                           the system trusts whitespace and imagery for visual heft. */
                         fontSize: {
                                 'display-xl': ['28px', { lineHeight: '1.2',  letterSpacing: '-0.02em', fontWeight: '600' }],
                                 'display-lg': ['22px', { lineHeight: '1.18', letterSpacing: '-0.02em', fontWeight: '600' }],

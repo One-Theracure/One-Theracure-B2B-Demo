@@ -1,13 +1,3 @@
-/**
- * Prescription PDF Service
- *
- * Builds a real PDF (no print dialog) for the smart prescription and the
- * patient AVS, matching the on-screen letterhead: gradient header,
- * clinic + doctor block, signature line, NMC reg, and clinic footer.
- *
- * The same Blob is reused for the WhatsApp / patient-app delivery payload.
- */
-
 import jsPDF from "jspdf";
 import type {
   SmartPrescriptionData,
