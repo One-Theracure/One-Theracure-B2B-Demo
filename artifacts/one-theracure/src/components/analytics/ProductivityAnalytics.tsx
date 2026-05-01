@@ -18,6 +18,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { chartColor } from "@/lib/chartTheme";
 
 interface ProductivityMetrics {
   documentationTime: {
@@ -59,10 +60,10 @@ const mockProductivityData = {
     { week: 'Week 4', patients: 55, avgVisitTime: 25, revenue: 6050 },
   ],
   aiFeatureUsage: [
-    { name: 'SOAP Generation', value: 78, color: '#3b82f6' },
-    { name: 'Coding Assistant', value: 65, color: '#10b981' },
-    { name: 'AI CDSS', value: 82, color: '#f59e0b' },
-    { name: 'Voice Transcription', value: 71, color: '#ef4444' },
+    { name: 'SOAP Generation',     value: 78, token: 'trust'   as const },
+    { name: 'Coding Assistant',    value: 65, token: 'success' as const },
+    { name: 'AI CDSS',             value: 82, token: 'warning' as const },
+    { name: 'Voice Transcription', value: 71, token: 'sky'     as const },
   ],
   errorDetection: [
     { category: 'Coding Errors', prevented: 23, impact: 'High' },
@@ -247,20 +248,22 @@ export const ProductivityAnalytics = ({ showHeader = true, timeRange: initialTim
                     <XAxis dataKey="date" />
                     <YAxis />
                     <Tooltip />
-                    <Area 
-                      type="monotone" 
-                      dataKey="manualTime" 
+                    <Area
+                      type="monotone"
+                      dataKey="manualTime"
                       stackId="1"
-                      stroke="#ef4444" 
-                      fill="#fef2f2" 
+                      stroke={chartColor("warning")}
+                      fill={chartColor("warning")}
+                      fillOpacity={0.18}
                       name="Manual Time (min)"
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="aiAssistedTime" 
+                    <Area
+                      type="monotone"
+                      dataKey="aiAssistedTime"
                       stackId="2"
-                      stroke="#10b981" 
-                      fill="#f0fdf4" 
+                      stroke={chartColor("success")}
+                      fill={chartColor("success")}
+                      fillOpacity={0.18}
                       name="AI-Assisted Time (min)"
                     />
                   </AreaChart>
@@ -302,12 +305,12 @@ export const ProductivityAnalytics = ({ showHeader = true, timeRange: initialTim
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
                   <Tooltip />
-                  <Bar yAxisId="left" dataKey="patients" fill="#3b82f6" name="Patients Seen" />
-                  <Line 
-                    yAxisId="right" 
-                    type="monotone" 
-                    dataKey="avgVisitTime" 
-                    stroke="#10b981" 
+                  <Bar yAxisId="left" dataKey="patients" fill={chartColor("trust")} name="Patients Seen" />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="avgVisitTime"
+                    stroke={chartColor("success")}
                     strokeWidth={3}
                     name="Avg Visit Time (min)"
                   />

@@ -135,7 +135,7 @@ const CDSOutputPanel = ({ output, onFinalize, onUpdate }: CDSOutputPanelProps) =
         ) : (
           <div className="prose prose-sm max-w-none">
             {contentLines.map((line, i) => {
-              if (line.startsWith("## ")) return <h2 key={i} className="text-base font-bold font-playfair text-foreground mt-4 mb-2">{line.slice(3)}</h2>;
+              if (line.startsWith("## ")) return <h2 key={i} className="text-title-md text-foreground mt-4 mb-2">{line.slice(3)}</h2>;
               if (line.startsWith("### ")) return <h3 key={i} className="text-sm font-semibold text-foreground mt-3 mb-1">{line.slice(4)}</h3>;
               if (line.startsWith("#### ")) return <h4 key={i} className="text-sm font-medium text-muted-foreground mt-2 mb-1">{line.slice(5)}</h4>;
               if (line.startsWith("- ")) return <li key={i} className="text-sm text-foreground ml-4 list-disc">{line.slice(2)}</li>;

@@ -122,7 +122,7 @@ const CDSTemplates = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold font-playfair">Templates & Preferences</h2>
+        <h2 className="text-display-lg text-brand-navy">Templates & Preferences</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">
           Manage per-doctor and clinic-wide templates for note generation. Use{" "}
           <code className="bg-muted px-1 rounded text-sm">{"{{variable}}"}</code> placeholders.
@@ -133,14 +133,14 @@ const CDSTemplates = () => {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-base font-inter">Note Templates</h3>
-            <Button size="sm" onClick={() => setShowCreate(!showCreate)} className="gap-1 text-sm bg-violet-600 hover:bg-violet-700">
+            <Button size="sm" onClick={() => setShowCreate(!showCreate)} className="gap-1 text-sm bg-brand-trust hover:bg-brand-navy">
               <PlusCircle className="h-3.5 w-3.5" />
               New Template
             </Button>
           </div>
 
           {showCreate && (
-            <Card className="border-violet-500/30 bg-violet-500/5">
+            <Card className="border-brand-trust/25 bg-brand-soft/60">
               <CardHeader className="pb-2"><CardTitle className="text-sm">Create New Template</CardTitle></CardHeader>
               <CardContent className="space-y-3">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

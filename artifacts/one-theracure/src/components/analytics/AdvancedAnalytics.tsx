@@ -15,6 +15,7 @@ import {
   BarChart3
 } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, PieChart, Pie, Cell, Area, AreaChart } from "recharts";
+import { chartColor, chartMutedFill } from "@/lib/chartTheme";
 
 interface AdvancedAnalyticsProps {
   showHeader?: boolean;
@@ -145,9 +146,9 @@ const AdvancedAnalytics = ({ showHeader = true, timeRange = "6months", compact =
                 <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip />
-                <Line type="monotone" dataKey="recovery" stroke="#3B82F6" strokeWidth={2} name="Recovery Rate %" />
-                <Line type="monotone" dataKey="satisfaction" stroke="#10B981" strokeWidth={2} name="Satisfaction %" />
-                <Line type="monotone" dataKey="readmission" stroke="#EF4444" strokeWidth={2} name="Readmission %" />
+                <Line type="monotone" dataKey="recovery" stroke={chartColor("trust")} strokeWidth={2} name="Recovery Rate %" />
+                <Line type="monotone" dataKey="satisfaction" stroke={chartColor("success")} strokeWidth={2} name="Satisfaction %" />
+                <Line type="monotone" dataKey="readmission" stroke={chartColor("warning")} strokeWidth={2} name="Readmission %" />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -196,8 +197,8 @@ const AdvancedAnalytics = ({ showHeader = true, timeRange = "6months", compact =
                   <XAxis dataKey="category" />
                   <YAxis />
                   <Tooltip formatter={(value) => `$${value}`} />
-                  <Bar dataKey="budget" fill="#E5E7EB" name="Budget" />
-                  <Bar dataKey="cost" fill="#3B82F6" name="Actual" />
+                  <Bar dataKey="budget" fill={chartMutedFill()} name="Budget" />
+                  <Bar dataKey="cost" fill={chartColor("trust")} name="Actual" />
                 </BarChart>
               </ResponsiveContainer>
             </div>

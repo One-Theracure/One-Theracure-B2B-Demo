@@ -62,7 +62,7 @@ const CDSChartSummary = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Pre-Visit Tools</h2>
+        <h2 className="text-display-md text-brand-navy">Pre-Visit Tools</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">Chart summaries, pre-visit preparation, conditions analysis, and hospital stay recaps.</p>
       </div>
       <CDSSafetyBanner />

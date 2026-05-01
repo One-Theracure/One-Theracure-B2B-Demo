@@ -86,7 +86,7 @@ const CDSSubNav = ({ active, onChange }: CDSSubNavProps) => {
                   onClick={() => onChange(item.value)}
                   className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium font-inter transition-all duration-200 ${
                     isActive
-                      ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md"
+                      ? "bg-brand-trust text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
                   }`}
                 >

@@ -69,8 +69,8 @@ const ScribeCompleteModal = ({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg font-playfair">
-            <Sparkles className="h-5 w-5 text-violet-500" />
+          <DialogTitle className="flex items-center gap-2 text-display-sm text-brand-navy">
+            <Sparkles className="h-5 w-5 text-brand-trust" />
             Ambient Scribing Session Complete
           </DialogTitle>
           <DialogDescription>
@@ -86,8 +86,8 @@ const ScribeCompleteModal = ({
                 variant={selectedMode === option.mode ? "default" : "outline"}
                 className={`cursor-pointer text-sm px-3 py-1.5 transition-colors ${
                   selectedMode === option.mode
-                    ? "bg-violet-600 text-white hover:bg-violet-700"
-                    : "hover:bg-violet-500/10 hover:border-violet-300"
+                    ? "bg-brand-trust text-white hover:bg-brand-navy"
+                    : "hover:bg-brand-soft hover:border-brand-trust/40"
                 }`}
                 onClick={() => setSelectedMode(option.mode)}
               >
@@ -127,7 +127,7 @@ const ScribeCompleteModal = ({
           <Button
             onClick={handleDraft}
             disabled={!selectedMode || isDrafting}
-            className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700"
+            className="gap-2 bg-brand-trust hover:bg-brand-navy"
           >
             {isDrafting ? (
               <>

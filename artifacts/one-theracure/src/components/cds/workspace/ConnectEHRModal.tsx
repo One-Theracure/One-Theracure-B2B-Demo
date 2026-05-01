@@ -73,7 +73,7 @@ const ConnectEHRModal = ({ open, onOpenChange }: ConnectEHRModalProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg font-playfair">
+          <DialogTitle className="flex items-center gap-2 text-display-sm text-brand-navy">
             <Link className="h-5 w-5 text-primary" />
             Connect EHR System
           </DialogTitle>

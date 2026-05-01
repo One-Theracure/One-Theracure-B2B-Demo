@@ -9,34 +9,32 @@ import UserRoleManagement from "./UserRoleManagement";
 
 type SettingsView = "main" | "templates" | "signature" | "roles";
 
+/* Single-accent discipline: every settings tile reads on Trust-Blue.
+   Differentiation comes from the icon glyph, not from a per-tile hue. */
 const SETTINGS_ITEMS = [
   {
     id: "templates" as const,
     icon: Settings,
     label: "Template Management",
     description: "Configure clinical note templates and smart phrases",
-    gradient: "from-blue-500 to-indigo-600",
   },
   {
     id: "signature" as const,
     icon: PenTool,
     label: "Digital Signature",
     description: "Set up your digital signature for prescriptions and notes",
-    gradient: "from-violet-500 to-purple-600",
   },
   {
     id: "roles" as const,
     icon: Users,
     label: "User Roles & Permissions",
     description: "Manage staff access levels and role assignments",
-    gradient: "from-emerald-500 to-teal-600",
   },
   {
     id: "audit" as const,
     icon: FileText,
     label: "Audit Logs",
     description: "View system activity and compliance records",
-    gradient: "from-orange-500 to-amber-500",
   },
 ];
 
@@ -64,8 +62,8 @@ const SettingsContent = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-card/90 backdrop-blur-xl rounded-2xl border border-border/50 shadow-xl p-6 sm:p-8">
-        <h2 className="text-2xl sm:text-3xl font-bold font-playfair bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-blue-300 dark:to-indigo-300 bg-clip-text text-transparent mb-2">Settings</h2>
+      <div className="bg-card rounded-airbnb-md border border-border p-6 sm:p-8">
+        <h2 className="text-display-xl text-brand-navy mb-2">Settings</h2>
         <p className="text-muted-foreground font-inter font-medium text-sm sm:text-base">Configure system preferences, user settings, and digital signatures</p>
       </div>
 
@@ -78,10 +76,10 @@ const SettingsContent = () => {
               key={item.id}
               onClick={() => isClickable && setView(item.id as SettingsView)}
               disabled={!isClickable}
-              className="group text-left bg-card rounded-2xl border border-border/60 shadow-sm hover:shadow-md hover:border-border transition-all duration-200 p-5 flex items-start gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="group text-left bg-card rounded-airbnb-md border border-border hover-lift transition-shadow duration-200 p-5 flex items-start gap-4 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${item.gradient} flex items-center justify-center flex-shrink-0`}>
-                <Icon className="h-5 w-5 text-white" />
+              <div className="w-10 h-10 rounded-airbnb-pill bg-brand-soft flex items-center justify-center flex-shrink-0">
+                <Icon className="h-5 w-5 text-brand-trust" />
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2">

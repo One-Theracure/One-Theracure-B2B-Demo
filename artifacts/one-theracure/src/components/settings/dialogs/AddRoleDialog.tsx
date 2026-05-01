@@ -51,7 +51,7 @@ const AddRoleDialog = ({ onAddRole }: AddRoleDialogProps) => {
   return (
     <Dialog open={showAddRole} onOpenChange={setShowAddRole}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+        <Button className="bg-brand-trust hover:bg-brand-navy text-white">
           <Shield className="h-4 w-4 mr-2" />
           Add Role
         </Button>

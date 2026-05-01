@@ -43,7 +43,7 @@ const CDSAssessmentPlan = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Assessment & Plan</h2>
+        <h2 className="text-display-md text-brand-navy">Assessment & Plan</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">Problem-oriented A&P with evidence-based diagnostics, treatment, follow-up, and safety netting.</p>
       </div>
       <CDSSafetyBanner />

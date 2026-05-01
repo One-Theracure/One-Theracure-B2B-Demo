@@ -5,18 +5,18 @@ import { MessageCircle } from 'lucide-react';
 
 const PatientSummaryHeader = () => {
   return (
-    <div className="relative bg-gradient-to-r from-blue-50 via-indigo-50 to-slate-50 border-2 border-blue-200 rounded-xl p-4 mb-4 shadow-lg">
+    <div className="relative bg-brand-soft border border-brand-trust/20 rounded-airbnb-md p-4 mb-4">
       <div className="flex items-center justify-between">
         <div className="flex-1"></div>
         <div className="text-center flex-1">
-          <h1 className="text-xl font-bold font-playfair bg-gradient-to-r from-blue-900 to-indigo-900 bg-clip-text text-transparent mb-1">
+          <h1 className="text-display-md text-brand-navy mb-1">
             Triumph Oncology Clinic
           </h1>
-          <p className="text-sm font-semibold font-sf-pro text-blue-600">After Visit Summary</p>
-          <p className="text-xs text-gray-600 font-inter">One TheraCure Smart-OPD • Main Branch</p>
+          <p className="text-sm font-semibold text-brand-trust">After Visit Summary</p>
+          <p className="text-xs text-muted-foreground font-inter">One TheraCure Smart-OPD • Main Branch</p>
         </div>
         <div className="flex-1 flex flex-col items-end gap-2">
-          <div className="w-12 h-12 bg-white rounded-full border-2 border-blue-300 flex items-center justify-center shadow-md">
+          <div className="w-12 h-12 bg-card rounded-airbnb-pill border border-brand-trust/25 flex items-center justify-center">
             <img alt="One TheraCure Logo" src="/lovable-uploads/b9cdbbf7-5ed9-4d60-a067-0d76cdf9c8ca.jpg" className="w-8 h-8 object-fill" />
           </div>
           <div className="flex flex-col items-center">
@@ -24,9 +24,9 @@ const PatientSummaryHeader = () => {
               value="https://app.onetheracure.com/visit/demo-visit-summary"
               size={48}
               level="M"
-              className="border border-blue-200 rounded p-0.5"
+              className="border border-brand-trust/20 rounded-airbnb-xs p-0.5"
             />
-            <span className="text-[8px] text-blue-500 mt-0.5 font-medium leading-tight text-center">Scan to save visit</span>
+            <span className="text-[8px] text-brand-trust mt-0.5 font-medium leading-tight text-center">Scan to save visit</span>
             <button
               onClick={() => {
                 const visitUrl = 'https://app.onetheracure.com/visit/demo-visit-summary';

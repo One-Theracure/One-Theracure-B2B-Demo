@@ -120,7 +120,7 @@ const TemplateManagement = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-card backdrop-blur-xl rounded-2xl border border-border/50 shadow-xl p-6">
+      <div className="bg-card rounded-airbnb-md border border-border p-6">
         <h2 className="text-2xl font-bold font-playfair text-foreground mb-2">
           Medical Templates
         </h2>
@@ -130,7 +130,7 @@ const TemplateManagement = () => {
       </div>
 
       {/* Search and Filters */}
-      <Card className="bg-card backdrop-blur-xl border border-border/50 shadow-xl">
+      <Card className="bg-card border border-border">
         <CardContent className="pt-6">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
@@ -218,7 +218,7 @@ const TemplateManagement = () => {
       {/* Templates Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filteredTemplates.map((template) => (
-          <Card key={template.id} className="bg-card backdrop-blur-xl border border-border/50 shadow-xl">
+          <Card key={template.id} className="bg-card border border-border">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div>
@@ -323,7 +323,7 @@ const TemplateManagement = () => {
       </Dialog>
 
       {filteredTemplates.length === 0 && (
-        <Card className="bg-card backdrop-blur-xl border border-border/50 shadow-xl">
+        <Card className="bg-card border border-border">
           <CardContent className="text-center py-12">
             <FileText className="h-12 w-12 text-muted-foreground/40 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-foreground mb-2">No templates found</h3>

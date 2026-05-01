@@ -26,7 +26,7 @@ const SuccessStep = ({ data, onClose }: SuccessStepProps) => {
         </div>
         
         <div className="space-y-2">
-          <h2 className="text-3xl font-playfair font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+          <h2 className="text-display-xl text-brand-success">
             Setup Complete!
           </h2>
           <p className="text-lg text-muted-foreground font-inter">

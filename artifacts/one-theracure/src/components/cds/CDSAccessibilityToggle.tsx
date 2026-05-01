@@ -12,7 +12,7 @@ const CDSAccessibilityToggle = ({ enabled, onToggle }: CDSAccessibilityTogglePro
       size="sm"
       variant={enabled ? "default" : "outline"}
       onClick={() => onToggle(!enabled)}
-      className={`gap-1.5 text-sm ${enabled ? "bg-violet-700 hover:bg-violet-800" : ""}`}
+      className={`gap-1.5 text-sm ${enabled ? "bg-brand-navy hover:bg-brand-navy/90" : ""}`}
       title={enabled ? "Disable large text & high contrast" : "Enable large text & high contrast for easier reading"}
     >
       {enabled ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}

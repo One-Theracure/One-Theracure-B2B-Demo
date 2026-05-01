@@ -81,7 +81,7 @@ const CDSMedicationAssist = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Medication Assist</h2>
+        <h2 className="text-display-md text-brand-navy">Medication Assist</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">
           AI-suggested medications based on clinical context. Always verify before prescribing.
         </p>
@@ -155,7 +155,7 @@ const CDSMedicationAssist = () => {
             <Button
               onClick={handleGenerate}
               disabled={loading || !inputs.chiefComplaint.trim()}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 gap-2 text-base"
+              className="w-full bg-brand-trust hover:bg-brand-navy gap-2 text-base"
             >
               {loading ? (
                 <>
@@ -176,8 +176,8 @@ const CDSMedicationAssist = () => {
           {suggestions.length === 0 && !loading && (
             <Card className="border-dashed border-2">
               <CardContent className="py-12 text-center space-y-3">
-                <div className="w-14 h-14 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
-                  <Pill className="h-7 w-7 text-violet-500 dark:text-violet-400" />
+                <div className="w-14 h-14 rounded-full bg-brand-soft flex items-center justify-center mx-auto">
+                  <Pill className="h-7 w-7 text-brand-trust" />
                 </div>
                 <p className="text-sm text-muted-foreground">
                   Enter clinical context and click "Get Suggestions" to see medication recommendations.

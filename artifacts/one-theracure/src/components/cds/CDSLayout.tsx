@@ -54,7 +54,7 @@ const CDSLayout = () => {
       <div className="bg-card/90 backdrop-blur-xl rounded-2xl border border-border/50 shadow-xl p-4 sm:p-5">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-xl font-bold font-playfair bg-gradient-to-r from-violet-900 to-purple-900 dark:from-violet-300 dark:to-purple-300 bg-clip-text text-transparent leading-tight">
+            <h2 className="text-display-md text-brand-navy">
               Clinical Workspace
             </h2>
             <p className="text-muted-foreground font-inter text-xs mt-0.5">

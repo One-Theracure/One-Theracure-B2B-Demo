@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, LineChart, Line, PieChart as RechartsPieChart, Pie, Cell, Legend } from "recharts";
+import { chartColor, chartPalette } from "@/lib/chartTheme";
 
 const monthlyVisits = [
   { month: "Jan", visits: 45, newPatients: 12 },
@@ -22,11 +23,11 @@ const dailyPerformance = [
 ];
 
 const specialtyDistribution = [
-  { name: "General Medicine", value: 35, color: "#3B82F6" },
-  { name: "Gynecology", value: 25, color: "#EF4444" },
-  { name: "Cardiology", value: 20, color: "#10B981" },
-  { name: "Oncology", value: 12, color: "#F59E0B" },
-  { name: "Orthopedics", value: 8, color: "#8B5CF6" },
+  { name: "General Medicine", value: 35 },
+  { name: "Gynecology",       value: 25 },
+  { name: "Cardiology",       value: 20 },
+  { name: "Oncology",         value: 12 },
+  { name: "Orthopedics",      value: 8  },
 ];
 
 const topDiagnoses = [
@@ -54,8 +55,8 @@ const ChartsSection = () => {
                 <YAxis tick={{ fontSize: 13 }} className="fill-muted-foreground" />
                 <Tooltip />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
-                <Bar dataKey="visits" fill="#3B82F6" name="Total Visits" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="newPatients" fill="#10B981" name="New Patients" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="visits" fill={chartColor("trust")} name="Total Visits" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="newPatients" fill={chartColor("success")} name="New Patients" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -74,8 +75,8 @@ const ChartsSection = () => {
                 <YAxis tick={{ fontSize: 13 }} className="fill-muted-foreground" />
                 <Tooltip />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
-                <Line type="monotone" dataKey="avgTime" stroke="#EF4444" name="Avg Time (min)" strokeWidth={2} dot={{ r: 3 }} />
-                <Line type="monotone" dataKey="visits" stroke="#8B5CF6" name="Visits" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="avgTime" stroke={chartColor("warning")} name="Avg Time (min)" strokeWidth={2} dot={{ r: 3 }} />
+                <Line type="monotone" dataKey="visits" stroke={chartColor("trust")} name="Visits" strokeWidth={2} dot={{ r: 3 }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -99,7 +100,10 @@ const ChartsSection = () => {
                   dataKey="value"
                 >
                   {specialtyDistribution.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={chartColor(chartPalette[index % chartPalette.length])}
+                    />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => `${value}%`} />

@@ -56,7 +56,7 @@ const AddUserDialog = ({ onAddUser }: AddUserDialogProps) => {
   return (
     <Dialog open={showAddUser} onOpenChange={setShowAddUser}>
       <DialogTrigger asChild>
-        <Button className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+        <Button className="bg-brand-trust hover:bg-brand-navy text-white">
           <Plus className="h-4 w-4 mr-2" />
           Add User
         </Button>

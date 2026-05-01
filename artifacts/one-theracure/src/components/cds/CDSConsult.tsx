@@ -44,7 +44,7 @@ const CDSConsult = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Ask Questions</h2>
+        <h2 className="text-display-md text-brand-navy">Ask Questions</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">Ask any clinical question. Get evidence-based answers with citations.</p>
       </div>
       <CDSSafetyBanner />

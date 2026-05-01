@@ -7,25 +7,40 @@
 
 @layer base {
   :root {
+    /* ─────────────────────────────────────────────────────────────
+       One TheraCure — Brand Foundation (Batch 1)
+       Canonical palette. Use these via the `brand-*` Tailwind colors
+       (e.g. bg-brand-trust, text-brand-navy) or via hsl(var(--brand-*)).
+       Red is reserved for clinical emergency only — do NOT use for
+       cancellations, inactive states, or destructive UI affordance.
+       ───────────────────────────────────────────────────────────── */
+    --brand-navy:    218 53% 20%;   /* #172B4D — Deep Navy (headings, primary text) */
+    --brand-trust:   214 100% 40%;  /* #0052CC — Trust Blue (primary CTA, active) */
+    --brand-sky:     214 100% 57%;  /* #2684FF — Sky Blue (in-progress, focus) */
+    --brand-soft:    213 100% 96%;  /* #EAF2FF — Soft Blue (light surface wash) */
+    --brand-slate:   217 25% 35%;   /* #42526E — Slate (secondary text, cancelled) */
+    --brand-success: 146 67% 37%;   /* #1F9D55 — Success / Arrived dot */
+    --brand-warning: 28 87% 62%;    /* #F2994A — Warning / No-show */
+
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 218 53% 20%;
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 218 53% 20%;
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 218 53% 20%;
+    --primary: 214 100% 40%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 213 100% 96%;
+    --secondary-foreground: 218 53% 20%;
     --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted-foreground: 217 25% 35%;
+    --accent: 213 100% 96%;
+    --accent-foreground: 218 53% 20%;
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 214 100% 40%;
     --radius: 0.5rem;
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -38,25 +53,25 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 218 53% 8%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 218 53% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 218 53% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary: 214 100% 57%;            /* Sky Blue — brighter for dark surfaces */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 218 40% 18%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
+    --muted: 218 40% 18%;
+    --muted-foreground: 215 20.2% 75%;
+    --accent: 218 40% 18%;
     --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 45%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 218 40% 22%;
+    --input: 218 40% 22%;
+    --ring: 214 100% 57%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -82,18 +97,23 @@
     font-optical-sizing: auto;
   }
 
-  /* Premium Typography System */
-  h1, h2 {
-    @apply font-playfair;
+  /* ─────────────────────────────────────────────────────────────
+     Typography (Batch 2 — Airbnb Discipline).
+     One type family (Inter), modest weights. Display headlines sit
+     at 600, never 700+. The system trusts whitespace and imagery
+     for visual heft, not typographic muscle.
+     Playfair Display is intentionally NOT applied to h1/h2 anymore;
+     a callsite that genuinely needs an editorial serif can opt in
+     with `font-playfair`.
+     ───────────────────────────────────────────────────────────── */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-inter;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
+    font-weight: 600;
     font-optical-sizing: auto;
   }
-  h3, h4, h5, h6 {
-    @apply font-inter;
-    font-feature-settings: "kern" 1, "liga" 1;
-    letter-spacing: -0.01em;
-  }
+  h1 { letter-spacing: -0.02em; }
 
   .font-luxury {
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
@@ -101,35 +121,31 @@
     font-optical-sizing: auto;
   }
 
-  /* Premium Visual Effects */
+  /* ─────────────────────────────────────────────────────────────
+     Visual Effects — Airbnb caps elevation at one soft halo.
+     `.glass-effect` keeps the blur for sticky nav use, but its
+     shadow collapses to the single Airbnb tier. `.luxury-shadow`
+     is rebound to the same single tier so any stale callsites
+     don't render the old 3-layer drop-shadow.
+     ───────────────────────────────────────────────────────────── */
   .glass-effect {
     background: hsl(var(--background) / 0.95);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
-    border: 1px solid hsl(var(--border) / 0.3);
-    box-shadow: 
-      0 8px 32px hsl(var(--foreground) / 0.08),
-      0 4px 16px hsl(var(--foreground) / 0.04),
-      inset 0 1px 0 hsl(var(--background) / 0.6);
+    border-bottom: 1px solid hsl(var(--border) / 0.6);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   }
 
   .luxury-shadow {
-    box-shadow: 
-      0 20px 25px -5px hsl(var(--foreground) / 0.08),
-      0 10px 10px -5px hsl(var(--foreground) / 0.04),
-      0 0 0 1px hsl(var(--background) / 0.05) inset,
-      0 2px 4px hsl(var(--foreground) / 0.02);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.06);
   }
 
   .premium-gradient {
-    background: linear-gradient(135deg, 
-      hsl(var(--background) / 0.98) 0%, 
-      hsl(var(--muted) / 0.95) 50%,
-      hsl(var(--muted) / 0.92) 100%
-    );
+    background: hsl(var(--background));
   }
 
-  /* Enhanced Animations */
+  /* Animations kept (cheap, on-brand) but transform-on-hover removed.
+     Airbnb shifts background, not position. */
   .animate-fade-in {
     animation: fadeIn 0.4s ease-out forwards;
   }
@@ -138,65 +154,59 @@
     animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
+  /* Hover halo uses the SAME single Airbnb tier as resting elevation.
+     There is no second/third tier — the hover state is a state change
+     applied to the one halo, not a stronger shadow. */
   .hover-lift {
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: box-shadow 0.2s ease-out;
   }
-
   .hover-lift:hover {
-    transform: translateY(-4px);
-    box-shadow: 
-      0 25px 50px -12px rgba(0, 0, 0, 0.15),
-      0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.06);
   }
 
   .hover-scale {
-    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: background-color 0.15s ease-out;
   }
-
   .hover-scale:hover {
-    transform: scale(1.02);
+    background-color: hsl(var(--brand-soft));
   }
 
-  /* Premium Button Styles */
+  /* ─────────────────────────────────────────────────────────────
+     Brand CTA — `.btn-luxury` (preserved class name, ~80 callers).
+     Airbnb discipline: solid voltage, NO drop shadow, NO transform,
+     8px radius, modest weight. Hover darkens to Deep Navy.
+     ───────────────────────────────────────────────────────────── */
   .btn-luxury {
-    @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700;
     @apply text-white font-inter font-medium;
-    @apply shadow-lg hover:shadow-2xl;
-    @apply transition-all duration-300 ease-out;
-    @apply border-0 rounded-xl;
-    transform: translateY(0);
-    box-shadow: 
-      0 10px 15px -3px rgba(59, 130, 246, 0.3),
-      0 4px 6px -2px rgba(59, 130, 246, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    @apply transition-colors duration-150 ease-out;
+    @apply border-0 rounded-airbnb-sm;
+    background-color: hsl(var(--brand-trust));
   }
 
   .btn-luxury:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 20px 25px -5px rgba(59, 130, 246, 0.4),
-      0 10px 10px -5px rgba(59, 130, 246, 0.2),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    background-color: hsl(var(--brand-navy));
   }
 
-  /* Premium Card Styles */
+  .btn-luxury:focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 3px hsl(var(--brand-sky) / 0.35),
+      0 0 0 1px hsl(var(--brand-trust));
+  }
+
+  /* ─────────────────────────────────────────────────────────────
+     Card surfaces — flat by default (border for definition, no
+     shadow), single Airbnb halo on hover. 14px radius matches
+     Airbnb property cards.
+     ───────────────────────────────────────────────────────────── */
   .luxury-card {
-    @apply bg-card/95 backdrop-blur-xl;
-    @apply border border-border/60;
-    @apply rounded-xl;
-    @apply transition-all duration-300;
-    box-shadow: 
-      0 4px 6px -1px hsl(var(--foreground) / 0.05),
-      0 2px 4px -1px hsl(var(--foreground) / 0.03),
-      inset 0 1px 0 hsl(var(--background) / 0.7);
+    @apply bg-card border border-border/60;
+    @apply rounded-airbnb-md;
+    @apply transition-shadow duration-200;
   }
 
   .luxury-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-      0 20px 25px -5px hsl(var(--foreground) / 0.1),
-      0 10px 10px -5px hsl(var(--foreground) / 0.04),
-      inset 0 1px 0 hsl(var(--background) / 0.8);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 6px 16px rgba(0, 0, 0, 0.06);
   }
 }
 
@@ -235,21 +245,21 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  background: hsl(var(--brand-trust) / 0.55);
   border-radius: 8px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #2563eb, #4f46e5);
+  background: hsl(var(--brand-navy) / 0.7);
 }
 
 /* Focus Styles for Accessibility */
 .focus-luxury:focus {
   outline: none;
-  box-shadow: 
-    0 0 0 3px rgba(59, 130, 246, 0.1),
-    0 0 0 1px rgba(59, 130, 246, 0.3);
+  box-shadow:
+    0 0 0 3px hsl(var(--brand-sky) / 0.15),
+    0 0 0 1px hsl(var(--brand-trust) / 0.5);
 }
 
 /* Premium Loading States */

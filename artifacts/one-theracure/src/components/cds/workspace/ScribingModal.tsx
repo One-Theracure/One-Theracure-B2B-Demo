@@ -370,7 +370,7 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
             <div className="px-4 py-2.5 bg-muted/30 border-b border-border/60 flex items-center justify-between">
               <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">AI Insights</span>
               {reviewMode && hasContent && (
-                <span className="text-xs text-violet-600 dark:text-violet-400">
+                <span className="text-xs text-brand-trust">
                   {approvedSections.size}/{SECTION_KEYS.filter((k) => structured?.[k]?.content).length} approved
                 </span>
               )}
@@ -522,7 +522,7 @@ const ScribingModal = ({ open, onOpenChange, onComplete, patientId = "demo", enc
               </Button>
               <Button
                 onClick={handleInsert}
-                className="gap-2 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white px-6"
+                className="gap-2 bg-brand-trust hover:bg-brand-navy text-white px-6"
                 size="default"
               >
                 <FileText className="h-4 w-4" />

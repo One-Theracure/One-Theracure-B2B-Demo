@@ -26,7 +26,7 @@ const sourceLabels: Record<DocumentVersion["source"], string> = {
 const sourceColors: Record<DocumentVersion["source"], string> = {
   autosave: "bg-primary/10 text-primary",
   manual: "bg-muted text-muted-foreground",
-  "ai-generated": "bg-purple-500/10 text-purple-700 dark:text-purple-300",
+  "ai-generated": "bg-brand-soft text-brand-trust",
   restore: "bg-amber-500/10 text-amber-700 dark:text-amber-300",
 };
 

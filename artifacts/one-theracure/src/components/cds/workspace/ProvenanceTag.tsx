@@ -19,7 +19,7 @@ const config: Record<
   "ai-generated": {
     label: "AI-generated",
     icon: Bot,
-    colors: "bg-purple-500/10 text-purple-700 border-purple-500/20 dark:text-purple-300",
+    colors: "bg-brand-soft text-brand-navy border-brand-trust/20",
   },
   "from-transcript": {
     label: "From transcript",

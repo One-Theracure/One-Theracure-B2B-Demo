@@ -367,7 +367,7 @@ const CDSInputPanel = ({
         <Button
           onClick={onGenerate}
           disabled={loading || !inputs.chiefComplaint.trim()}
-          className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 gap-2 text-base"
+          className="w-full bg-brand-trust hover:bg-brand-navy gap-2 text-base"
         >
           {loading ? (
             <>

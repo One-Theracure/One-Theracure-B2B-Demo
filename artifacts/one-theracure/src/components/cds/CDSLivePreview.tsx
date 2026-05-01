@@ -11,7 +11,7 @@ interface CDSLivePreviewProps {
 
 const Section = ({ title, content }: { title: string; content: string }) => (
   <div>
-    <h3 className="text-sm font-semibold font-playfair text-primary mb-1">{title}</h3>
+    <h3 className="text-title-sm text-brand-trust mb-1">{title}</h3>
     <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{content}</p>
   </div>
 );
@@ -40,7 +40,7 @@ const CDSLivePreview = ({ inputs, generatedContent }: CDSLivePreviewProps) => {
     return lines.map((line, i) => {
       if (line.startsWith("## "))
         return (
-          <h2 key={i} className="text-base font-bold font-playfair text-foreground mt-4 mb-2">
+          <h2 key={i} className="text-title-md text-foreground mt-4 mb-2">
             {line.slice(3)}
           </h2>
         );
@@ -188,13 +188,13 @@ const CDSLivePreview = ({ inputs, generatedContent }: CDSLivePreviewProps) => {
                 <Separator className="my-4" />
                 <div className="space-y-3">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-purple-500 dark:text-purple-400" />
-                    <span className="text-sm font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wide">
+                    <Sparkles className="h-4 w-4 text-brand-trust" />
+                    <span className="text-sm font-semibold text-brand-trust uppercase tracking-wide">
                       AI-Generated
                     </span>
-                    <div className="flex-1 border-t border-purple-500/20" />
+                    <div className="flex-1 border-t border-brand-trust/20" />
                   </div>
-                  <div className="prose prose-sm max-w-none bg-purple-500/5 rounded-lg p-3 border border-purple-500/10">
+                  <div className="prose prose-sm max-w-none bg-brand-soft/60 rounded-lg p-3 border border-brand-trust/10">
                     {renderGeneratedContent(generatedContent)}
                   </div>
                 </div>

@@ -52,7 +52,7 @@ const UserRoleManagement = () => {
 
   return (
     <div className="space-y-6">
-      <div className="bg-card backdrop-blur-xl rounded-2xl border border-border/50 shadow-xl p-6 sm:p-8">
+      <div className="bg-card rounded-airbnb-md border border-border p-6 sm:p-8">
         <h2 className="text-2xl sm:text-3xl font-bold font-playfair text-foreground mb-2">
           User Roles & Permissions
         </h2>

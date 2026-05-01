@@ -123,16 +123,30 @@ export interface Appointment {
   tags?: string[]; // specialty-specific tags like "Cycle Day 7", "RCT Phase 2"
 }
 
+/**
+ * Appointment status palette — Brand Foundation Batch 1 (issue 6.2).
+ *
+ * Booked / Confirmed → Trust Blue (primary scheduled state).
+ * Arrived           → Soft-Blue background with a Success-green dot (the
+ *                     dot is rendered alongside the label in DailySchedule).
+ * In-Consult / In-Procedure → Sky Blue (live, in-progress).
+ * Completed         → Success green.
+ * No-Show           → Warning amber (NOT red — no-show is operational, not clinical).
+ * Cancelled         → Slate with strikethrough (administrative, not alarming).
+ * Rescheduled       → Slate (calm, neutral).
+ *
+ * Red is reserved for clinical emergency surfaces only.
+ */
 export const STATUS_CONFIG: Record<AppointmentStatus, { label: string; color: string }> = {
-  booked: { label: "Booked", color: "bg-blue-100 text-blue-700 border-blue-200" },
-  confirmed: { label: "Confirmed", color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
-  arrived: { label: "Arrived", color: "bg-cyan-100 text-cyan-700 border-cyan-200" },
-  "in-consult": { label: "In Consult", color: "bg-violet-100 text-violet-700 border-violet-200" },
-  "in-procedure": { label: "In Procedure", color: "bg-purple-100 text-purple-700 border-purple-200" },
-  completed: { label: "Completed", color: "bg-emerald-100 text-emerald-700 border-emerald-200" },
-  "no-show": { label: "No Show", color: "bg-red-100 text-red-700 border-red-200" },
-  cancelled: { label: "Cancelled", color: "bg-gray-100 text-gray-500 border-gray-200" },
-  rescheduled: { label: "Rescheduled", color: "bg-orange-100 text-orange-700 border-orange-200" },
+  booked:         { label: "Booked",       color: "bg-brand-soft text-brand-trust border-brand-trust/25" },
+  confirmed:      { label: "Confirmed",    color: "bg-brand-trust/10 text-brand-trust border-brand-trust/30" },
+  arrived:        { label: "● Arrived",    color: "bg-brand-soft text-brand-success border-brand-success/30" },
+  "in-consult":   { label: "In Consult",   color: "bg-brand-sky/15 text-brand-trust border-brand-sky/40" },
+  "in-procedure": { label: "In Procedure", color: "bg-brand-sky/15 text-brand-trust border-brand-sky/40" },
+  completed:      { label: "Completed",    color: "bg-brand-success/10 text-brand-success border-brand-success/30" },
+  "no-show":      { label: "No Show",      color: "bg-brand-warning/15 text-brand-warning border-brand-warning/30" },
+  cancelled:      { label: "Cancelled",    color: "bg-brand-slate/10 text-brand-slate border-brand-slate/20 line-through" },
+  rescheduled:    { label: "Rescheduled",  color: "bg-brand-slate/10 text-brand-slate border-brand-slate/20" },
 };
 
 export interface FollowUpRule {

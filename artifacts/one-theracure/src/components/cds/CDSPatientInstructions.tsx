@@ -79,7 +79,7 @@ const CDSPatientInstructions = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Patient Instructions</h2>
+        <h2 className="text-display-md text-brand-navy">Patient Instructions</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">
           Generate plain-language care instructions for patients to take home.
         </p>
@@ -147,7 +147,7 @@ const CDSPatientInstructions = () => {
             <Button
               onClick={handleGenerate}
               disabled={loading || !inputs.chiefComplaint.trim()}
-              className="w-full bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 gap-2 text-base"
+              className="w-full bg-brand-trust hover:bg-brand-navy gap-2 text-base"
             >
               {loading ? (
                 <>
@@ -168,8 +168,8 @@ const CDSPatientInstructions = () => {
           {!output && !loading && (
             <Card className="border-dashed border-2">
               <CardContent className="py-12 text-center space-y-3">
-                <div className="w-14 h-14 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
-                  <BookOpen className="h-7 w-7 text-violet-500" />
+                <div className="w-14 h-14 rounded-full bg-brand-soft flex items-center justify-center mx-auto">
+                  <BookOpen className="h-7 w-7 text-brand-trust" />
                 </div>
                  <p className="text-sm text-muted-foreground">
                   Enter a diagnosis and click "Generate Instructions" to create patient-friendly care instructions.

@@ -89,7 +89,7 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-playfair font-bold bg-gradient-to-r from-blue-900 to-indigo-900 bg-clip-text text-transparent">
+        <h2 className="text-display-lg text-brand-navy">
           Doctor Profile & Clinic Details
         </h2>
         <p className="text-muted-foreground font-inter mt-2">
@@ -103,7 +103,7 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
           <Card className="luxury-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-blue-600" />
+                <User className="h-5 w-5 text-brand-trust" />
                 <span>Doctor Profile</span>
               </CardTitle>
             </CardHeader>
@@ -194,7 +194,7 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
           <Card className="luxury-card">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <MapPin className="h-5 w-5 text-blue-600" />
+                <MapPin className="h-5 w-5 text-brand-trust" />
                 <span>Clinic Information</span>
               </CardTitle>
             </CardHeader>
@@ -316,7 +316,7 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-purple-600" />
+                  <Clock className="h-5 w-5 text-brand-trust" />
                   <span>Working Hours</span>
                 </div>
                 <Button 
@@ -368,24 +368,24 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
 
         {/* Enhanced Live Preview */}
         <div className="lg:col-span-1">
-          <Card className="luxury-card sticky top-4 border-2 border-blue-200">
-            <CardHeader className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-t-lg">
+          <Card className="luxury-card sticky top-4 border-brand-trust/20">
+            <CardHeader className="bg-brand-soft rounded-t-airbnb-md border-b border-brand-trust/15">
               <div className="flex items-center space-x-2">
-                <Stethoscope className="h-5 w-5 text-blue-600" />
-                <CardTitle className="text-lg text-blue-700 dark:text-blue-300">Live Preview</CardTitle>
+                <Stethoscope className="h-5 w-5 text-brand-trust" />
+                <CardTitle className="text-display-sm text-brand-navy">Live Preview</CardTitle>
               </div>
-              <p className="text-sm text-blue-600 dark:text-blue-400">How patients will see your profile</p>
+              <p className="text-sm text-brand-trust">How patients will see your profile</p>
             </CardHeader>
             <CardContent className="p-4 space-y-4">
               <div className="text-center space-y-3">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full mx-auto flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                <div className="w-20 h-20 bg-brand-trust rounded-airbnb-pill mx-auto flex items-center justify-center text-white text-display-md">
                   {data.fullName ? data.fullName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) : 'DR'}
                 </div>
                 <div>
-                  <h3 className="font-bold text-xl text-foreground">
+                  <h3 className="text-display-sm text-foreground">
                     {data.fullName || 'Dr. Your Name'}
                   </h3>
-                  <p className="text-blue-600 font-semibold text-lg">
+                  <p className="text-brand-trust font-semibold text-lg">
                     {data.specialty || 'Your Specialty'}
                   </p>
                   {data.subSpecialty && (
@@ -454,9 +454,9 @@ const ClinicDetailsStep = ({ data, updateData, onNext, onPrev }: ClinicDetailsSt
                 )}
 
                 {data.aboutDoctor && (
-                  <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                    <h4 className="font-semibold text-blue-700 dark:text-blue-400 mb-1">About</h4>
-                    <p className="text-xs text-blue-600 dark:text-blue-300 leading-relaxed">
+                  <div className="p-3 bg-brand-soft rounded-airbnb-sm border border-brand-trust/20">
+                    <h4 className="font-semibold text-brand-navy mb-1">About</h4>
+                    <p className="text-xs text-brand-trust leading-relaxed">
                       {data.aboutDoctor.slice(0, 120)}
                       {data.aboutDoctor.length > 120 && '...'}
                     </p>

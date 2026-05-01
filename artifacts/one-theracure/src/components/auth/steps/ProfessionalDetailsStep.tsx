@@ -59,7 +59,7 @@ const ProfessionalDetailsStep = ({ data, updateData, onNext, onPrev }: Professio
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-playfair font-bold bg-gradient-to-r from-blue-900 to-indigo-900 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+        <h2 className="text-display-lg text-brand-navy">
           Professional Details
         </h2>
         <p className="text-muted-foreground font-inter mt-2">

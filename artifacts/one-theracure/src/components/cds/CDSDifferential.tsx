@@ -103,7 +103,7 @@ const CDSDifferential = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Differential Diagnosis</h2>
+        <h2 className="text-display-md text-brand-navy">Differential Diagnosis</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">Structured, tiered differential with supporting evidence and next steps.</p>
       </div>
       <CDSSafetyBanner />

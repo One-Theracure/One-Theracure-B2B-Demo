@@ -57,7 +57,7 @@ const CATEGORY_COLORS: Record<EntityCategory, string> = {
   problem: "bg-red-500/10 text-red-700 dark:text-red-300 border-red-500/20",
   medication: "bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20",
   allergy: "bg-orange-500/10 text-orange-700 dark:text-orange-300 border-orange-500/20",
-  lab: "bg-purple-500/10 text-purple-700 dark:text-purple-300 border-purple-500/20",
+  lab: "bg-brand-soft text-brand-trust border-brand-trust/20",
   imaging: "bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border-cyan-500/20",
   procedure: "bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20",
   vital: "bg-pink-500/10 text-pink-700 dark:text-pink-300 border-pink-500/20",

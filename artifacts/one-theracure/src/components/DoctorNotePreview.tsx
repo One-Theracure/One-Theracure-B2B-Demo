@@ -103,7 +103,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
         <div className="flex items-center justify-between">
           <div className="flex-1"></div>
           <div className="text-center flex-1">
-            <h1 className="text-2xl font-bold font-playfair bg-gradient-to-r from-blue-900 to-indigo-900 bg-clip-text text-transparent mb-2">{clinicName}</h1>
+            <h1 className="text-display-lg text-brand-navy mb-2">{clinicName}</h1>
             <h2 className="text-lg font-semibold font-sf-pro text-blue-700 mb-1 tracking-wide">OPD VISIT SUMMARY / INITIAL ASSESSMENT</h2>
             <p className="text-sm text-slate-600 font-inter">{clinicAddress}</p>
             <p className="text-sm text-slate-600 mt-1 font-inter">Visit Date & Time: {formatDate(formData.visitDate)} • {getCurrentTime()} • IST</p>
@@ -121,7 +121,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       </div>
 
       <div>
-        <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">1. Administrative Data</h2>
+        <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">1. Administrative Data</h2>
         <div className="grid grid-cols-2 gap-3 text-xs bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-lg border shadow-inner">
           <div className="bg-white p-2 rounded font-sf-pro shadow-sm"><strong className="font-playfair">MR / Reg No.</strong> {formData.mrn || "To be assigned"}</div>
           <div className="bg-white p-2 rounded font-sf-pro shadow-sm"><strong className="font-playfair">CR No.</strong> {formData.mrn || "To be assigned"}</div>
@@ -139,7 +139,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       <Separator className="my-4" />
 
       <div>
-        <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">2. Presenting Information</h2>
+        <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">2. Presenting Information</h2>
         <div className="space-y-3 bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-lg shadow-inner">
           <div className="bg-white p-3 rounded font-sf-pro shadow-sm"><strong className="font-playfair">Chief Complaint(s):</strong> {formData.chiefComplaint || "To be documented during visit"}</div>
           <div className="bg-white p-3 rounded font-sf-pro shadow-sm">
@@ -153,7 +153,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
 
       {/* Personal History Section */}
       <div>
-        <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">3. Personal History</h2>
+        <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">3. Personal History</h2>
         {hasPersonalHistory ? (
           <div className="space-y-3 bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-lg shadow-inner">
             {formData.pastMedicalHistory && (
@@ -215,7 +215,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       <Separator className="my-4" />
 
       <div>
-        <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">4. Symptoms & Signs</h2>
+        <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">4. Symptoms & Signs</h2>
         <div className="bg-gray-50 p-4 rounded-lg">
           <div className="grid grid-cols-3 gap-2 text-xs mb-3">
             <div className="bg-blue-100 p-2 rounded font-bold">System</div>
@@ -256,7 +256,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       {hasInvestigations && (
         <>
           <div>
-            <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">5. Investigations Summary</h2>
+            <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">5. Investigations Summary</h2>
             <div className="bg-gray-50 p-4 rounded-lg">
               <div className="grid grid-cols-5 gap-2 text-xs">
                 <div className="bg-blue-100 p-2 rounded font-bold">Date</div>
@@ -304,7 +304,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       {hasTreatmentPlanning && (
         <>
           <div>
-            <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">
+            <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">
               {hasInvestigations ? "6" : "5"}. Treatment Planning
             </h2>
             <div className="space-y-4 bg-gray-50 p-4 rounded-lg">
@@ -384,7 +384,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
       {!hasTreatmentPlanning && (
         <>
           <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
-            <h2 className="text-md font-bold font-playfair text-yellow-700 mb-2">
+            <h2 className="text-base font-semibold text-brand-warning mb-2">
               {hasInvestigations ? "6" : "5"}. Treatment Planning
             </h2>
             <p className="text-yellow-600 text-sm">Treatment planning and clinical decisions to be documented during consultation</p>
@@ -395,7 +395,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
 
       {formData.icdCode && (
         <div>
-          <h2 className="text-md font-bold font-playfair text-blue-700 mb-3 bg-gradient-to-r from-blue-50 to-indigo-50 p-2 rounded-lg border border-blue-100">
+          <h2 className="text-base font-semibold text-brand-navy mb-3 bg-brand-soft p-2 rounded-airbnb-sm border border-brand-trust/15">
             {hasInvestigations ? "7" : hasTreatmentPlanning ? "7" : "6"}. Coding & Billing
           </h2>
           <div className="bg-gray-50 p-4 rounded-lg">
@@ -421,7 +421,7 @@ const DoctorNotePreview = ({ formData, profileData }: DoctorNotePreviewProps) =>
               className="h-6 object-contain"
             />
           </div>
-          <p className="text-sm font-semibold font-playfair bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+          <p className="text-sm font-semibold text-brand-trust">
             Powered by One TheraCure | onetheracure.com
           </p>
           <p className="text-xs text-gray-600 font-sf-pro">

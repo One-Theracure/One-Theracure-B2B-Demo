@@ -220,8 +220,8 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
       <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-3 py-10">
-            <div className="w-12 h-12 rounded-2xl bg-violet-500/10 flex items-center justify-center">
-              <Sparkles className="h-6 w-6 text-violet-500 dark:text-violet-400" />
+            <div className="w-12 h-12 rounded-2xl bg-brand-soft flex items-center justify-center">
+              <Sparkles className="h-6 w-6 text-brand-trust" />
             </div>
             <div className="space-y-1">
               <p className="text-sm font-semibold text-foreground">
@@ -242,8 +242,8 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
             className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             {msg.role === "ai" && (
-              <div className="w-7 h-7 rounded-full bg-violet-500/10 flex items-center justify-center flex-shrink-0 mt-1">
-                <Sparkles className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400" />
+              <div className="w-7 h-7 rounded-full bg-brand-soft flex items-center justify-center flex-shrink-0 mt-1">
+                <Sparkles className="h-3.5 w-3.5 text-brand-trust" />
               </div>
             )}
             <div
@@ -268,8 +268,8 @@ const ClinicalChat = ({ patientInputs, onDocumentGenerated, onUploadContext }: C
 
         {loading && (
           <div className="flex gap-2.5 justify-start">
-            <div className="w-7 h-7 rounded-full bg-violet-500/10 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="h-3.5 w-3.5 text-violet-600 dark:text-violet-400 animate-pulse" />
+            <div className="w-7 h-7 rounded-full bg-brand-soft flex items-center justify-center flex-shrink-0">
+              <Sparkles className="h-3.5 w-3.5 text-brand-trust animate-pulse" />
             </div>
             <div className="bg-muted/60 rounded-2xl rounded-bl-sm px-4 py-2.5 border border-border/60">
               <div className="flex gap-1">

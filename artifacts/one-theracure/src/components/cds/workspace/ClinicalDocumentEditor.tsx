@@ -167,7 +167,7 @@ const ClinicalDocumentEditor = ({
             <Button
               variant="ghost"
               size="sm"
-              className="h-7 px-2 text-xs gap-1.5 text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 hover:bg-violet-500/10"
+              className="h-7 px-2 text-xs gap-1.5 text-brand-trust hover:text-brand-navy dark:hover:text-brand-trust hover:bg-brand-soft"
               onClick={onReviewCodes}
               title="Review coding suggestions"
             >

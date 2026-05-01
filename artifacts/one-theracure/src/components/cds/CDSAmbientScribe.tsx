@@ -228,7 +228,7 @@ const CDSAmbientScribe = () => {
     <div className="space-y-4">
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-xl font-bold font-playfair">Ambient Scribe</h2>
+          <h2 className="text-display-md text-brand-navy">Ambient Scribe</h2>
           <p className="text-sm text-muted-foreground font-inter mt-0.5">
             Real-time transcription with multi-speaker attribution and live clinical insights.
           </p>
@@ -249,7 +249,7 @@ const CDSAmbientScribe = () => {
           <Button
             onClick={isListening ? stopListening : startListening}
             variant={isListening ? "destructive" : "default"}
-            className={`gap-2 ${!isListening ? "bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700" : ""}`}
+            className={`gap-2 ${!isListening ? "bg-brand-trust hover:bg-brand-navy" : ""}`}
           >
             {isListening ? <><MicOff className="h-4 w-4" /> Stop Scribe</> : <><Mic className="h-4 w-4" /> Start Scribe</>}
           </Button>
@@ -273,7 +273,7 @@ const CDSAmbientScribe = () => {
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <CardTitle className="text-sm flex items-center gap-2">
-                  <Mic className="h-4 w-4 text-violet-500" />
+                  <Mic className="h-4 w-4 text-brand-trust" />
                   Live Transcript
                   {isListening && <Badge className="bg-destructive/10 text-destructive text-sm animate-pulse">Recording</Badge>}
                 </CardTitle>
@@ -323,7 +323,7 @@ const CDSAmbientScribe = () => {
               <div className="space-y-1">
                 <Label className="text-sm">Chief Complaint (optional override)</Label>
                 <input
-                  className="w-full border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-400"
+                  className="w-full border border-border rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-trust"
                   placeholder="e.g. Chest pain 2 days"
                   value={chiefComplaint}
                   onChange={(e) => setChiefComplaint(e.target.value)}
@@ -434,7 +434,7 @@ const CDSAmbientScribe = () => {
                   </SelectContent>
                 </Select>
               </div>
-              <Button onClick={handleGenerateNote} disabled={noteLoading} className="w-full bg-gradient-to-r from-violet-600 to-purple-600 gap-2 text-base">
+              <Button onClick={handleGenerateNote} disabled={noteLoading} className="w-full bg-brand-trust gap-2 text-base">
                 {noteLoading
                   ? <><div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Drafting Note...</>
                   : <><FileText className="h-4 w-4" /> Generate {NOTE_TYPES.find((n) => n.mode === selectedNoteType)?.label}</>}
@@ -525,8 +525,8 @@ const CDSAmbientScribe = () => {
                       <CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground uppercase tracking-wide">Preliminary Next Steps</CardTitle></CardHeader>
                       <CardContent className="space-y-1.5">
                         {insights.nextSteps.map((s, i) => (
-                           <div key={i} className="flex gap-2 text-sm p-2 bg-purple-500/5 rounded-lg">
-                             <ArrowRight className="h-3 w-3 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-0.5" />
+                           <div key={i} className="flex gap-2 text-sm p-2 bg-brand-soft/60 rounded-lg">
+                             <ArrowRight className="h-3 w-3 text-brand-trust flex-shrink-0 mt-0.5" />
                             <span>{s}</span>
                           </div>
                         ))}
@@ -537,8 +537,8 @@ const CDSAmbientScribe = () => {
               ) : (
                 <Card className="border-dashed border-2">
                   <CardContent className="py-12 text-center space-y-3">
-                     <div className="w-14 h-14 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
-                      <Activity className="h-7 w-7 text-violet-500" />
+                     <div className="w-14 h-14 rounded-full bg-brand-soft flex items-center justify-center mx-auto">
+                      <Activity className="h-7 w-7 text-brand-trust" />
                     </div>
                      <p className="text-sm text-muted-foreground">
                        Start recording and live insights will appear here automatically every 20 seconds.
@@ -567,8 +567,8 @@ const CDSAmbientScribe = () => {
               ) : (
                 <Card className="border-dashed border-2">
                   <CardContent className="py-12 text-center space-y-3">
-                    <div className="w-14 h-14 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
-                      <FileText className="h-7 w-7 text-violet-400" />
+                    <div className="w-14 h-14 rounded-full bg-brand-soft flex items-center justify-center mx-auto">
+                      <FileText className="h-7 w-7 text-brand-trust" />
                     </div>
                      <p className="text-sm text-muted-foreground">
                        No note generated yet. Record a transcript and click <strong>Generate</strong> to create a clinical note.

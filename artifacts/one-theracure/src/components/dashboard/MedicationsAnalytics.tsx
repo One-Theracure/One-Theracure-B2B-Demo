@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, PieChart as RechartsPieChart, Pie, Cell, Legend } from "recharts";
 import { Pill, TrendingUp } from "lucide-react";
+import { chartColor, chartPalette, type BrandToken } from "@/lib/chartTheme";
 
 const MedicationsAnalytics = () => {
   const topMedications = [
@@ -16,12 +17,14 @@ const MedicationsAnalytics = () => {
     { name: "Levothyroxine", count: 28, percentage: 5, category: "Thyroid", strength: "50mcg" }
   ];
 
-  const medicationsByCategory = [
-    { name: "Cardiovascular", value: 35, color: "#3B82F6", count: 198 },
-    { name: "Analgesics", value: 22, color: "#EF4444", count: 125 },
-    { name: "Diabetes", value: 17, color: "#10B981", count: 98 },
-    { name: "Gastro", value: 13, color: "#F59E0B", count: 76 },
-    { name: "Others", value: 13, color: "#8B5CF6", count: 75 }
+  const medicationsByCategory: Array<{
+    name: string; value: number; token: BrandToken; count: number;
+  }> = [
+    { name: "Cardiovascular", value: 35, token: chartPalette[0], count: 198 },
+    { name: "Analgesics",     value: 22, token: chartPalette[3], count: 125 },
+    { name: "Diabetes",       value: 17, token: chartPalette[2], count:  98 },
+    { name: "Gastro",         value: 13, token: chartPalette[1], count:  76 },
+    { name: "Others",         value: 13, token: chartPalette[4], count:  75 },
   ];
 
   const monthlyPrescriptions = [
@@ -85,7 +88,7 @@ const MedicationsAnalytics = () => {
                   dataKey="value"
                 >
                   {medicationsByCategory.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
+                    <Cell key={`cell-${index}`} fill={chartColor(entry.token)} />
                   ))}
                 </Pie>
                 <Tooltip formatter={(value) => `${value}%`} />
@@ -110,8 +113,8 @@ const MedicationsAnalytics = () => {
                 <YAxis tick={{ fontSize: 13 }} className="text-muted-foreground" />
                 <Tooltip />
                 <Legend wrapperStyle={{ fontSize: 13, paddingTop: 8 }} />
-                <Bar dataKey="total" fill="#3B82F6" name="Total Prescriptions" radius={[3, 3, 0, 0]} />
-                <Bar dataKey="antibiotics" fill="#EF4444" name="Antibiotics" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="total" fill={chartColor("trust")} name="Total Prescriptions" radius={[3, 3, 0, 0]} />
+                <Bar dataKey="antibiotics" fill={chartColor("warning")} name="Antibiotics" radius={[3, 3, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -127,9 +130,9 @@ const MedicationsAnalytics = () => {
               {medicationsByCategory.map((category, index) => (
                 <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                   <div className="flex items-center space-x-3">
-                    <div 
+                    <div
                       className="w-4 h-4 rounded"
-                      style={{ backgroundColor: category.color }}
+                      style={{ backgroundColor: chartColor(category.token) }}
                     ></div>
                     <span className="font-medium text-foreground">{category.name}</span>
                   </div>

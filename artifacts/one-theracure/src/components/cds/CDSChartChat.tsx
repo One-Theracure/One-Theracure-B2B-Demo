@@ -122,7 +122,7 @@ const CDSChartChat = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Chart Chat</h2>
+        <h2 className="text-display-md text-brand-navy">Chart Chat</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">
           Ask questions about your patient's chart. AI answers using available clinical data.
         </p>
@@ -152,7 +152,7 @@ const CDSChartChat = () => {
                 </Select>
               </div>
               {inputs.patientName && (
-                <div className="p-3 bg-violet-500/10 border border-violet-500/20 rounded-lg space-y-1.5">
+                <div className="p-3 bg-brand-soft border border-brand-trust/20 rounded-lg space-y-1.5">
                   <p className="text-base font-semibold text-foreground">{inputs.patientName}</p>
                   <p className="text-sm text-muted-foreground">{inputs.age}y, {inputs.gender}</p>
                   {inputs.pmh && <p className="text-sm text-muted-foreground"><span className="font-medium">PMH:</span> {inputs.pmh}</p>}
@@ -177,7 +177,7 @@ const CDSChartChat = () => {
           <Card className="flex flex-col h-[600px]">
             <CardHeader className="pb-2 border-b">
               <CardTitle className="text-sm flex items-center gap-2">
-                <MessageCircle className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+                <MessageCircle className="h-4 w-4 text-brand-trust" />
                 Chat
                 <Badge variant="secondary" className="text-xs">{messages.length} messages</Badge>
               </CardTitle>
@@ -185,8 +185,8 @@ const CDSChartChat = () => {
             <CardContent className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.length === 0 && (
                 <div className="flex flex-col items-center justify-center h-full text-center space-y-3 py-12">
-                  <div className="w-14 h-14 rounded-full bg-violet-500/10 flex items-center justify-center">
-                    <MessageCircle className="h-7 w-7 text-violet-500 dark:text-violet-400" />
+                  <div className="w-14 h-14 rounded-full bg-brand-soft flex items-center justify-center">
+                    <MessageCircle className="h-7 w-7 text-brand-trust" />
                   </div>
                   <p className="text-sm text-muted-foreground max-w-xs">
                     {inputs.patientName
@@ -198,7 +198,7 @@ const CDSChartChat = () => {
                       <button
                         key={q}
                         onClick={() => setQuery(q)}
-                        className="text-sm px-4 py-2 bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20 rounded-full hover:bg-violet-500/20 transition-colors"
+                        className="text-sm px-4 py-2 bg-brand-soft text-brand-trust border border-brand-trust/20 rounded-full hover:bg-brand-trust/15 transition-colors"
                       >
                         {q}
                       </button>
@@ -213,8 +213,8 @@ const CDSChartChat = () => {
                   className={`flex gap-3 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                 >
                   {msg.role === "ai" && (
-                    <div className="w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                    <div className="w-8 h-8 rounded-full bg-brand-soft flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-4 w-4 text-brand-trust" />
                     </div>
                   )}
                   <div
@@ -239,8 +239,8 @@ const CDSChartChat = () => {
 
               {loading && (
                 <div className="flex gap-3 justify-start">
-                  <div className="w-8 h-8 rounded-full bg-violet-500/10 flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="h-4 w-4 text-violet-600 dark:text-violet-400 animate-pulse" />
+                  <div className="w-8 h-8 rounded-full bg-brand-soft flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="h-4 w-4 text-brand-trust animate-pulse" />
                   </div>
                   <div className="bg-muted rounded-2xl rounded-bl-md px-4 py-3 border border-border">
                     <div className="flex gap-1">

@@ -85,7 +85,7 @@ const DoctorProfileStep = ({ data, updateData, onNext, onSwitchToLogin }: Doctor
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h2 className="text-2xl font-playfair font-bold bg-gradient-to-r from-blue-900 to-indigo-900 bg-clip-text text-transparent">
+        <h2 className="text-display-lg text-brand-navy">
           Doctor Profile
         </h2>
         <p className="text-muted-foreground font-inter mt-2">

@@ -44,7 +44,7 @@ const AVSSummaryComponent = ({ open, onOpenChange, patient, encounterId, diagnos
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2 text-lg font-playfair">
+          <DialogTitle className="flex items-center gap-2 text-display-sm text-brand-navy">
             <Heart className="h-5 w-5 text-rose-500 dark:text-rose-400" />
             After-Visit Summary (AVS)
           </DialogTitle>
@@ -124,7 +124,7 @@ const AVSSummaryComponent = ({ open, onOpenChange, patient, encounterId, diagnos
 
               <div>
                 <h4 className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
-                  <ListChecks className="h-4 w-4 text-violet-500 dark:text-violet-400" />
+                  <ListChecks className="h-4 w-4 text-brand-trust" />
                   Next Steps
                 </h4>
                 <div className="space-y-1.5">

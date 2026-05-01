@@ -33,11 +33,11 @@ const UsersSection = ({ users, onAddUser, onEditUser, onToggleUserStatus, onDele
 
   return (
     <>
-      <Card className="bg-card/90 backdrop-blur-xl border border-border/50 shadow-xl">
-        <CardHeader className="bg-gradient-to-r from-muted/50 to-muted/30 rounded-t-2xl">
+      <Card className="bg-card border border-border">
+        <CardHeader className="bg-muted/30 rounded-t-airbnb-md border-b border-border">
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle className="font-playfair text-lg sm:text-xl bg-gradient-to-r from-blue-800 to-indigo-800 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+              <CardTitle className="text-display-md text-brand-navy">
                 Users
               </CardTitle>
               <CardDescription className="font-inter font-medium text-muted-foreground text-sm sm:text-base">

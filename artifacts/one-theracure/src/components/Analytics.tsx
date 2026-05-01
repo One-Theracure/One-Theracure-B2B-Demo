@@ -14,6 +14,7 @@ import {
   Activity
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, LineChart, Line, Pie } from "recharts";
+import { chartColor, chartPalette, type BrandToken } from "@/lib/chartTheme";
 
 const Analytics = () => {
   const monthlyVisits = [
@@ -25,12 +26,14 @@ const Analytics = () => {
     { month: "Jun", visits: 67, newPatients: 22 }
   ];
 
-  const specialtyDistribution = [
-    { name: "General Medicine", value: 35, color: "#3B82F6" },
-    { name: "Gynecology", value: 25, color: "#EF4444" },
-    { name: "Cardiology", value: 20, color: "#10B981" },
-    { name: "Oncology", value: 12, color: "#F59E0B" },
-    { name: "Orthopedics", value: 8, color: "#8B5CF6" }
+  const specialtyDistribution: Array<{
+    name: string; value: number; token: BrandToken;
+  }> = [
+    { name: "General Medicine", value: 35, token: chartPalette[0] },
+    { name: "Gynecology",       value: 25, token: chartPalette[3] },
+    { name: "Cardiology",       value: 20, token: chartPalette[2] },
+    { name: "Oncology",         value: 12, token: chartPalette[1] },
+    { name: "Orthopedics",      value:  8, token: chartPalette[4] },
   ];
 
   const dailyPerformance = [
@@ -168,8 +171,8 @@ const Analytics = () => {
                     <XAxis dataKey="month" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="visits" fill="#3B82F6" name="Total Visits" />
-                    <Bar dataKey="newPatients" fill="#10B981" name="New Patients" />
+                    <Bar dataKey="visits" fill={chartColor("trust")} name="Total Visits" />
+                    <Bar dataKey="newPatients" fill={chartColor("success")} name="New Patients" />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -187,8 +190,8 @@ const Analytics = () => {
                     <XAxis dataKey="day" />
                     <YAxis />
                     <Tooltip />
-                    <Line type="monotone" dataKey="avgTime" stroke="#EF4444" name="Avg Time (min)" />
-                    <Line type="monotone" dataKey="visits" stroke="#8B5CF6" name="Visits" />
+                    <Line type="monotone" dataKey="avgTime" stroke={chartColor("warning")} name="Avg Time (min)" />
+                    <Line type="monotone" dataKey="visits" stroke={chartColor("trust")} name="Visits" />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -226,7 +229,7 @@ const Analytics = () => {
                   <XAxis dataKey="month" />
                   <YAxis />
                   <Tooltip />
-                  <Bar dataKey="visits" fill="#3B82F6" />
+                  <Bar dataKey="visits" fill={chartColor("trust")} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -252,7 +255,7 @@ const Analytics = () => {
                       label={({ name, value }) => `${name}: ${value}%`}
                     >
                       {specialtyDistribution.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell key={`cell-${index}`} fill={chartColor(entry.token)} />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -271,9 +274,9 @@ const Analytics = () => {
                   {specialtyDistribution.map((specialty, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
                       <div className="flex items-center space-x-3">
-                        <div 
+                        <div
                           className="w-4 h-4 rounded"
-                          style={{ backgroundColor: specialty.color }}
+                          style={{ backgroundColor: chartColor(specialty.token) }}
                         ></div>
                         <span className="font-medium">{specialty.name}</span>
                       </div>

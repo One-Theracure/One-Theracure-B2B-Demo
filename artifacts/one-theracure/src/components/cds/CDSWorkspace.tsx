@@ -117,7 +117,7 @@ const CDSWorkspace = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair text-foreground">Encounter Workspace</h2>
+        <h2 className="text-display-md text-foreground">Encounter Workspace</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">
           Start with a patient, ask a question, or generate clinical documentation.
         </p>
@@ -133,8 +133,8 @@ const CDSWorkspace = () => {
                 onClick={() => setMode(qa.mode)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-full border text-sm font-medium font-inter transition-all ${
                   mode === qa.mode
-                    ? "bg-violet-600 text-white border-violet-600 shadow-sm"
-                    : "bg-card text-foreground border-border hover:border-violet-300 hover:text-violet-700 hover:shadow-sm"
+                    ? "bg-brand-trust text-white border-brand-trust shadow-sm"
+                    : "bg-card text-foreground border-border hover:border-brand-trust/40 hover:text-brand-navy hover:shadow-sm"
                 }`}
               >
                 <QaIcon className="h-3.5 w-3.5" />
@@ -188,8 +188,8 @@ const CDSWorkspace = () => {
               {!session && !loading && (
                 <Card className="border-dashed border-2 border-border">
                   <CardContent className="py-12 text-center space-y-2">
-                    <div className="w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
-                      <History className="h-6 w-6 text-violet-500" />
+                    <div className="w-12 h-12 rounded-full bg-brand-soft flex items-center justify-center mx-auto">
+                      <History className="h-6 w-6 text-brand-trust" />
                     </div>
                      <p className="text-sm text-muted-foreground font-inter">
                        Fill in clinical details and click <strong>Generate</strong> to see AI-assisted output here.
@@ -200,10 +200,10 @@ const CDSWorkspace = () => {
               )}
 
               {loading && (
-                <Card className="border border-violet-500/20">
+                <Card className="border border-brand-trust/20">
                   <CardContent className="py-10 text-center space-y-3">
                     <div className="flex items-center justify-center gap-2">
-                      <div className="h-5 w-5 border-2 border-violet-300 border-t-violet-600 rounded-full animate-spin" />
+                      <div className="h-5 w-5 border-2 border-brand-trust/40 border-t-brand-trust rounded-full animate-spin" />
                      <span className="text-sm text-muted-foreground font-inter">
                          {deepReasoning ? "Deep reasoning in progress…" : "Generating clinical content…"}
                        </span>

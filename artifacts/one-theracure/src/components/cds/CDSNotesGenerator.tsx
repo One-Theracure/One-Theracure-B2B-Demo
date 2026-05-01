@@ -69,7 +69,7 @@ const CDSNotesGenerator = () => {
   return (
     <div className="space-y-4">
       <div>
-        <h2 className="text-xl font-bold font-playfair">Clinical Notes</h2>
+        <h2 className="text-display-md text-brand-navy">Clinical Notes</h2>
         <p className="text-sm text-muted-foreground font-inter mt-0.5">Generate H&amp;P, progress notes, discharge summaries, referral letters, and patient handouts.</p>
       </div>
       <CDSSafetyBanner />
@@ -81,7 +81,7 @@ const CDSNotesGenerator = () => {
             onClick={() => setActiveMode(nt.mode)}
             className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg border text-sm font-medium font-inter transition-all ${
               activeMode === nt.mode
-                ? "bg-violet-600 text-white border-violet-600 shadow-sm"
+                ? "bg-brand-trust text-white border-brand-trust shadow-sm"
                 : "bg-background text-muted-foreground border-border hover:border-primary/30 hover:text-foreground"
             }`}
           >

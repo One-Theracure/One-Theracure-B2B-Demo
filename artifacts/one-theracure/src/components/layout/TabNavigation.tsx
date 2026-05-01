@@ -1,87 +1,86 @@
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BarChart3, Settings, Brain, MonitorSmartphone } from "lucide-react";
 import { useLanguage } from "@/components/i18n/LanguageProvider";
+import { cn } from "@/lib/utils";
 
 interface TabNavigationProps {
   activeTab: string;
   onTabChange: (value: string) => void;
 }
 
+/**
+ * TabNavigation — primary product tabs (Brand Foundation Batch 1, issue 1.3).
+ *
+ * Reference design: 32px icon above label, 2px Trust-Blue ink underline for
+ * the active tab, no per-tab gradient. Replaces the four conflicting gradient
+ * pills (blue/indigo, teal/cyan, violet/fuchsia, gray/slate) with a single
+ * unified Trust-Blue identity.
+ */
 const TabNavigation = ({ activeTab, onTabChange }: TabNavigationProps) => {
   const { t } = useLanguage();
 
   const tabs = [
-    {
-      value: "dashboard",
-      icon: BarChart3,
-      label: t('nav.dashboard'),
-      shortLabel: "Dash",
-      color: "from-blue-600 to-indigo-600"
-    },
-    {
-      value: "frontdesk",
-      icon: MonitorSmartphone,
-      label: "Front Desk",
-      shortLabel: "Ops",
-      color: "from-teal-600 to-cyan-600"
-    },
-    {
-      value: "cds-scribe",
-      icon: Brain,
-      label: "Clinical",
-      shortLabel: "Clinical",
-      color: "from-violet-600 to-fuchsia-600"
-    },
-    {
-      value: "settings",
-      icon: Settings,
-      label: t('nav.settings'),
-      shortLabel: "Config",
-      color: "from-gray-600 to-slate-600"
-    }
+    { value: "dashboard",  icon: BarChart3,         label: t('nav.dashboard') },
+    { value: "frontdesk",  icon: MonitorSmartphone, label: "Front Desk" },
+    { value: "cds-scribe", icon: Brain,             label: "Clinical" },
+    { value: "settings",   icon: Settings,          label: t('nav.settings') },
   ];
 
   return (
-    <div className="relative">
-      <Tabs value={activeTab} onValueChange={onTabChange}>
-        <TabsList className="grid w-full grid-cols-4 bg-background/95 backdrop-blur-xl border border-border/50 p-1 rounded-xl shadow-lg relative">
-          {/* Subtle background wash */}
-          <div className="absolute inset-0 bg-gradient-to-r from-muted/30 via-accent/20 to-muted/30 rounded-2xl pointer-events-none" />
+    <Tabs value={activeTab} onValueChange={onTabChange}>
+      <TabsList className="grid w-full grid-cols-4 h-auto bg-transparent p-0 gap-2 rounded-none">
+        {tabs.map((tab) => {
+          const IconComponent = tab.icon;
+          const isActive = activeTab === tab.value;
 
-          {tabs.map((tab) => {
-            const IconComponent = tab.icon;
-            const isActive = activeTab === tab.value;
-
-            return (
-              <TabsTrigger
-                key={tab.value}
-                value={tab.value}
-                aria-label={`${tab.label} tab`}
-                className={`
-                  relative flex items-center justify-center gap-2 font-sf-pro rounded-xl
-                  transition-all duration-200 text-sm px-2 py-2.5 z-10
-                  min-h-[44px] w-full leading-none
-                  ${isActive
-                    ? `bg-gradient-to-r ${tab.color} text-white shadow-md font-semibold`
-                    : 'text-muted-foreground hover:text-foreground hover:bg-background/70 font-medium'
-                  }
-                `}
-              >
-                <IconComponent className={`h-[18px] w-[18px] flex-shrink-0 ${isActive ? 'drop-shadow-sm' : ''}`} />
-                <span className="hidden sm:inline lg:hidden xl:inline truncate">
-                  {tab.label}
-                </span>
-
-                {isActive && (
-                  <div className={`absolute inset-0 bg-gradient-to-r ${tab.color} rounded-xl blur-md opacity-20 -z-10`} />
+          return (
+            <TabsTrigger
+              key={tab.value}
+              value={tab.value}
+              aria-label={`${tab.label} tab`}
+              aria-current={isActive ? "page" : undefined}
+              className={cn(
+                "group relative flex flex-col items-center justify-end gap-1.5",
+                "rounded-none bg-transparent p-2 pt-2.5 pb-2",
+                "data-[state=active]:bg-transparent data-[state=active]:shadow-none",
+                "transition-colors duration-200 min-h-[64px]",
+              )}
+            >
+              <IconComponent
+                aria-hidden
+                className={cn(
+                  "h-8 w-8 transition-colors duration-200",
+                  isActive
+                    ? "text-brand-trust"
+                    : "text-brand-slate group-hover:text-brand-navy",
                 )}
-              </TabsTrigger>
-            );
-          })}
-        </TabsList>
-      </Tabs>
-    </div>
+                strokeWidth={isActive ? 2 : 1.6}
+              />
+              <span
+                className={cn(
+                  "font-inter text-xs sm:text-sm leading-none tracking-tight transition-colors",
+                  isActive
+                    ? "text-brand-navy font-semibold"
+                    : "text-brand-slate font-medium group-hover:text-brand-navy",
+                )}
+              >
+                {tab.label}
+              </span>
+              {/* 2px Trust-Blue ink underline — active indicator */}
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] rounded-full transition-all duration-200",
+                  isActive
+                    ? "w-8 bg-brand-trust opacity-100"
+                    : "w-0 bg-brand-trust opacity-0",
+                )}
+              />
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+    </Tabs>
   );
 };
 
