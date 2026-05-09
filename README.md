@@ -40,16 +40,33 @@ This is a pnpm monorepo. Each top-level product lives under `artifacts/`:
 
 Future artifacts (mobile app, promo video, pitch deck) will be created under the same `artifacts/` directory and should pick up the **Trust Blue** brand foundation (deep navy `#1a2c5b`, trust blue `#0066cc`, Inter for UI, Playfair for editorial) at creation time.
 
-## 🚢 Deployment
+## 🚢 Deployment (Vercel)
 
-Deployment is configured per-artifact in `artifacts/<name>/.replit-artifact/artifact.toml`. The web app is set up for `static` serve mode (the SPA build in `dist/public`) with SPA fallback rewrites. Port binding is via the `PORT` environment variable, which is injected by the Replit runtime — never hard-code a port.
+For a free public demo, deploy the frontend to Vercel directly from this monorepo.
 
-To publish:
+### Frontend-only demo (fastest path)
 
-1. From the main version of the project, click the **Publish** button.
-2. After the first publish, copy the resulting `.replit.app` URL into the **Public demo URL** section above.
+This is enough for sales demos: the app runs fully in browser, and patient registration falls back to local demo mode when `/api` is unavailable.
 
-The deployment skill notes that publish must be initiated by the user from the main repl, not from a task agent. After this task merges, please publish from the main project to fill in the URL.
+1. Import the repo in Vercel.
+2. Set **Root Directory** to `artifacts/one-theracure`.
+3. Vercel should auto-detect **Vite** (`build: vite build`, output: `dist/public`).
+4. Add env var:
+   - `VITE_CLERK_PUBLISHABLE_KEY` (required)
+   - `VITE_CLERK_PROXY_URL` (optional)
+   - `VITE_API_BASE_URL` (optional)
+5. Deploy and copy the generated `.vercel.app` URL.
+
+SPA fallback is configured in `artifacts/one-theracure/vercel.json`.
+
+### Full-stack demo (optional)
+
+If you also want persistent patient storage:
+
+1. Deploy `artifacts/api-server` as a separate backend service (Vercel/Render/Railway).
+2. Set backend env vars (`DATABASE_URL`, `CLERK_SECRET_KEY`, and related Clerk keys).
+3. Set frontend `VITE_API_BASE_URL` to the backend origin (for example, `https://one-theracure-api.vercel.app`).
+4. Re-deploy the frontend so browser calls target the hosted API.
 
 ## 🛡 Brand foundation
 
