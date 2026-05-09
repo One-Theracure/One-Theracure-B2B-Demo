@@ -57,7 +57,9 @@ This is enough for sales demos: the app runs fully in browser, and patient regis
    - `VITE_API_BASE_URL` (optional)
 5. Deploy and copy the generated `.vercel.app` URL.
 
-SPA fallback is configured in `artifacts/one-theracure/vercel.json`.
+SPA fallback and the correct static output path are in `artifacts/one-theracure/vercel.json` (Vite writes to `dist/public`, not the default `dist`).
+
+**If the deploy succeeds but you see Vercel’s `404: NOT_FOUND`:** the site is not serving the built files. In the Vercel project, set **Root Directory** to `artifacts/one-theracure`, confirm **Output Directory** is `dist/public` (or pull the latest `vercel.json` and redeploy), then open the **Production** deployment URL from the Deployments tab.
 
 ### Full-stack demo (optional)
 
